@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="icon" href="/img/favicon.ico" />
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" type="text/css" href="/semantic-ui-master/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="  crossorigin="anonymous"></script>
+    <script src="/semantic-ui-master/semantic.min.js"></script>
+    <style type="text/css">
+     h2{
+       margin:0px!important;
+     }
+     h2 > div{
+       width:100%;
+       background-color:white;
+       padding-bottom:0.5em!important;
+     }
+     body{
+       background-color: white;
+     }
+      body > .grid {
+        height: 100%;
+      }
+      .image {
+        margin-top: -100px;
+      }
+      .main {
+        border-radius: 15px;
+        box-shadow: hsl(24, 89%, 53%) 0px 0px 20px 4px;
+        padding-bottom: 1em;
+        max-width: 50em;
+        padding-right: 2em!important;
+        padding-left: 2em!important;
+      }
+      .ui.teal.header{
+        color:#f78b1c!important;
+      }
+      .ui.primary.button{
+        width: 100%;
+        background-color:#f78b1c!important;
+      }
+      dd{
+        margin-left: 0px;
+      }
+      .ui.form .fields{
+        margin-bottom: 16px!important;
+      }
+      .ui.form .field{
+        margin-bottom: 16px!important;
+      }
+      .ui.form .inline{
+        margin-bottom: 16px!important;
+      }
+      select:required:invalid {
+        color: gray;
+      }
+      option[value=""][disabled] {
+        display: none;
+      }
+      option {
+        color: black;
+      }
+      .messages{
+        width: 100%;
+        text-align: center;
+        background-color: red;
+        color:white;
+        padding-top:1em;
+        padding-bottom:1em;
+        border-radius: 10px;
+        font-size: 1.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ui   middle aligned centered grid">
+      <div class="row">
+        <div class="column main">
+          <h2 class="ui teal image header">
+            <img src="/img/logo.jpg" style="width: auto!important;" class="image">
+          </h2>
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <div class="messages">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
+          {% endwith %}
+          {% from "_formhelpers.html" import render_field %}
+          <form class="ui segment form" action="/login" method="POST">
+            {{ form.csrf_token }}
+              <div class="column">
+                <div class="field">
+                  <div id="emailError" class="field">
+                    <label>Email</label>
+                    <input id="email" name="email" placeholder="Email"  type="text" value="">
+                  </div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <div id="passwordError" class="field">
+                    <label>Password</label>
+                    <input id="password" name="password" placeholder="Password"  type="password" value="">
+                  </div>
+                </div>
+              </div>
+              <div class="column">
+                <input id="button"  class="ui primary  button" type="submit" value="Login">
+              </div>
+          </form>
+          <div style="text-align: center;width:100%;">
+            New to Zenon? &nbsp;
+            <a class="panel-footer" href="/signup"><span>Sign Up</span></a>
+        </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+      window.addEventListener("load", function(){
+        var script = document.createElement("script");
+        script.src = "/js/login/loginValidator.js?ver=" + (new Date()).getTime();
+        document.body.appendChild(script);
+      });
+    </script>
+</html>
