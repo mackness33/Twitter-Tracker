@@ -21,9 +21,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # from database.models.odm_user_mongo import user, signupUser, project
 # from web import db
 
-# import WTForms
-from .forms import LoginForm, SignupForm
-
 # import OTHERS
 import datetime
 import json
@@ -34,7 +31,7 @@ auth = Blueprint('auth', __name__, template_folder='templates', static_folder='s
 #---------------LOGIN---------------
 @auth.route('/login')
 def login():
-    return  render_template('login.html')
+    return  render_template('SWE_interfaccia.html')
 
 
 # @auth.route('/login', methods=['POST'])
