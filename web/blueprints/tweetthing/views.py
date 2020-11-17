@@ -9,14 +9,15 @@ import datetime
 
 
 # this blueprint manages all the route for the zendash application:
-tweet = Blueprint('zendash', __name__, template_folder='templates', static_folder='/blueprints/static')
+tweet = Blueprint('tweet', __name__, template_folder='templates', static_folder='/blueprints/static')
 
 #---------- BASE -------------
+@tweet.route('/base')
 def base():
     print('=================')
     print('IN BASE')
     print('request_cookie: {}'.format(request.cookies))
-    print('current_user: {}'.format(current_user))
+    # print('current_user: {}'.format(current_user))
     print('=================')
 
-    return render_template('baseImportData.html')
+    return render_template('base.html')

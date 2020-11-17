@@ -96,7 +96,6 @@
           {% endwith %}
           {% from "_formhelpers.html" import render_field %}
           <form class="ui segment form" action="/login" method="POST">
-            {{ form.csrf_token }}
               <div class="column">
                 <div class="field">
                   <div id="emailError" class="field">
