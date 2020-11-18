@@ -21,16 +21,43 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # from database.models.odm_user_mongo import user, signupUser, project
 # from web import db
 
+from service.twitter_keys import ACCESS_TOKEN, APP_KEY
+from service.Twitter.useful_class import Twitter
+
 # import OTHERS
 import datetime
 import json
 
-#=============== DEFINITION ===============
-auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static')
+from twython import Twython
 
+#=============== DEFINITION ===============
+tracker = Blueprint('tracker', __name__, template_folder='templates', static_folder='static')
+
+twitter = Twython(APP_KEY, access_token=ACCESS_TOKEN)
+
+T = Twitter()
 #---------------LOGIN---------------
-@auth.route('/login')
-def login():
+@tracker.route('/search')
+def search():
+    lis = {}
+    try :
+        results = twitter.cursor(twitter.search, q='bombardino')
+        i = 0
+        for result in results:
+            if i < 10:
+                lis[i] = result
+            i=i+1
+    except:
+        print(lis)
+
+    return lis
+
+@tracker.route('/search2')
+def search2():
+    return T.main()
+
+@tracker.route('/base')
+def base():
     return  render_template('SWE_interfaccia.html')
 
 
@@ -78,7 +105,7 @@ def login():
 
 
 #---------------SIGNUP---------------
-@auth.route('/signup')
+@tracker.route('/signup')
 def signup():
     return render_template('signup.html')
 
@@ -124,7 +151,7 @@ def signup():
 #     return jsonify(errors)
 
 #---------------LOGOUT---------------
-@auth.route('/logout')
+@tracker.route('/logout')
 # @jwt_required
 def logout():
     #TODO: add index
@@ -133,4 +160,4 @@ def logout():
     #     unset_jwt_cookies(response)
     #     return response
 
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('tracker.login'))

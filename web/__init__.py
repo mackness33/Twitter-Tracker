@@ -1,6 +1,5 @@
 #===============FLASK SERVER===============
 from flask import Flask, redirect, url_for, send_file, Response
-from twython import Twython
 import json
 #==============OTHER PACKAGES==============
 import os
@@ -14,36 +13,20 @@ app = Flask(__name__, instance_relative_config=True, static_url_path="", static_
 
 
 #===================AUTHENTICATION=========================
-from .blueprints.auth.views import auth
-app.register_blueprint(auth)
+from .blueprints.auth.views import tracker
+app.register_blueprint(tracker)
 
 
-
-APP_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
-APP_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
-twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
-ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAWcVRj1jSQICavXy6ed1brWy%2BJxQ%3DVaEsvLARgtGvJ8qSLInEELeZVm9Gl4guEgPTUufUJQ6cox4MWe'
-twitter2 = Twython(APP_KEY, access_token=ACCESS_TOKEN)
+# APP_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
+# APP_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
+# twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
+# ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAWcVRj1jSQICavXy6ed1brWy%2BJxQ%3DVaEsvLARgtGvJ8qSLInEELeZVm9Gl4guEgPTUufUJQ6cox4MWe'
+# twitter2 = Twython(APP_KEY, access_token=ACCESS_TOKEN)
 
 #==============INDEX====================
 @app.route('/')
-def routeIndex():
-    lis = {}
-    try :
-        results = twitter.cursor(twitter2.search, q='bombardino')
-        i = 0
-        for result in results:
-            if i < 10:
-                lis[i] = result
-        #         break
-        #     else:
-            # print(result)
-            i=i+1
-    except:
-        print(lis)
-
-
-    return lis
+def base():
+    return redirect(url_for('tracker.base'))
 
 #==============ERROR HANDLING====================
 # handle login failed
