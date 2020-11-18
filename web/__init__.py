@@ -1,5 +1,6 @@
 #===============FLASK SERVER===============
-from flask import Flask, redirect, url_for, send_file
+from flask import Flask, redirect, url_for, send_file, Response
+from twython import Twython
 
 #==============OTHER PACKAGES==============
 import os
@@ -17,10 +18,26 @@ from .blueprints.auth.views import auth
 app.register_blueprint(auth)
 
 
+APP_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
+APP_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
+
+twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
+ACCESS_TOKEN = twitter.obtain_access_token()
+twitter2 = Twython(APP_KEY, access_token=ACCESS_TOKEN)
+
 #==============INDEX====================
 @app.route('/')
 def routeIndex():
-    return  redirect(url_for("auth.login")), 302
+    results = twitter.cursor(twitter2.search, q='python')
+    i = 0
+    for result in results:
+        if i > 10:
+            break
+        else:
+            print(result)
+        i=i+1
+
+    return results
 
 #==============ERROR HANDLING====================
 # handle login failed
