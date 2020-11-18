@@ -1,5 +1,5 @@
 #===============FLASK SERVER===============
-from flask import Flask, redirect
+from flask import Flask, redirect, url_for, send_file
 
 #==============OTHER PACKAGES==============
 import os
@@ -17,18 +17,23 @@ app = Flask(__name__, instance_relative_config=True, static_url_path="", static_
 from .blueprints.auth.views import auth
 app.register_blueprint(auth)
 
-#===================APPLICATION=========================
-from .blueprints.tweetthing.views import tweet
-app.register_blueprint(tweet)
-
 import web.route
 
 
 #==============INDEX====================
 @app.route('/')
 def routeIndex():
-    return  redirect("/login"), 302
+    return  redirect(url_for("auth.login")), 302
 
+#==============ERROR HANDLING====================
+# handle login failed
+@app.errorhandler(401)
+def page_not_found(e):
+    return Response('<p>Login failed</p>')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return send_file('errorHandler/404/404.html'), 404
 
 # def create_app(test_config=None):
 #     # create and configure the app
