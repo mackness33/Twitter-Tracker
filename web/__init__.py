@@ -1,7 +1,7 @@
 #===============FLASK SERVER===============
 from flask import Flask, redirect, url_for, send_file, Response
 from twython import Twython
-
+import json
 #==============OTHER PACKAGES==============
 import os
 
@@ -18,26 +18,32 @@ from .blueprints.auth.views import auth
 app.register_blueprint(auth)
 
 
+
 APP_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
 APP_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
-
 twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
-ACCESS_TOKEN = twitter.obtain_access_token()
+ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAWcVRj1jSQICavXy6ed1brWy%2BJxQ%3DVaEsvLARgtGvJ8qSLInEELeZVm9Gl4guEgPTUufUJQ6cox4MWe'
 twitter2 = Twython(APP_KEY, access_token=ACCESS_TOKEN)
 
 #==============INDEX====================
 @app.route('/')
 def routeIndex():
-    results = twitter.cursor(twitter2.search, q='python')
-    i = 0
-    for result in results:
-        if i > 10:
-            break
-        else:
-            print(result)
-        i=i+1
+    lis = {}
+    try :
+        results = twitter.cursor(twitter2.search, q='bombardino')
+        i = 0
+        for result in results:
+            if i < 10:
+                lis[i] = result
+        #         break
+        #     else:
+            # print(result)
+            i=i+1
+    except:
+        print(lis)
 
-    return results
+
+    return lis
 
 #==============ERROR HANDLING====================
 # handle login failed
@@ -51,6 +57,8 @@ def page_not_found(e):
 
 app.config.update(
     DEBUG = True
+    # TWITTER_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
+    # TWITTER_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
     # UPLOAD_FOLDER = os.path.abspath(os.path.dirname(__file__))
     # MONGO_URI = "mongodb://127.0.0.1:27017"
     # SECURITY_PASSWORD_SALT = "dev"
