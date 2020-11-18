@@ -9,15 +9,12 @@ import os
 # from service.jwt_manager import jwt_manager
 # from service.Dash.app import DashApp
 
-
 app = Flask(__name__, instance_relative_config=True, static_url_path="", static_folder="assets")
 
 
 #===================AUTHENTICATION=========================
 from .blueprints.auth.views import auth
 app.register_blueprint(auth)
-
-import web.route
 
 
 #==============INDEX====================
@@ -29,11 +26,28 @@ def routeIndex():
 # handle login failed
 @app.errorhandler(401)
 def page_not_found(e):
-    return Response('<p>Login failed</p>')
+    return Response('<p>Login failed</p>', 401)
 
 @app.errorhandler(404)
 def page_not_found(e):
     return send_file('errorHandler/404/404.html'), 404
+
+app.config.update(
+    DEBUG = True
+    # UPLOAD_FOLDER = os.path.abspath(os.path.dirname(__file__))
+    # MONGO_URI = "mongodb://127.0.0.1:27017"
+    # SECURITY_PASSWORD_SALT = "dev"
+    # SECRET_KEY = 'dev'
+)
+
+# try:
+#     app.config.from_pyfile('config.py')
+#     if app.config['ENV'] == 'deployment':
+#         app.config.from_object('config.Deployment')
+#     else:
+#         app.config.from_object('config.Production')
+# except OSError:
+#     print ('Configuration file missing!')
 
 # def create_app(test_config=None):
 #     # create and configure the app
