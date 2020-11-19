@@ -55,7 +55,7 @@ def search_post():
 @tracker.route('/base', methods = ['POST'])
 # def base_post(in_json):
 def base_post():
-    return in_json
+    return "OK"
 
 @tracker.route('/base')
 def base():
