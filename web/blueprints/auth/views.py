@@ -21,8 +21,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # from database.models.odm_user_mongo import user, signupUser, project
 # from web import db
 
-from service.twitter_keys import ACCESS_TOKEN, APP_KEY
+# from service.twitter_keys import ACCESS_TOKEN, APP_KEY
 from service.Twitter.useful_class import Twitter
+
+from web import app
 
 # import OTHERS
 import datetime
@@ -33,9 +35,10 @@ from twython import Twython
 #=============== DEFINITION ===============
 tracker = Blueprint('tracker', __name__, template_folder='templates', static_folder='static')
 
-twitter = Twython(APP_KEY, access_token=ACCESS_TOKEN)
+twitter = Twython(app.config['APP_KEY'], access_token=app.config['ACCESS_TOKEN'])
 
-T = Twitter()
+T = Twitter(app.config['ACCESS_TOKEN'])
+
 #---------------LOGIN---------------
 @tracker.route('/search')
 def search():
@@ -52,9 +55,10 @@ def search():
 
     return lis
 
+
 @tracker.route('/search2')
 def search2():
-    return T.main()
+    return T.get_tweets({"usernames": "TwitterDev,TwitterAPI", "user.fields": "description,created_at"})
 
 @tracker.route('/base')
 def base():

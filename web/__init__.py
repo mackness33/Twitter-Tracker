@@ -11,6 +11,18 @@ import os
 
 app = Flask(__name__, instance_relative_config=True, static_url_path="", static_folder="assets")
 
+app.config.update(
+DEBUG = True,
+APP_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU',
+APP_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun',
+ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAZ5Tc4633LX1tBevirv57eHi6fxU%3DKTTzwVXH36xwRpjxmsTyIoESruOA70OtEUolqDW1KcaSxzP0sX'
+# TWITTER_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
+# TWITTER_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
+# UPLOAD_FOLDER = os.path.abspath(os.path.dirname(__file__))
+# MONGO_URI = "mongodb://127.0.0.1:27017"
+# SECURITY_PASSWORD_SALT = "dev"
+# SECRET_KEY = 'dev'
+)
 
 #===================AUTHENTICATION=========================
 from .blueprints.auth.views import tracker
@@ -38,15 +50,6 @@ def page_not_found(e):
 def page_not_found(e):
     return send_file('errorHandler/404/404.html'), 404
 
-app.config.update(
-    DEBUG = True
-    # TWITTER_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
-    # TWITTER_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
-    # UPLOAD_FOLDER = os.path.abspath(os.path.dirname(__file__))
-    # MONGO_URI = "mongodb://127.0.0.1:27017"
-    # SECURITY_PASSWORD_SALT = "dev"
-    # SECRET_KEY = 'dev'
-)
 
 # try:
 #     app.config.from_pyfile('config.py')
