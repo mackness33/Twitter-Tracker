@@ -10,6 +10,7 @@ import os
 # from service.Dash.app import DashApp
 
 app = Flask(__name__, instance_relative_config=True, static_url_path="", static_folder="assets")
+ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAZ5Tc4633LX1tBevirv57eHi6fxU%3DKTTzwVXH36xwRpjxmsTyIoESruOA70OtEUolqDW1KcaSxzP0sX'
 
 app.config.update(
 DEBUG = True,

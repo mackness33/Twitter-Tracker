@@ -1,11 +1,3 @@
-#this blueprint manages all the route for the authentication:
-#2) signup page
-#1) login page
-#3) logout page
-
-#####to add
-# summarizing page after registration
-
 # import FLASK
 from flask import Blueprint, render_template, redirect, url_for, request, after_this_request, jsonify
 # from flask_jwt_extended import (
@@ -16,49 +8,54 @@ from flask import Blueprint, render_template, redirect, url_for, request, after_
 # import FLASK security
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# import UserService
-# from service.services import users
-# from database.models.odm_user_mongo import user, signupUser, project
-# from web import db
+# import TWHYTON
+from twython import Twython
 
+# import SERVICES
 # from service.twitter_keys import ACCESS_TOKEN, APP_KEY
 from service.Twitter.useful_class import Twitter
 
-from web import app
+# TODO: need to find a way to import the ACCESS_TOKEN from the configuration
+# import APP
+from web import ACCESS_TOKEN
 
 # import OTHERS
 import datetime
 import json
 
-from twython import Twython
 
 #=============== DEFINITION ===============
 tracker = Blueprint('tracker', __name__, template_folder='templates', static_folder='static')
 
-twitter = Twython(app.config['APP_KEY'], access_token=app.config['ACCESS_TOKEN'])
+# twitter = Twython(app.config['APP_KEY'], access_token=app.config['ACCESS_TOKEN'])
 
-T = Twitter(app.config['ACCESS_TOKEN'])
+# T = Twitter(app.config['ACCESS_TOKEN'])
+T = Twitter(ACCESS_TOKEN)
 
 #---------------LOGIN---------------
-@tracker.route('/search')
-def search():
-    lis = {}
-    try :
-        results = twitter.cursor(twitter.search, q='bombardino')
-        i = 0
-        for result in results:
-            if i < 10:
-                lis[i] = result
-            i=i+1
-    except:
-        print(lis)
+# @tracker.route('/search')
+# def search():
+#     lis = {}
+#     try :
+#         results = twitter.cursor(twitter.search, q='bombardino')
+#         i = 0
+#         for result in results:
+#             if i < 10:
+#                 lis[i] = result
+#             i=i+1
+#     except:
+#         print(lis)
+#
+#     return lis
 
-    return lis
-
-
-@tracker.route('/search2')
-def search2():
+@tracker.route('/search2', methods = ['POST'])
+def search_post():
     return T.get_tweets({"usernames": "TwitterDev,TwitterAPI", "user.fields": "description,created_at"})
+
+@tracker.route('/base', methods = ['POST'])
+# def base_post(in_json):
+def base_post():
+    return in_json
 
 @tracker.route('/base')
 def base():
