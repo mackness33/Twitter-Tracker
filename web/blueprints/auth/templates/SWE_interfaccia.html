@@ -4,7 +4,7 @@
    <meta charset="utf-8">
    <style type="text/css">
       p {
-         margin-top: 1.5vw;   
+         margin-top: 1.5vw;
       }
       h1 {
          text-align: center;
@@ -14,7 +14,7 @@
          font-size: 5vw;
          font-family: Helvetica;
       }
-      input, button {
+      #input, #button {
          height: 3vw;
          width: 10vw;
          text-align: center;
@@ -23,12 +23,13 @@
          border-color: rgb(0, 174, 255);
          font-family: Arial, Helvetica, serif;
       }
-      input {
+      #input {
+         margin-top: 1.15vw;
          margin-left: 38vw;
          margin-right: 3vw;
          float: left;
       }
-      button {
+      #button {
          font-weight: bold;
          background-color: blue;
          color: orange;
@@ -37,27 +38,41 @@
          font-size: 0.75vw;
          text-align: center;
       }
-   </style> 
+   </style>
+
    <script type="text/javascript">
+
+      /*function richiestaP(stringa)
+      {
+         return jasone;
+      };
+
+      function stampone(jason)
+      {
+         d = document.getElementById("gionni");
+         for(x in jason)
+         {
+            d.appendChild(x);
+         }
+      };
+
       var clicca = function() {
          var ricerca = document.getElementById("argomento_da_cercare").value;
          svolgiRicerca(ricerca);
       };
       function svolgiRicerca(stringa){
-         if (stringa[0] == '#') {
-            ricercaParolaChiave(stringa);
-         }
-         else if (stringa[0] == "$") {
-            ricercaLuogo(stringa);
-         }
-         else if (stringa[0] == "@") {
-            ricercaPersona(stringa);  //stalking
+         if (stringa[0] == '#' || stringa[0] == "$" || stringa[0] == "@") {
+            v = richiestaP(stringa);
+            stampone(v);
          }
          else {
             alert("input non valido");
          };
       };
-      function ricercaParolaChiave(stringa){
+
+
+      /*function ricercaParolaChiave(stringa){
+         richiestaP()
          alert("imp");
       };
       function ricercaLuogo(stringa){
@@ -65,20 +80,23 @@
       };
       function ricercaPersona(stringa){
          alert("lo stalking è un reato penale");
-      };
- 	</script> 
+      };*/
+
+ 	</script>
  </head>
  <body>
  <h1>Twitter Tracker</h1>
- <p id="input">
-    <input type="text" id="argomento_da_cercare" value="i"> 
- </p>
- <button onclick="clicca()">Search</button>
+ <form action="/base" method="post" target="_self">
+      <input id="input" type="text" name="ricerca" ><br>
+      <input id="button" type="submit" value="Search" />
+ </form>
  <p id="descrizione">
     Per cercare: <br>
     -una parola chiave scrivi la parola preceduta dal carattere #, <br>
     -una zona scrivi il nome della zona preceduta dal carattere $, <br>
     -gli spostamenti di una persona scrivi il nome utente di quella persona (compresa la @). <br>
- </p> 
+ </p>
+ <p id="gionni">
+ </p>
  </body>
 </html>
