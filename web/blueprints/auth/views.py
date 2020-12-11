@@ -60,19 +60,19 @@ def base_post():
     # if say[0] == "#":
     #     return Twitter.cursor(Twitter.search, q=say2)
     if say[0] == '#':
-        return T.tweets_lookup(id=1275828087666679809)
+        return T.tweets_lookup(id=1275828087666679809, fields={"tweet.fields": "author_id,created_at", "user.fields": "description,created_at"})
     elif say[0] == 'd':
-        return T.tweets_lookup(id=[20,1276230436478386177,1276501058211262464])
+        return T.tweets_lookup(id=[20,1276230436478386177,1276501058211262464], fields={"user.fields": "description,created_at"})
     elif say[0] == '@':
-        return T.users_lookup(query=300)
+        return T.users_lookup(query=300, fields={"user.fields": "description,created_at"})
     elif say[0] == 'm':
-        return T.users_lookup(query=[300,1111111,999578121123848192])
+        return T.users_lookup(query=[300,1111111,999578121123848192], fields={"user.fields": "description,created_at"})
     elif say[0] == 'u':
-        return T.users_lookup(query='Twitter')
+        return T.users_lookup(query='Twitter', fields={"user.fields": "description,created_at"})
     elif say[0] == 's':
-        return T.users_lookup(query=['Twitter','TwitterDev','GiuseppeConteIT'])
+        return T.users_lookup(query=['Twitter','TwitterDev','GiuseppeConteIT'], fields={"user.fields": "description,created_at"})
     elif say[0] == 'r':
-        return T.recent_search(query=['migranti', 'capitano'])
+        return T.recent_search(query=['ciao', 'capitano'], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
     elif say[0] == 'e':
         return T.sample_stream()
     elif say[0] == '$':
