@@ -4,6 +4,8 @@ import json
 
 # TODO: if incorrect type of input raise an exception.
 # TODO: if in multiple args one doesn't exist retry starting from the next one.
+# TODO: exception handling.
+# TODO: testing.
 
 class Twitter():
     # token: bearer token for the authentication
@@ -14,6 +16,25 @@ class Twitter():
     #---------TWEETS LOOKUP----------
     def tweets_lookup(self, id, **fields):
         url = self._create_url('tweets', 'ids', id)                          # set up the url
+        headers = self._create_headers()                         # set up the headers
+        json_response = self._request_resources(url, headers)  # set up the response as a json
+        return json_response
+
+    #---------USERS LOOKUP----------
+    def users_lookup(self, query, **fields):
+        def by(query):
+            if isinstance(query, list):
+                if isinstance(query[0], int):
+                    return 'users', 'ids'
+                else:
+                    return 'users/by', 'usernames'
+            else:
+                if isinstance(query, int):
+                    return 'users', 'ids'
+                else:
+                    return 'users/by/username', 'usernames'
+        type, field = by(query)
+        url = self._create_url(type, field, query)                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
