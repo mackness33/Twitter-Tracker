@@ -33,8 +33,15 @@ class Twitter():
                     return 'users', 'ids'
                 else:
                     return 'users/by/username', 'usernames'
+
         type, field = by(query)
         url = self._create_url(type, field, query)                          # set up the url
+        headers = self._create_headers()                         # set up the headers
+        json_response = self._request_resources(url, headers)  # set up the response as a json
+        return json_response
+
+    def recent_search(self, query, **fields):
+        url = self._create_url('tweets/search/recent', 'query', query)  # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
@@ -51,7 +58,7 @@ class Twitter():
         url = self._base_url + type
 
         # multiple arguments or single arg
-        if not isinstance(values, list) or len(values) == 1:
+        if not isinstance(values, list):
             url += '/' + str(values)
         else:
             # key MUST be a parameter name
