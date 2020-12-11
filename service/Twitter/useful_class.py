@@ -3,7 +3,7 @@ import os
 import json
 
 # TODO: if incorrect type of input raise an exception.
-# TODO: if in multiple args one doesn't exist retry starting from the next one.
+# TODO: create a socket for stream use
 # TODO: exception handling.
 # TODO: testing.
 
@@ -19,6 +19,7 @@ class Twitter():
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
+
 
     #---------USERS LOOKUP----------
     def users_lookup(self, query, **fields):
@@ -40,8 +41,17 @@ class Twitter():
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
 
+
+    #---------RECENT SEARCH----------
     def recent_search(self, query, **fields):
         url = self._create_url('tweets/search/recent', 'query', query)  # set up the url
+        headers = self._create_headers()                         # set up the headers
+        json_response = self._request_resources(url, headers)  # set up the response as a json
+        return json_response
+
+    #---------SAMPLE STREAM----------
+    def sample_stream(self, **fields):
+        url = self._base_url + 'tweets/sample/stream'           # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response

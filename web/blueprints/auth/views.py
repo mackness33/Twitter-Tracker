@@ -73,6 +73,8 @@ def base_post():
         return T.users_lookup(query=['Twitter','TwitterDev','GiuseppeConteIT'])
     elif say[0] == 'r':
         return T.recent_search(query=['migranti', 'capitano'])
+    elif say[0] == 'e':
+        return T.sample_stream()
     elif say[0] == '$':
         return "not implemented"
 
