@@ -10,13 +10,13 @@ import os
 # from service.Dash.app import DashApp
 
 app = Flask(__name__, instance_relative_config=True, static_url_path="", static_folder="assets")
-ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAZ5Tc4633LX1tBevirv57eHi6fxU%3DKTTzwVXH36xwRpjxmsTyIoESruOA70OtEUolqDW1KcaSxzP0sX'
+ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAAMrVIwEAAAAAEkonZgXAHTAD%2FwK%2BCV1m7lIkloU%3D0ev1s90pbmSNbGUCCkohg2hZXRShDU1jp7qXi1cmN3Q7jschtn'
 
 app.config.update(
 DEBUG = True,
 APP_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU',
 APP_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun',
-ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAZ5Tc4633LX1tBevirv57eHi6fxU%3DKTTzwVXH36xwRpjxmsTyIoESruOA70OtEUolqDW1KcaSxzP0sX'
+ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAAMrVIwEAAAAAEkonZgXAHTAD%2FwK%2BCV1m7lIkloU%3D0ev1s90pbmSNbGUCCkohg2hZXRShDU1jp7qXi1cmN3Q7jschtn'
 # TWITTER_KEY = '09kHJqtgk2AHxXZq2tyDyXsAU'
 # TWITTER_SECRET = 'As1wcMtXaktX3iCADPRhKRsz9VwUBECZru6XCRKbGGs4LnUHun'
 # UPLOAD_FOLDER = os.path.abspath(os.path.dirname(__file__))

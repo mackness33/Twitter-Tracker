@@ -55,7 +55,16 @@ def search_post():
 @tracker.route('/base', methods = ['POST'])
 # def base_post(in_json):
 def base_post():
-    return "OK"
+    say=request.form['ricerca']
+    say2 = say[1:]
+    if say[0] == "#":
+        return Twitter.cursor(Twitter.search, q=say2)
+    elif say[0] == '@':
+        return T.get_tweets({"usernames": say2, "user.fields": "description,created_at"})
+    elif say[0] == '$':
+        return "not implemented"
+
+    return "ERROR INPUT"
 
 @tracker.route('/base')
 def base():
