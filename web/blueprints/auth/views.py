@@ -56,6 +56,7 @@ def search_post():
 # def base_post(in_json):
 def base_post():
     say=request.form['ricerca']
+    print(say)
     say2 = say[1:]
     # if say[0] == "#":
     #     return Twitter.cursor(Twitter.search, q=say2)
@@ -66,7 +67,7 @@ def base_post():
     elif say[0] == '@':
         return T.users_lookup(query=300, fields={"user.fields": "description,created_at"})
     elif say[0] == 'm':
-        return T.users_lookup(query=[300,1111111,999578121123848192], fields={"user.fields": "description,created_at"})
+        return T.users_lookup(query=[300,999578121123848192], fields={"user.fields": "description,created_at"})
     elif say[0] == 'u':
         return T.users_lookup(query='Twitter', fields={"user.fields": "description,created_at"})
     elif say[0] == 's':

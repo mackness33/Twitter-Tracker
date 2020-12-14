@@ -46,7 +46,6 @@
         	margin: 0;
         	padding: 0;
         	height:100%;
-<<<<<<< HEAD
         	font-family: open sans;
 			width: 100%;
       	}
@@ -56,24 +55,12 @@
 		  	height:50%;
 		  	position: relative;
 		  	float: left;
-=======
-        	font-family: open sans;
-			width: 100%;
-      	}
-
-      	#container-map, #ricerca, #word_cloud, #visualizzazione_tw{
-		  	width:50%;
-		  	height:50%;
-		  	position: relative;
-		  	float: left;
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 		  	overflow: auto;
 		}
       		/*#top-sfu{width:100%; background: url(img/top-sfu.png) repeat-x; height:10px;position: absolute;z-index:20;top:0;}
       		#bottom-sfu{width:100%; background: url(img/bottom-sfu.png) repeat-x; height:10px;position: absolute;z-index:20;bottom:0;}
       		#logo{width:200px;height:200px; background: url(img/logo.png);position: absolute; left:100px; bottom: 150px;z-index: 30;}*/
 
-<<<<<<< HEAD
       	/*.popup a{color:#fe4a5d;text-decoration: none;}
       	.popup h2{margin:0;padding:0;}
       	.popup #berlin{width:220px;height:40px; background: url(img/berlin.png);text-indent: -9999px}	/*presumibilmente inutile*/
@@ -87,30 +74,11 @@
 
 	  	iframe{
 			width: 95%;
-=======
-      	/*.popup a{color:#fe4a5d;text-decoration: none;}
-      	.popup h2{margin:0;padding:0;}
-      	.popup #berlin{width:220px;height:40px; background: url(img/berlin.png);text-indent: -9999px}	/*presumibilmente inutile*/
-
-      	#map-canvas{
-			width: 95%;
-			height:95%;
-			position:relative;
-			z-index:10;
-		}
-
-	  	iframe{
-			width: 95%;
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 			height: 95%;
 		}
 
-    </style>
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 
@@ -131,28 +99,31 @@
 	<script>
 
 		/*gestione tweet raccolti*/
-		async function richiesta_dati(){
-			var value = document.getElementById("input").value;
+		function richiesta_dati(){
+			$.ajax({
+           type: "POST",
+           url: "/base",
+           data: $("#foro").serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+               console.log(data); // show response from the php script.
+           }
+         });
+			/*var value = document.getElementById("input").value;
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", "/base", true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(JSON.stringify({
     			value: value
-			}));
+			}));*/
 		}
-<<<<<<< HEAD
+
+		
 
 
 		/*mappa*/
 		function initialize() {
 
-=======
-
-
-		/*mappa*/
-		function initialize() {
-
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 			/* Style of the map */
 			var styles = [
 			{
@@ -180,7 +151,6 @@
 		           { visibility: "off" }
 		         ]
 		       }
-<<<<<<< HEAD
 
 		    ];
 
@@ -192,19 +162,6 @@
 		  /* Lat. and Lon. of the center of the map */
 		  var myCenter = new google.maps.LatLng(44.302700, 11.21504);
 
-=======
-
-		    ];
-
-
-		  // Create a new StyledMapType object, passing it the array of styles,
-		  // as well as the name to be displayed on the map type control.
-		  var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
-
-		  /* Lat. and Lon. of the center of the map */
-		  var myCenter = new google.maps.LatLng(44.302700, 11.21504);
-
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 		  // Create a map object, and include the MapTypeId to add
 		  // to the map type control.
 		  var mapOptions = {
@@ -212,7 +169,6 @@
 		    center: myCenter, 		//center position
 		    scrollwheel: false, 	//zoom when scroll disable
 		    zoomControl: true, 		//show control zoom
-<<<<<<< HEAD
 
 		    mapTypeControlOptions: {
 		      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
@@ -227,22 +183,6 @@
 		  map.setMapTypeId('map_style');
 
 
-=======
-
-		    mapTypeControlOptions: {
-		      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
-		    }
-
-		  };
-
-		  var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-
-		  //Associate the styled map with the MapTypeId and set it to display.
-		  map.mapTypes.set('map_style', styledMap);
-		  map.setMapTypeId('map_style');
-
-
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 		  gino=[[52.520196, 13.406067],[50.520196, 12.406067],[44.302700, 11.21504]];
 
 		  for(a of gino){
@@ -252,7 +192,6 @@
 		      position: myLatlng,
 		      map: map,
 		  });
-<<<<<<< HEAD
 		  }
 	}
 
@@ -263,18 +202,6 @@
 
 
 	// Chart code
-=======
-		  }
-	}
-
-	google.maps.event.addDomListener(window, 'load', initialize);
-
-	//wordcloud
-
-
-
-	// Chart code
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 
 	am4core.ready(function() {
 
@@ -294,11 +221,7 @@
 		series.fontFamily = "Courier New";
 		series.maxFontSize = am4core.percent(30);
 
-<<<<<<< HEAD
 		series.text = "Though yet of Hamlet our dear brother's death The memory be green, and that it us befitted To bear our hearts in grief and our whole kingdom To be contracted in one brow of woe, Yet so far hath discretion fought with nature That we with wisest sorrow think on him, Together with remembrance of ourselves. Therefore our sometime sister, now our queen, The imperial jointress to this warlike state, Have we, as 'twere with a defeated joy,-- With an auspicious and a dropping eye, With mirth in funeral and with dirge in marriage, In equal scale weighing delight and dole,-- Taken to wife: nor have we herein barr'd Your better wisdoms, which have freely gone With this affair along. For all, our thanks. Now follows, that you know, young Fortinbras, Holding a weak supposal of our worth, Or thinking by our late dear brother's death Our state to be disjoint and out of frame, Colleagued with the dream of his advantage, He hath not fail'd to pester us with message, Importing the surrender of those lands Lost by his father, with all bonds of law, To our most valiant brother. So much for him. Now for ourself and for this time of meeting: Thus much the business is: we have here writ To Norway, uncle of young Fortinbras,-- Who, impotent and bed-rid, scarcely hears Of this his nephew's purpose,--to suppress His further gait herein; in that the levies, The lists and full proportions, are all made Out of his subject: and we here dispatch You, good Cornelius, and you, Voltimand, For bearers of this greeting to old Norway; Giving to you no further personal power To business with the king, more than the scope Of these delated articles allow. Farewell, and let your haste commend your duty. Tis sweet and commendable in your nature, Hamlet,To give these mourning duties to your father: But, you must know, your father lost a father; That father lost, lost his, and the survivor bound In filial obligation for some term To do obsequious sorrow: but to persever In obstinate condolement is a course Of impious stubbornness; 'tis unmanly grief; It shows a will most incorrect to heaven, A heart unfortified, a mind impatient, An understanding simple and unschool'd: For what we know must be and is as common As any the most vulgar thing to sense, Why should we in our peevish opposition Take it to heart? Fie! 'tis a fault to heaven, A fault against the dead, a fault to nature, To reason most absurd: whose common theme Is death of fathers, and who still hath cried, From the first corse till he that died to-day, 'This must be so.' We pray you, throw to earth This unprevailing woe, and think of us As of a father: for let the world take note, You are the most immediate to our throne; And with no less nobility of love Than that which dearest father bears his son, Do I impart toward you. For your intent In going back to school in Wittenberg, It is most retrograde to our desire: And we beseech you, bend you to remain Here, in the cheer and comfort of our eye, Our chiefest courtier, cousin, and our son.";
-=======
-		series.text = "Though yet of Hamlet our dear brother's death The memory be green, and that it us befitted To bear our hearts in grief and our whole kingdom To be contracted in one brow of woe, Yet so far hath discretion fought with nature That we with wisest sorrow think on him, Together with remembrance of ourselves. Therefore our sometime sister, now our queen, The imperial jointress to this warlike state, Have we, as 'twere with a defeated joy,-- With an auspicious and a dropping eye, With mirth in funeral and with dirge in marriage, In equal scale weighing delight and dole,-- Taken to wife: nor have we herein barr'd Your better wisdoms, which have freely gone With this affair along. For all, our thanks. Now follows, that you know, young Fortinbras, Holding a weak supposal of our worth, Or thinking by our late dear brother's death Our state to be disjoint and out of frame, Colleagued with the dream of his advantage, He hath not fail'd to pester us with message, Importing the surrender of those lands Lost by his father, with all bonds of law, To our most valiant brother. So much for him. Now for ourself and for this time of meeting: Thus much the business is: we have here writ To Norway, uncle of young Fortinbras,-- Who, impotent and bed-rid, scarcely hears Of this his nephew's purpose,--to suppress His further gait herein; in that the levies, The lists and full proportions, are all made Out of his subject: and we here dispatch You, good Cornelius, and you, Voltimand, For bearers of this greeting to old Norway; Giving to you no further personal power To business with the king, more than the scope Of these delated articles allow. Farewell, and let your haste commend your duty. Tis sweet and commendable in your nature, Hamlet,To give these mourning duties to your father: But, you must know, your father lost a father; That father lost, lost his, and the survivor bound In filial obligation for some term To do obsequious sorrow: but to persever In obstinate condolement is a course Of impious stubbornness; 'tis unmanly grief; It shows a will most incorrect to heaven, A heart unfortified, a mind impatient, An understanding simple and unschool'd: For what we know must be and is as common As any the most vulgar thing to sense, Why should we in our peevish opposition Take it to heart? Fie! 'tis a fault to heaven, A fault against the dead, a fault to nature, To reason most absurd: whose common theme Is death of fathers, and who still hath cried, From the first corse till he that died to-day, 'This must be so.' We pray you, throw to earth This unprevailing woe, and think of us As of a father: for let the world take note, You are the most immediate to our throne; And with no less nobility of love Than that which dearest father bears his son, Do I impart toward you. For your intent In going back to school in Wittenberg, It is most retrograde to our desire: And we beseech you, bend you to remain Here, in the cheer and comfort of our eye, Our chiefest courtier, cousin, and our son.";
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 
 	});
 
@@ -307,7 +230,7 @@
   <body>
 <div id="ricerca">
     <h1>Twitter Tracker</h1>
-    <form action="/base" method="post" target="tweet">
+    <form id="foro" method="post" target="tweet">
 		<input id="input" type="text" name="ricerca" ><br>
 		<input id="input2" type="text" name="numero_tw" ><br>
 		<input id="button" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
@@ -318,11 +241,7 @@
        -una parola chiave scrivi la parola preceduta dal carattere #, <br>
        -una zona scrivi il nome della zona preceduta dal carattere $, <br>
        -gli spostamenti di una persona scrivi il nome utente di quella persona (compresa la @). <br>
-<<<<<<< HEAD
     </p>
-=======
-    </p>
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
 </div>
 <div id="visualizzazione_tw">
 	<iframe id="denis" name="tweet"></iframe>
@@ -338,7 +257,3 @@
 </div>
   </body>
 </html>
-<<<<<<< HEAD
-=======
-
->>>>>>> 67bd861a12deb270d24539f7b431fa294f38be61
