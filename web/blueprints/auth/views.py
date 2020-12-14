@@ -74,7 +74,7 @@ def base_post():
     elif say[0] == 'r':
         return T.recent_search(query=['ciao', 'capitano'], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
     elif say[0] == 'e':
-        return T.sample_stream()
+        return T.main()
     elif say[0] == '$':
         return "not implemented"
 
