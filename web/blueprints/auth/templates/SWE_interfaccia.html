@@ -60,6 +60,7 @@
       		/*#top-sfu{width:100%; background: url(img/top-sfu.png) repeat-x; height:10px;position: absolute;z-index:20;top:0;}
       		#bottom-sfu{width:100%; background: url(img/bottom-sfu.png) repeat-x; height:10px;position: absolute;z-index:20;bottom:0;}
       		#logo{width:200px;height:200px; background: url(img/logo.png);position: absolute; left:100px; bottom: 150px;z-index: 30;}*/
+
       	/*.popup a{color:#fe4a5d;text-decoration: none;}
       	.popup h2{margin:0;padding:0;}
       	.popup #berlin{width:220px;height:40px; background: url(img/berlin.png);text-indent: -9999px}	/*presumibilmente inutile*/
@@ -76,8 +77,8 @@
 			height: 95%;
 		}
 
-    </style>
-
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 
@@ -98,15 +99,26 @@
 	<script>
 
 		/*gestione tweet raccolti*/
-		async function richiesta_dati(){
-			var value = document.getElementById("input").value;
+		function richiesta_dati(){
+			$.ajax({
+           type: "POST",
+           url: "/base",
+           data: $("#foro").serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+               console.log(data); // show response from the php script.
+           }
+         });
+			/*var value = document.getElementById("input").value;
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", "/base", true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(JSON.stringify({
     			value: value
-			}));
+			}));*/
 		}
+
+    
 		/*mappa*/
 		function initialize() {
 			/* Style of the map */
@@ -147,7 +159,7 @@
 		  /* Lat. and Lon. of the center of the map */
 		  var myCenter = new google.maps.LatLng(44.302700, 11.21504);
 
-      // Create a map object, and include the MapTypeId to add
+		  // Create a map object, and include the MapTypeId to add
 		  // to the map type control.
 		  var mapOptions = {
 		    zoom: 12, 				//zoom level
@@ -215,7 +227,7 @@
   <body>
 <div id="ricerca">
     <h1>Twitter Tracker</h1>
-    <form action="/base" method="post" target="tweet">
+    <form id="foro" method="post" target="tweet">
 		<input id="input" type="text" name="ricerca" ><br>
 		<input id="input2" type="text" name="numero_tw" ><br>
 		<input id="button" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
