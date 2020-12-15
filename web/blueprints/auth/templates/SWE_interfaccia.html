@@ -96,6 +96,29 @@
 			console.log(data);
 		}
 	-->
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+  <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+
+          namespace = '/base';
+          var socket = io(namespace);
+
+          socket.on('connect', function() {
+              socket.emit('my_event', {data: 'connected to the SocketServer...'});
+          });
+
+          socket.on('my_response', function(msg, cb) {
+              $('#log').append('<br>' + $('<div/>').text('logs #' + msg.count + ': ' + msg.data).html());
+              if (cb)
+                  cb();
+          });
+          $('form#emit').submit(function(event) {
+              socket.emit('my_event', {data: $('#emit_data').val()});
+              return false;
+          });
+      });
+  </script>
 	<script>
 
 		/*gestione tweet raccolti*/
