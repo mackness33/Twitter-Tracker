@@ -56,7 +56,6 @@ def search_post():
 # def base_post(in_json):
 def base_post():
     say=request.form['ricerca']
-    print(say)
     say2 = say[1:]
     # if say[0] == "#":
     #     return Twitter.cursor(Twitter.search, q=say2)
@@ -73,7 +72,8 @@ def base_post():
     elif say[0] == 's':
         return T.users_lookup(query=['Twitter','TwitterDev','GiuseppeConteIT'], fields={"user.fields": "description,created_at"})
     elif say[0] == 'r':
-        return T.recent_search(query=['ciao', 'capitano'], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
+        return T.recent_search(query=[say2], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
+        #return T.recent_search(query=['ciao', 'capitano'], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
     elif say[0] == 'e':
         return T.sample_stream()
     elif say[0] == '$':
