@@ -119,15 +119,18 @@
             console.log(msg);
           });
 
-          $('form#start').submit(function(event) {
-              socket.emit('connect', {data: $('#emit_data').val()});
-              return false;
+          socket.on('stream', function(msg) {
+            console.log(msg);
           });
 
-          $('form#stop').submit(function(event) {
-              socket.emit('disconnect', {data: $('#emit_data').val()});
-              return false;
+          $('form#foro').submit(function(event) {
+              socket.emit('req_data', {data: $('#input').val()});
           });
+
+          // $('form#stop').submit(function(event) {
+          //     socket.emit('disconnect', {data: $('#emit_data').val()});
+          //     return false;
+          // });
       });
   </script>
 	<script>
@@ -156,13 +159,12 @@
 		/*mappa*/
 		function initialize() {
 			/* Style of the map */
-			var styles = [
-			{
+			var styles = [{
 		      stylers: [
 		        { hue: "#00ffe6" },
 		        { saturation: -20 }
 		      ]
-		    },{
+        },{
 		      featureType: "road",
 		      elementType: "geometry",
 		      stylers: [
@@ -181,9 +183,8 @@
 		         stylers: [
 		           { visibility: "off" }
 		         ]
-		       }
-
-		    ];
+		     }
+		  ];
 
 
 		  // Create a new StyledMapType object, passing it the array of styles,

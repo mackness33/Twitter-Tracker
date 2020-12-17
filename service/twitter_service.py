@@ -1,17 +1,23 @@
 import requests
 import os
 import json
+import threading
+from web import socketio
+
+# from .stream_thread import StreamThread
+
 
 # TODO: if incorrect type of input raise an exception.
 # TODO: create a socket for stream use
 # TODO: exception handling.
 # TODO: testing.
 
-class Twitter():
+class TwitterService():
     # token: bearer token for the authentication
     def __init__(self, token):
         self._bearer = token
         self._base_url = "https://api.twitter.com/2/"
+        self._end_stream = threading.Event()
 
     #---------TWEETS LOOKUP----------
     def tweets_lookup(self, id, fields):
@@ -58,6 +64,9 @@ class Twitter():
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
+
+    def end_stream(self):
+        self._end_stream.set(True)
 
     def get_rules(self, headers, bearer_token):
         response = requests.get(
@@ -123,10 +132,15 @@ class Twitter():
                 )
             )
         for response_line in response.iter_lines():
+            if self._end_stream.isSet():
+                break
+
             if response_line:
                 json_response = json.loads(response_line)
+                socketio.emit('stream', json_response, namespace='/base')
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
+        self._end_stream.clear()
 
     def main(self):
         bearer_token = self._bearer
@@ -134,7 +148,11 @@ class Twitter():
         rules = self.get_rules(headers, bearer_token)
         delete = self.delete_all_rules(headers, bearer_token, rules)
         set = self.set_rules(headers, delete, bearer_token)
-        self.get_stream(headers, set, bearer_token)
+        thread = threading.Thread(target=self.get_stream, args=(headers, set, bearer_token))
+        if not thread.isAlive():
+            print("Starting Thread")
+            thread.start()
+
         print ('are we at the end?')
 
     def _create_url(self, type, field, values):
