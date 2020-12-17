@@ -1,36 +1,31 @@
 # import FLASK
 from flask import Blueprint, render_template, redirect, url_for, request, after_this_request, jsonify
-# from flask_jwt_extended import (
-#     JWTManager, jwt_required, create_access_token, jwt_refresh_token_required, create_refresh_token, set_access_cookies,
-#     set_refresh_cookies, unset_jwt_cookies, unset_access_cookies, current_user
-# )
-
-# import FLASK security
-from werkzeug.security import generate_password_hash, check_password_hash
+# import flask.ext
+from flask_socketio import SocketIO, emit
 
 # import TWHYTON
 from twython import Twython
 
 # import SERVICES
-# from service.twitter_keys import ACCESS_TOKEN, APP_KEY
-from service.Twitter.useful_class import Twitter
-
 # TODO: need to find a way to import the ACCESS_TOKEN from the configuration
 # import APP
-from web import ACCESS_TOKEN
+from web import ACCESS_TOKEN, socketio
+from service.Twitter.useful_class import Twitter
+from service.Twitter.streamThread import StreamThread
 
 # import OTHERS
 import datetime
 import json
+from threading import Thread
 
 
 #=============== DEFINITION ===============
 tracker = Blueprint('tracker', __name__, template_folder='templates', static_folder='static')
-
-# twitter = Twython(app.config['APP_KEY'], access_token=app.config['ACCESS_TOKEN'])
-
-# T = Twitter(app.config['ACCESS_TOKEN'])
 T = Twitter(ACCESS_TOKEN)
+# twitter = Twython(app.config['APP_KEY'], access_token=app.config['ACCESS_TOKEN'])
+# T = Twitter(app.config['ACCESS_TOKEN'])
+
+
 
 #---------------LOGIN---------------
 # @tracker.route('/search')
@@ -47,6 +42,33 @@ T = Twitter(ACCESS_TOKEN)
 #         print(lis)
 #
 #     return lis
+@socketio.on('my_event', namespace='/base')                          # Decorator to catch an event called "my event":
+def test_message(message):                        # test_message() is the event callback function.
+    print('In my event')
+    emit('my response', {'data': 'got it!'})      # Trigger a new event called "my response"
+
+@socketio.on('connect', namespace='/base')
+def test_connect():
+    # need visibility of the global thread object
+    global thread
+    thread = Thread()
+    print('Client connected')
+    #Start the random number generator thread only if the thread has not been started before.
+    if not thread.isAlive():
+        print("Starting Thread")
+        thread = StreamThread()
+        thread.start()
+
+
+@socketio.on('disconnect', namespace='/base')
+def disconnect_request():
+    @copy_current_request_context
+    def can_disconnect():
+        disconnect()
+
+    emit('my_response',
+         {'data': 'Disconnected!', 'count': 10},
+         callback=can_disconnect)
 
 @tracker.route('/search2', methods = ['POST'])
 def search_post():

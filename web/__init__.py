@@ -1,5 +1,6 @@
 #===============FLASK SERVER===============
 from flask import Flask, redirect, url_for, send_file, Response
+from flask_socketio import SocketIO, emit
 import json
 #==============OTHER PACKAGES==============
 import os
@@ -24,6 +25,8 @@ ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAJZ%2FhX9vWi1gLPT9hNP%2BcDgnAZ78%
 # SECURITY_PASSWORD_SALT = "dev"
 # SECRET_KEY = 'dev'
 )
+
+socketio = SocketIO(app)
 
 #===================AUTHENTICATION=========================
 from .blueprints.auth.views import tracker

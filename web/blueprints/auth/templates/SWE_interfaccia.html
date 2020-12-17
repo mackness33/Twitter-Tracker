@@ -97,24 +97,35 @@
 		}
 	-->
   <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+  <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
   <script type="text/javascript" charset="utf-8">
       $(document).ready(function() {
+          // start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
+          var socket = io('http://' + document.domain + ':' + location.port + '/base');
+          // var socket = io.connect('http://' + document.domain + ':' + location.port + '/base');
 
-          namespace = '/base';
-          var socket = io(namespace);
+          // this is a callback that triggers when the "my response" event is emitted by the server.
+          socket.on('my response', function(msg) {
+            $('#log').append('<p>Received: ' + msg.data + '</p>');
+          });
 
           socket.on('connect', function() {
-              socket.emit('my_event', {data: 'connected to the SocketServer...'});
+              socket.emit('success_connection', {data: 'successfully connected to the SocketServer...'});
+              console.log('successfully connected to the SocketServer...');
+              socket.emit('my_event', {data: 'successfully connected to the SocketServer...'});
           });
 
-          socket.on('my_response', function(msg, cb) {
-              $('#log').append('<br>' + $('<div/>').text('logs #' + msg.count + ': ' + msg.data).html());
-              if (cb)
-                  cb();
+          socket.on('my_response', function(msg) {
+            console.log(msg);
           });
-          $('form#emit').submit(function(event) {
-              socket.emit('my_event', {data: $('#emit_data').val()});
+
+          $('form#start').submit(function(event) {
+              socket.emit('connect', {data: $('#emit_data').val()});
+              return false;
+          });
+
+          $('form#stop').submit(function(event) {
+              socket.emit('disconnect', {data: $('#emit_data').val()});
               return false;
           });
       });
@@ -141,7 +152,7 @@
 			}));*/
 		}
 
-    
+
 		/*mappa*/
 		function initialize() {
 			/* Style of the map */
@@ -253,7 +264,8 @@
     <form id="foro" method="post" target="tweet">
 		<input id="input" type="text" name="ricerca" ><br>
 		<input id="input2" type="text" name="numero_tw" ><br>
-		<input id="button" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
+    <input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
+		<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 		<!--onclick=richiesta_dati()-->
     </form>
     <p id="descrizione">
