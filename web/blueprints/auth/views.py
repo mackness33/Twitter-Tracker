@@ -1,5 +1,5 @@
 # import FLASK
-from flask import Blueprint, render_template, redirect, url_for, request, after_this_request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, request, after_this_request, jsonify, copy_current_request_context
 # import flask.ext
 from flask_socketio import SocketIO, emit
 
@@ -51,13 +51,14 @@ def test_connect():
     T.main()
 
 
-@socketio.on('disconnect', namespace='/base')
+@socketio.on('disconnection', namespace='/base')
 def disconnect_request():
     @copy_current_request_context
     def can_disconnect():
         disconnect()
 
-    emit('my_response', {'data': 'disconnected', 'count': 10}, callback=can_disconnect)
+    print('disconnecting socket ..')
+    emit('disconnection', {'data': 'disconnecting'}, callback=can_disconnect)
 
 @tracker.route('/search2', methods = ['POST'])
 def search_post():
@@ -67,28 +68,29 @@ def search_post():
 # def base_post(in_json):
 def base_post():
     say=request.form['ricerca']
-    print(say)
-    say2 = say[1:]
+    print('say: ', say)
+    # print('message: ', msg)
+    # say2 = say[1:]
     # if say[0] == "#":
     #     return Twitter.cursor(Twitter.search, q=say2)
-    if say[0] == '#':
-        return T.tweets_lookup(id=1275828087666679809, fields={"tweet.fields": "author_id,created_at", "user.fields": "description,created_at"})
-    elif say[0] == 'd':
-        return T.tweets_lookup(id=[20,1276230436478386177,1276501058211262464], fields={"user.fields": "description,created_at"})
-    elif say[0] == '@':
-        return T.users_lookup(query=300, fields={"user.fields": "description,created_at"})
-    elif say[0] == 'm':
-        return T.users_lookup(query=[300,999578121123848192], fields={"user.fields": "description,created_at"})
-    elif say[0] == 'u':
-        return T.users_lookup(query='Twitter', fields={"user.fields": "description,created_at"})
-    elif say[0] == 's':
-        return T.users_lookup(query=['Twitter','TwitterDev','GiuseppeConteIT'], fields={"user.fields": "description,created_at"})
-    elif say[0] == 'r':
-        return T.recent_search(query=['ciao', 'capitano'], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
-    elif say[0] == 'e':
-        return T.main()
-    elif say[0] == '$':
-        return "not implemented"
+    # if say[0] == '#':
+    #     return T.tweets_lookup(id=1275828087666679809, fields={"tweet.fields": "author_id,created_at", "user.fields": "description,created_at"})
+    # elif say[0] == 'd':
+    #     return T.tweets_lookup(id=[20,1276230436478386177,1276501058211262464], fields={"user.fields": "description,created_at"})
+    # elif say[0] == '@':
+    #     return T.users_lookup(query=300, fields={"user.fields": "description,created_at"})
+    # elif say[0] == 'm':
+    #     return T.users_lookup(query=[300,999578121123848192], fields={"user.fields": "description,created_at"})
+    # elif say[0] == 'u':
+    #     return T.users_lookup(query='Twitter', fields={"user.fields": "description,created_at"})
+    # elif say[0] == 's':
+    #     return T.users_lookup(query=['Twitter','TwitterDev','GiuseppeConteIT'], fields={"user.fields": "description,created_at"})
+    # elif say[0] == 'r':
+    #     return T.recent_search(query=['ciao', 'capitano'], fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
+    # elif say[0] == 'e':
+    #     return 'T.main()'
+    # elif say[0] == '$':
+    #     return "not implemented"
 
     return "ERROR INPUT"
 

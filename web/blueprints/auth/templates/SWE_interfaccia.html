@@ -105,14 +105,14 @@
           // var socket = io.connect('http://' + document.domain + ':' + location.port + '/base');
 
           // this is a callback that triggers when the "my response" event is emitted by the server.
-          socket.on('my response', function(msg) {
-            $('#log').append('<p>Received: ' + msg.data + '</p>');
-          });
+          // socket.on('my response', function(msg) {
+          //   $('#log').append('<p>Received: ' + msg.data + '</p>');
+          // });
 
           socket.on('connect', function() {
               socket.emit('success_connection', {data: 'successfully connected to the SocketServer...'});
-              console.log('successfully connected to the SocketServer...');
               socket.emit('my_event', {data: 'successfully connected to the SocketServer...'});
+              console.log('successfully connected to the SocketServer...');
           });
 
           socket.on('my_response', function(msg) {
@@ -121,16 +121,17 @@
 
           socket.on('stream', function(msg) {
             console.log(msg);
+            // $('#log').append('<p>Received: ' + msg.data + '</p>');
+          });
+
+          socket.on('disconnection', function(msg) {
+            socket.disconnect()
+            console.log(msg);
           });
 
           $('form#foro').submit(function(event) {
-              socket.emit('req_data', {data: $('#input').val()});
+              socket.emit('disconnection');
           });
-
-          // $('form#stop').submit(function(event) {
-          //     socket.emit('disconnect', {data: $('#emit_data').val()});
-          //     return false;
-          // });
       });
   </script>
 	<script>

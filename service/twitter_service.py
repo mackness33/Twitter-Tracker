@@ -66,7 +66,7 @@ class TwitterService():
         return json_response
 
     def end_stream(self):
-        self._end_stream.set(True)
+        self._end_stream.clear()
 
     def get_rules(self, headers, bearer_token):
         response = requests.get(
@@ -133,14 +133,16 @@ class TwitterService():
             )
         for response_line in response.iter_lines():
             if self._end_stream.isSet():
+                print ('Should be the')
                 break
+                print ('end')
 
             if response_line:
                 json_response = json.loads(response_line)
                 socketio.emit('stream', json_response, namespace='/base')
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
-        self._end_stream.clear()
+        self.end_stream()
 
     def main(self):
         bearer_token = self._bearer
