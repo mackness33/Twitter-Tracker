@@ -8,7 +8,6 @@ from web import socketio
 
 
 # TODO: if incorrect type of input raise an exception.
-# TODO: create a socket for stream use
 # TODO: exception handling.
 # TODO: testing.
 

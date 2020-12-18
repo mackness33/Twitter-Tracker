@@ -26,43 +26,30 @@ T = TwitterService(ACCESS_TOKEN)
 
 
 
-#---------------LOGIN---------------
-@socketio.on('my_event', namespace='/base')                          # Decorator to catch an event called "my event":
-def test_message(message):                        # test_message() is the event callback function.
-    print('In my event')
-    print(message)
-    emit('my response', {'data': 'got it!'})      # Trigger a new event called "my response"
+#---------------SOCKETIO---------------
+@socketio.on('connect', namespace='/base')
+def socket_connection():
+    print('Client is connected')
 
+@socketio.on('start_sample', namespace='/base')
+def socket_connection():
+    print(msg)
+    T.main()
 
-@socketio.on('req_data', namespace='/base')                          # Decorator to catch an event called "my event":
-def req_data(message):                        # test_message() is the event callback function.
-    print('In req_data')
-    print(message)
-
-@socketio.on('end_stream', namespace='/base')                          # Decorator to catch an event called "my event":
+@socketio.on('stop_stream', namespace='/base')                          # Decorator to catch an event called "my event":
 def the_end(message):                        # test_message() is the event callback function.
     print('In the_end')
     T.end_stream()
     print(message)
 
-@socketio.on('connect', namespace='/base')
-def test_connect():
-    print('Client connected')
-    T.main()
-
-
-@socketio.on('disconnection', namespace='/base')
+@socketio.on('disconnect', namespace='/base')
 def disconnect_request():
     @copy_current_request_context
     def can_disconnect():
         disconnect()
 
     print('disconnecting socket ..')
-    emit('disconnection', {'data': 'disconnecting'}, callback=can_disconnect)
-
-@tracker.route('/search2', methods = ['POST'])
-def search_post():
-    return T.get_tweets({"usernames": "TwitterDev,TwitterAPI", "user.fields": "description,created_at"})
+    emit('disconnect', {'data': 'disconnecting socket ...'}, callback=can_disconnect)
 
 @tracker.route('/base', methods = ['POST'])
 # def base_post(in_json):

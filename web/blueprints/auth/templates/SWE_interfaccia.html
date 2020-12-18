@@ -100,38 +100,32 @@
   <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
   <script type="text/javascript" charset="utf-8">
       $(document).ready(function() {
-          // start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
-          var socket = io('http://' + document.domain + ':' + location.port + '/base');
-          // var socket = io.connect('http://' + document.domain + ':' + location.port + '/base');
+        // start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
+        var socket = io('http://' + document.domain + ':' + location.port + '/base');
 
-          // this is a callback that triggers when the "my response" event is emitted by the server.
-          // socket.on('my response', function(msg) {
-          //   $('#log').append('<p>Received: ' + msg.data + '</p>');
-          // });
+        // this is a callback that triggers when the "my response" event is emitted by the server.
+        // socket.on('my response', function(msg) {
+        //   $('#log').append('<p>Received: ' + msg.data + '</p>');
+        // });
 
-          socket.on('connect', function() {
-              socket.emit('success_connection', {data: 'successfully connected to the SocketServer...'});
-              socket.emit('my_event', {data: 'successfully connected to the SocketServer...'});
-              console.log('successfully connected to the SocketServer...');
-          });
+        socket.on('connect', function() {
+          console.log('successfully connected to the SocketServer...');
+          socket.emit('start_sample', {data: 'Starting sample stream'});
+        });
 
-          socket.on('my_response', function(msg) {
-            console.log(msg);
-          });
+        socket.on('stream', function(msg) {
+          console.log(msg);
+        });
 
-          socket.on('stream', function(msg) {
-            console.log(msg);
-            // $('#log').append('<p>Received: ' + msg.data + '</p>');
-          });
+        socket.on('disconnect', function(msg, cb) {
+          // socket.disconnect()
+          cb()
+          console.log(msg);
+        });
 
-          socket.on('disconnection', function(msg) {
-            socket.disconnect()
-            console.log(msg);
-          });
-
-          $('form#foro').submit(function(event) {
-              socket.emit('disconnection');
-          });
+        $('form#foro').submit(function(event) {
+            socket.emit('disconnect');
+        });
       });
   </script>
 	<script>
