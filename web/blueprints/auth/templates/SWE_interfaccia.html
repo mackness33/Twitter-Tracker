@@ -32,6 +32,10 @@
    			border-color: rgb(0, 174, 255);
    			font-family: Arial, Helvetica, serif;
 		}
+		input[type="checkbox"]{
+			margin-top: 1vw;
+			margin-left: 25%;
+		}
 		#button {
 		   	font-weight: bold;
    			background-color: blue;
@@ -68,6 +72,40 @@
 	  	iframe{
 			width: 95%;
 			height: 95%;
+		}
+
+		.tweet_container{
+			width: 95%;
+			height: 70px;
+			border: solid 2px #50ABF1;
+			border-radius: 10px;
+			margin: 10px;
+			display: flex;
+			align-items: center;
+			scrollbar-width: none;  /* Firefox */
+			overflow: scroll;
+		}
+
+		.tweet_userName{
+			height: 100%;
+			width: 250px;
+			border: solid 2px #50ABF1;
+			border-radius: 10px;
+			margin-right: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: #50ABF1;
+			color: white;
+			scrollbar-width: none;  /* Firefox */
+		}
+
+		.tweet_text{
+			height: 100%;
+			color: #50ABF1;
+			padding: 5px;
+			overflow: scroll;
+			scrollbar-width: none;  /* Firefox */
 		}
 
 	</style>
@@ -129,153 +167,194 @@
            	url: "/base",
            	data: $("#foro").serialize(), // serializes the form's elements.
            	success: function(data)
-           	{
-			   	var dati = data.data;
-			   	//var testo = dati[4].entities.hashtags[0].tag;
-			   	var testo2 = ""
-			   	for (a of dati){
-					pk = 0;
-					if (typeof a.entities!=="undefined"){
-					   	if (typeof a.entities.hashtags!=="undefined"){
-						   	while (typeof a.entities.hashtags[pk]!=="undefined"){
-						   		testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
-								pk=pk+1;
+		   		{
+			   		console.log(data);
+			   		var dati = data.data;
+			   		//word cloud;
+			   		var testo2 = ""
+			   		for (a of dati){
+						pk = 0;
+						if (typeof a.entities!=="undefined"){
+					   		if (typeof a.entities.hashtags!=="undefined"){
+						   		while (typeof a.entities.hashtags[pk]!=="undefined"){
+						   			testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
+									pk=pk+1;
+								}
 							}
 						}
+			   		}
+					gibbolo(testo2);
+					//controllo risposte
+			   		console.log(dati);// show response from the server.
+					console.log(testo2);
+					//visualizzazione tweet
+			   		var node = document.getElementById("visualizzazione_tw")
+					while (node.hasChildNodes()) {
+						node.removeChild(node.lastChild);
 					}
-			   	}
-			   	gibbolo(testo2);
-			   	console.log(dati);// show response from the server.
-			   	console.log(testo2);
-           	}
+					var index = 0
+					dati.forEach(element => {
+						var tmp = document.createElement("div")
+						tmp.setAttribute("id", "tweet" + index);
+						tmp.setAttribute("class", "tweet_container");
+						var tmp2 = document.createElement("div")
+						tmp2.setAttribute("id", "tweet" + index + "_userName");
+						tmp2.setAttribute("class", "tweet_userName");
+						tmp2.innerHTML = element.author_id
+						var tmp3 = document.createElement("div")
+						tmp3.setAttribute("id", "tweet" + index + "_text");
+						tmp3.setAttribute("class", "tweet_text");
+						tmp3.innerHTML = element.text
+						tmp.appendChild(tmp2)
+						tmp.appendChild(tmp3)
+						document.getElementById("visualizzazione_tw").appendChild(tmp)
+						index = index +1
+					});
+
+           		}
          	});
 		}
+
 
 		/*mappa*/
 		function initialize() {
 			/* Style of the map */
 			var styles = [{
-		      stylers: [
-		        { hue: "#00ffe6" },
-		        { saturation: -20 }
-		      ]
-        },{
-		      featureType: "road",
-		      elementType: "geometry",
-		      stylers: [
-		        { lightness: 100 },
-		        { visibility: "simplified" }
-		      ]
-		    },{
-		      featureType: "road",
-		      elementType: "labels",
-		      stylers: [
-		        { visibility: "off" }
-		      ]
-		    },{
-		         featureType: "poi",
-		         elementType: "labels",
-		         stylers: [
-		           { visibility: "off" }
-		         ]
-		     }
-		  ];
+		      	stylers: [
+		        	{ hue: "#00ffe6" },
+		        	{ saturation: -20 }
+		      	]
+			},
+			{
+		      	featureType: "road",
+		      	elementType: "geometry",
+		      	stylers: [
+		        	{ lightness: 100 },
+		        	{ visibility: "simplified" }
+		      	]
+			},
+			{
+		      	featureType: "road",
+		      	elementType: "labels",
+		      	stylers: [
+		        	{ visibility: "off" }
+		      	]
+			},
+				{
+		         	featureType: "poi",
+		         	elementType: "labels",
+		         	stylers: [
+		           		{ visibility: "off" }
+		         	]
+		     	}
+		  	];
 
 
-		  // Create a new StyledMapType object, passing it the array of styles,
-		  // as well as the name to be displayed on the map type control.
-		  var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
+		  	// Create a new StyledMapType object, passing it the array of styles,
+		  	// as well as the name to be displayed on the map type control.
+		  	var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
 
-		  /* Lat. and Lon. of the center of the map */
-		  var myCenter = new google.maps.LatLng(44.302700, 11.21504);
+		  	/* Lat. and Lon. of the center of the map */
+		  	var myCenter = new google.maps.LatLng(44.302700, 11.21504);
 
-		  // Create a map object, and include the MapTypeId to add
-		  // to the map type control.
-		  var mapOptions = {
-		    zoom: 12, 				//zoom level
-		    center: myCenter, 		//center position
-		    scrollwheel: false, 	//zoom when scroll disable
-		    zoomControl: true, 		//show control zoom
+		  	// Create a map object, and include the MapTypeId to add
+		  	// to the map type control.
+		  	var mapOptions = {
+		    	zoom: 12, 				//zoom level
+		    	center: myCenter, 		//center position
+		    	scrollwheel: false, 	//zoom when scroll disable
+		    	zoomControl: true, 		//show control zoom
 
-		    mapTypeControlOptions: {
-		      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
-		    }
+		    	mapTypeControlOptions: {
+		      		mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+		    	}
 
-		  };
+		  	};
 
-		  var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+		  	var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 
-		  //Associate the styled map with the MapTypeId and set it to display.
-		  map.mapTypes.set('map_style', styledMap);
-		  map.setMapTypeId('map_style');
+		  	//Associate the styled map with the MapTypeId and set it to display.
+		  	map.mapTypes.set('map_style', styledMap);
+		  	map.setMapTypeId('map_style');
 
 
-		  gino=[[52.520196, 13.406067],[50.520196, 12.406067],[44.302700, 11.21504]];
+		  	gino=[[52.520196, 13.406067],[50.520196, 12.406067],[44.302700, 11.21504]];
 
-		  for(a of gino){
+		  	for(a of gino){
 
-		  var myLatlng = new google.maps.LatLng(a[0], a[1]);
-		  var marker = new google.maps.Marker({
-		      position: myLatlng,
-		      map: map,
-		  });
-		  }
-	}
+		  		var myLatlng = new google.maps.LatLng(a[0], a[1]);
+		  		var marker = new google.maps.Marker({
+		      		position: myLatlng,
+		      		map: map,
+		  		});
+		  	}
+		}
 
-	google.maps.event.addDomListener(window, 'load', initialize);
+		google.maps.event.addDomListener(window, 'load', initialize);
 
-	//wordcloud
+		//wordcloud
 
-	// Chart code
 
-	//am4core.ready(function() {
 
-		function gibbolo(a){
+		// Chart code
 
-		// Themes begin
-		am4core.useTheme(am4themes_animated);
-		// Themes end
+		function gibbolo(a) {
 
-		var chart = am4core.create("word_cloud", am4plugins_wordCloud.WordCloud);
-		var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+			// Themes begin
+			am4core.useTheme(am4themes_animated);
+			// Themes end
 
-		series.accuracy = 4;
-		series.step = 15;
-		series.rotationThreshold = 0.7;
-		series.maxCount = 200;
-		series.minWordLength = 2;
-		series.labels.template.tooltipText = "{word}: {value}";
-		series.fontFamily = "Courier New";
-		series.maxFontSize = am4core.percent(30);
+			var chart = am4core.create("word_cloud", am4plugins_wordCloud.WordCloud);
+			var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
 
-		series.text = a;
+			series.accuracy = 4;
+			series.step = 15;
+			series.rotationThreshold = 0.7;
+			series.maxCount = 200;
+			series.minWordLength = 2;
+			series.labels.template.tooltipText = "{word}: {value}";
+			series.fontFamily = "Courier New";
+			series.maxFontSize = am4core.percent(30);
 
-	};
+			series.text = a;
 
-	</script>
-  </head>
-	<body>
+		};
+
+		</script>
+  	</head>
+  	<body>
+		<h1>Twitter Tracker</h1>
 		<div id="ricerca">
-	    	<h1>Twitter Tracker</h1>
     		<form id="foro" method="post" target="tweet">
 				<input id="input" type="text" name="ricerca" ><br>
 				<input id="input2" type="text" name="numero_tw" ><br>
-				<input id="button" type="submit" onclick=richiesta_dati() value="Search" />
+				<input type="checkbox" id="persona" name="persona">
+				<label for="persona"> Username</label><br>
+				<input type="checkbox" id="luogo" name="luogo">
+				<label for="luogo"> Luogo</label><br>
+				<input type="checkbox" id="area geografica" name="area geografica">
+				<label for="area geografica"> Area geografica</label><br>
+				<input type="checkbox" id="parola chiave" name="parola chiave">
+				<label for="parola chiave"> Parola chiave</label><br>
+				<input id="button" type="submit" onclick=richiesta_dati() value="Search">
+    			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
+				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
+				<!--onclick=richiesta_dati()-->
     		</form>
-	    	<p id="descrizione">
-    			Per cercare: <br>
-        		-una parola chiave scrivi la parola preceduta dal carattere #, <br>
+    		<p id="descrizione">
+       			Per cercare: <br>
+       			-una parola chiave scrivi la parola preceduta dal carattere #, <br>
        			-una zona scrivi il nome della zona preceduta dal carattere $, <br>
        			-gli spostamenti di una persona scrivi il nome utente di quella persona (compresa la @). <br>
     		</p>
 		</div>
 		<div id="visualizzazione_tw">
-			<iframe id="denis" name="tweet"></iframe>
 		</div>
   		<div id="container-map">
     		<div id="map-canvas"></div>
 	  	</div>
 		<div id="word_cloud">
 		</div>
+		<iframe name="tweet" style="display:none"></iframe>
   	</body>
 </html>
