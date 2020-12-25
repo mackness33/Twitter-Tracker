@@ -160,7 +160,6 @@
       });
   </script>
 	<script>
-
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
 			$.ajax({
@@ -172,69 +171,28 @@
 		}
 
     function print_stream_tweets(response){
-      // console.log(data.data)
-      var tweet = response.data
-      var keys = Object.keys(tweet)
-      var values = Object.values(tweet)
-      //     console.log(`${key}: ${courses[key]}`);
-      // dati.forEach(val => {
-      // });
-      // if (true){
-      //   return true
-      // }
-      //word cloud;
-      var testo2 = "";
-      var geo = true;   //test mappa
+      let tweet = response.data
+      let word_cloud_text = "";
 
-      pk = 0;
-      if (typeof tweet.entities!=="undefined"){
-          if (typeof tweet.entities.hashtags!=="undefined"){
-            while (typeof tweet.entities.hashtags[pk]!=="undefined"){
-              testo2 = testo2 + " " + tweet.entities.hashtags[pk].tag;
-            pk=pk+1;
-          }
+      if (typeof tweet.entities !== "undefined"){
+          if (typeof tweet.entities.hashtags !== "undefined"){
+            tweet.entities.hashtags.forEach((hashtag, index) => {
+              word_cloud_text = word_cloud_text + " " + hashtag.tag;
+            });
         }
       }
-      if (typeof tweet.geo!=="undefined"){ //test mappa
-        console.log(tweet.geo);
-        geo = false;
-      }
+      console.log('word_cloud_text: ', word_cloud_text);
+      word_cloud(word_cloud_text);
 
-      if (geo) { //test mappa
-        console.log("zibibbo")
-      }
-      word_cloud(testo2);
+      // visualizzazione tweet
+      // TODO: set a maximum quantity of tweets to be visualize
+      // TIP: use a Queue
+      tweet_visualization(tweet)
 
-      //controllo risposte
-      console.log(tweet);// show response from the server.
-
-      //visualizzazione tweet
-      var node = document.getElementById("visualizzazione_tw")
-      while (node.hasChildNodes()) {
-        node.removeChild(node.lastChild);
-      }
-      var index = 0
-      // tweet.forEach(element => {
-      var tmp = document.createElement("div");
-      tmp.setAttribute("id", "tweet" + index);
-      tmp.setAttribute("class", "tweet_container");
-      var tmp2 = document.createElement("div");
-      tmp2.setAttribute("id", "tweet" + index + "_userName");
-      tmp2.setAttribute("class", "tweet_userName");
-      tmp2.innerHTML = tweet.author_id;
-      var tmp3 = document.createElement("div");
-      tmp3.setAttribute("id", "tweet" + index + "_text");
-      tmp3.setAttribute("class", "tweet_text");
-      tmp3.innerHTML = tweet.text;
-      tmp.appendChild(tmp2);
-      tmp.appendChild(tmp3);
-      document.getElementById("visualizzazione_tw").appendChild(tmp);
-      index = index +1;
-      // });
-
-      //colloca su mappa
+      // maps
       var coordinate = [];
-      if (typeof tweet.geo!=="undefined"){
+      if (typeof tweet.geo !== "undefined"){ //test mappa
+        console.log('GEO: ', tweet.geo);
         if (typeof tweet.geo.coordinates!=="undefined"){
           console.log(typeof tweet.geo.coordinates.coordinates[0]);
           var long = tweet.geo.coordinates.coordinates[0];
@@ -247,17 +205,30 @@
       initialize (coordinate);
     }
 
+    function tweet_visualization(tweet){
+      let node = document.getElementById("visualizzazione_tw")
+
+      let container = document.createElement("div");
+      container.setAttribute("id", "tweet" + tweet.id);
+      container.setAttribute("class", "tweet_container");
+
+      let username = document.createElement("div");
+      username.setAttribute("id", "tweet" + tweet.id + "_userName");
+      username.setAttribute("class", "tweet_userName");
+      username.innerHTML = tweet.author_id;
+
+      let text = document.createElement("div");
+      text.setAttribute("id", "tweet" + tweet.id + "_text");
+      text.setAttribute("class", "tweet_text");
+      text.innerHTML = tweet.text;
+
+      container.appendChild(username);
+      container.appendChild(text);
+      document.getElementById("visualizzazione_tw").appendChild(container);
+    }
+
     function print_tweets(data){
-      // console.log(data.data)
       var dati = data.data
-      var keys = Object.keys(data.data)
-      var values = Object.values(data.data)
-      // dati.forEach(val => {
-      //     console.log(`${key}: ${courses[key]}`);
-      // });
-      // if (true){
-      //   return true
-      // }
       //word cloud;
       var testo2 = "";
       var geo = true;   //test mappa
