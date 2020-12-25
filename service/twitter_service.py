@@ -2,6 +2,7 @@ import requests
 import os
 import json
 import threading
+import time
 from web import socketio
 
 # from .stream_thread import StreamThread
@@ -121,7 +122,8 @@ class TwitterService():
     # can use yield to send one tweet per time
     def get_stream(self, headers, set, bearer_token):
         response = requests.get(
-            "https://api.twitter.com/2/tweets/search/stream", headers=headers, stream=True,
+            # "https://api.twitter.com/2/tweets/search/stream", headers=headers, stream=True,
+            "https://api.twitter.com/2/tweets/sample/stream?tweet.fields=entities,geo,author_id", headers=headers, stream=True,
         )
         print(response.status_code)
         if response.status_code != 200:
@@ -137,6 +139,7 @@ class TwitterService():
             if response_line:
                 json_response = json.loads(response_line)
                 socketio.emit('tweet', json_response, namespace='/base')
+                time.sleep(5)
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
         self.end_stream()
@@ -144,9 +147,9 @@ class TwitterService():
     def main(self):
         bearer_token = self._bearer
         headers = self._create_headers()
-        rules = self.get_rules(headers, bearer_token)
-        delete = self.delete_all_rules(headers, bearer_token, rules)
-        set = self.set_rules(headers, delete, bearer_token)
+        # rules = self.get_rules(headers, bearer_token)
+        # delete = self.delete_all_rules(headers, bearer_token, rules)
+        # set = self.set_rules(headers, delete, bearer_token)
         thread = threading.Thread(target=self.get_stream, args=(headers, set, bearer_token))
         if not thread.isAlive():
             print("Starting Thread")
