@@ -146,6 +146,7 @@
 
         socket.on('tweet', function(msg) {
           console.log(msg);
+          print_tweets(msg)
         });
 
         socket.on('disconnect_client', function(msg) {
@@ -163,79 +164,87 @@
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
 			$.ajax({
-           	type: "POST",
-           	url: "/base",
-           	data: $("#foro").serialize(), // serializes the form's elements.
-           	success: function(data)
-		   		{
-			   		var dati = data.data;
-			   		//word cloud;
-					var testo2 = "";
-					var geo = true;   //test mappa
-			   		for (a of dati){
-						pk = 0;
-						if (typeof a.entities!=="undefined"){
-					   		if (typeof a.entities.hashtags!=="undefined"){
-						   		while (typeof a.entities.hashtags[pk]!=="undefined"){
-						   			testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
-									pk=pk+1;
-								}
-							}
-						}
-						if (typeof a.geo!=="undefined"){ //test mappa
-							console.log(a.geo);
-							geo = false;
-						}
-					}
-					if (geo) { //test mappa
-						console.log("zibibbo")
-					}   
-					word_cloud(testo2);
-					//controllo risposte
-			   		console.log(dati);// show response from the server.
-					//visualizzazione tweet
-			   		var node = document.getElementById("visualizzazione_tw")
-					while (node.hasChildNodes()) {
-						node.removeChild(node.lastChild);
-					}
-					var index = 0
-					dati.forEach(element => {
-						var tmp = document.createElement("div");
-						tmp.setAttribute("id", "tweet" + index);
-						tmp.setAttribute("class", "tweet_container");
-						var tmp2 = document.createElement("div");
-						tmp2.setAttribute("id", "tweet" + index + "_userName");
-						tmp2.setAttribute("class", "tweet_userName");
-						tmp2.innerHTML = element.author_id;
-						var tmp3 = document.createElement("div");
-						tmp3.setAttribute("id", "tweet" + index + "_text");
-						tmp3.setAttribute("class", "tweet_text");
-						tmp3.innerHTML = element.text;
-						tmp.appendChild(tmp2);
-						tmp.appendChild(tmp3);
-						document.getElementById("visualizzazione_tw").appendChild(tmp);
-						index = index +1;
-					});
-
-					//colloca su mappa
-					var coordinate = [];
-					for (a of dati){
-						if (typeof a.geo!=="undefined"){
-							if (typeof a.geo.coordinates!=="undefined"){
-								console.log(typeof a.geo.coordinates.coordinates[0]);
-								var long = a.geo.coordinates.coordinates[0];
-								var lat = a.geo.coordinates.coordinates[1];
-								var latlong = [lat, long];
-								coordinate.push(latlong);
-							}
-						}
-					}
-
-					initialize (coordinate);
-
-           		}
-         	});
+       	type: "POST",
+       	url: "/base",
+       	data: $("#foro").serialize(), // serializes the form's elements.
+       	success: print_tweets(data)
+     	});
 		}
+
+    function print_tweets(data){
+      // console.log(data.data)
+      var dati = data.data;
+      // var parsed_data = JSON.parse(dati);
+      console.log('something', Object.keys(dati))
+      if (true){
+        return true
+      }
+      //word cloud;
+      var testo2 = "";
+      var geo = true;   //test mappa
+      for (a of dati){
+        pk = 0;
+        if (typeof a.entities!=="undefined"){
+            if (typeof a.entities.hashtags!=="undefined"){
+              while (typeof a.entities.hashtags[pk]!=="undefined"){
+                testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
+              pk=pk+1;
+            }
+          }
+        }
+        if (typeof a.geo!=="undefined"){ //test mappa
+          console.log(a.geo);
+          geo = false;
+        }
+      }
+      if (geo) { //test mappa
+        console.log("zibibbo")
+      }
+      word_cloud(testo2);
+
+      //controllo risposte
+      console.log(dati);// show response from the server.
+
+      //visualizzazione tweet
+      var node = document.getElementById("visualizzazione_tw")
+      while (node.hasChildNodes()) {
+        node.removeChild(node.lastChild);
+      }
+      var index = 0
+      dati.forEach(element => {
+        var tmp = document.createElement("div");
+        tmp.setAttribute("id", "tweet" + index);
+        tmp.setAttribute("class", "tweet_container");
+        var tmp2 = document.createElement("div");
+        tmp2.setAttribute("id", "tweet" + index + "_userName");
+        tmp2.setAttribute("class", "tweet_userName");
+        tmp2.innerHTML = element.author_id;
+        var tmp3 = document.createElement("div");
+        tmp3.setAttribute("id", "tweet" + index + "_text");
+        tmp3.setAttribute("class", "tweet_text");
+        tmp3.innerHTML = element.text;
+        tmp.appendChild(tmp2);
+        tmp.appendChild(tmp3);
+        document.getElementById("visualizzazione_tw").appendChild(tmp);
+        index = index +1;
+      });
+
+      //colloca su mappa
+      var coordinate = [];
+      for (a of dati){
+        if (typeof a.geo!=="undefined"){
+          if (typeof a.geo.coordinates!=="undefined"){
+            console.log(typeof a.geo.coordinates.coordinates[0]);
+            var long = a.geo.coordinates.coordinates[0];
+            var lat = a.geo.coordinates.coordinates[1];
+            var latlong = [lat, long];
+            coordinate.push(latlong);
+          }
+        }
+      }
+
+      initialize (coordinate);
+    }
 
 		/*mappa*/
 		function initialize(coordinate) {

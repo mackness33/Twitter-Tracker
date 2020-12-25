@@ -123,7 +123,6 @@ class TwitterService():
         response = requests.get(
             "https://api.twitter.com/2/tweets/search/stream", headers=headers, stream=True,
         )
-        print('In get stream')
         print(response.status_code)
         if response.status_code != 200:
             raise Exception(
@@ -133,9 +132,7 @@ class TwitterService():
             )
         for response_line in response.iter_lines():
             if self._end_stream.isSet():
-                print ('Should be the')
                 break
-                print ('end')
 
             if response_line:
                 json_response = json.loads(response_line)
