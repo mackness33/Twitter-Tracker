@@ -123,6 +123,7 @@ class TwitterService():
         response = requests.get(
             "https://api.twitter.com/2/tweets/search/stream", headers=headers, stream=True,
         )
+        print('In get stream')
         print(response.status_code)
         if response.status_code != 200:
             raise Exception(
@@ -138,7 +139,7 @@ class TwitterService():
 
             if response_line:
                 json_response = json.loads(response_line)
-                socketio.emit('stream', json_response, namespace='/base')
+                socketio.emit('tweet', json_response, namespace='/base')
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
         self.end_stream()

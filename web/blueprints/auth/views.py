@@ -29,30 +29,26 @@ T = TwitterService(ACCESS_TOKEN)
 #---------------SOCKETIO---------------
 @socketio.on('connect', namespace='/base')
 def socket_connection():
-    print('Client is connected')
+    print('connecting socket ..')
+    emit('connection_done')
 
 @socketio.on('start_sample', namespace='/base')
-def socket_connection():
+def start_sample(msg):
     print(msg)
     T.main()
 
-@socketio.on('stop_stream', namespace='/base')                          # Decorator to catch an event called "my event":
-def the_end(message):                        # test_message() is the event callback function.
-    print('In the_end')
-    T.end_stream()
+@socketio.on('stop_stream', namespace='/base')
+def the_end(msg):
     print(message)
+    T.end_stream()
 
-@socketio.on('disconnect', namespace='/base')
+@socketio.on('disconnect_server', namespace='/base')
 def disconnect_request():
-    @copy_current_request_context
-    def can_disconnect():
-        disconnect()
-
+    T.end_stream()
     print('disconnecting socket ..')
-    emit('disconnect', {'data': 'disconnecting socket ...'}, callback=can_disconnect)
+    emit('disconnect_client', {'data': 'disconnecting socket ...'})
 
 @tracker.route('/base', methods = ['POST'])
-# def base_post(in_json):
 def base_post():
     say=request.form['ricerca']
     print('say: ', say)
