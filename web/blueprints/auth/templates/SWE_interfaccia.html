@@ -20,7 +20,7 @@
    			font-size: 3vw;
    			font-family: Helvetica;
 		}
-		#input, #input2, #button {
+		#input, #input2, .button, #input_stream, #input2_stream {
    			height: 3vw;
    			width: 50%;
    			margin-top: 1vw;
@@ -36,7 +36,7 @@
 			margin-top: 1vw;
 			margin-left: 25%;
 		}
-		#button {
+		.button {
 		   	font-weight: bold;
    			background-color: blue;
    			color: orange;
@@ -152,14 +152,30 @@
         socket.on('disconnect_client', function(msg) {
           socket.disconnect()
           console.log(msg);
-        });
+		});
+		
+			$('form#foro').submit(function(event) {
+				socket.emit('disconnect_server');
+			});
 
-        $('form#foro').submit(function(event) {
-            socket.emit('disconnect_server');
-        });
-      });
-  </script>
+        	$('form#form_stream').submit(function(event) {
+            	socket.emit('connect');
+        	});
+     	});
+  	</script>
 	<script>
+
+		//gestione form da mostrare
+		function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
+			document.getElementById("foro").style.display = "block"; 
+			document.getElementById("form_stream").style.display = "none";
+		};
+
+		function visualizza_form_stream(){ //vedi sopra
+			document.getElementById("form_stream").style.display = "block";
+			document.getElementById("foro").style.display = "none";
+		};
+
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
 			$.ajax({
@@ -399,23 +415,49 @@
   	<body>
 		<h1>Twitter Tracker</h1>
 		<div id="ricerca">
-    		<form id="foro" method="post" target="tweet">
+			 <!--Per scegliere il tipo di ricerca-->
+			<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
+			<label for="search"> Ricerca</label><br>
+			<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta">
+			<label for="stream"> Stream</label><br>
+			
+			<!--form lookup-->
+			<form id="foro" method="post" target="tweet" style="display:none">
+				<p>Ricerca: </p>
 				<input id="input" type="text" name="ricerca" ><br>
 				<input id="input2" type="text" name="numero_tw" ><br>
 				<input type="checkbox" id="persona" name="persona">
 				<label for="persona"> Username</label><br>
-				<input type="checkbox" id="luogo" name="luogo">
+				<!--<input type="checkbox" id="luogo" name="luogo"> //probabilmente non è utile
 				<label for="luogo"> Luogo</label><br>
-				<input type="checkbox" id="area geografica" name="area geografica">
-				<label for="area geografica"> Area geografica</label><br>
-				<input type="checkbox" id="parola chiave" name="parola chiave">
+				<input type="checkbox" id="area_geografica" name="area_geografica">
+				<label for="area geografica"> Area geografica</label><br>-->
+				<input type="checkbox" id="parola_chiave" name="parola_chiave">
 				<label for="parola chiave"> Parola chiave</label><br>
-				<input id="button" type="submit" onclick=richiesta_dati() value="Search">
+				<input class="button" type="submit" onclick=richiesta_dati() value="Search">
+    			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
+				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
+				<!--onclick=richiesta_dati()-->
+			</form>
+			<!--form streaming-->
+			<form id="form_stream" method="post" target="tweet" style="display:none">
+				<p>Stream: </p>
+				<input id="input_stream" type="text" name="ricerca" ><br>
+				<input id="input2_stream" type="text" name="numero_tw" ><br>
+				<input type="checkbox" id="persona_stream" name="persona">
+				<label for="persona_stream"> Username</label><br>
+				<input type="checkbox" id="luogo_stream" name="luogo">
+				<label for="luogo_stream"> Luogo</label><br>
+				<input type="checkbox" id="area_geografica_stream" name="area_geografica">
+				<label for="area geografica stream"> Area geografica</label><br>
+				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave">
+				<label for="parola_chiave_stream"> Parola chiave</label><br>
+				<input class="button" type="submit" onclick=richiesta_dati() value="Search">
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--onclick=richiesta_dati()-->
     		</form>
-    		<p id="descrizione">
+    		<p id="descrizione" style="display: none"> <!--Inserire in questo paragrafo i commenti e le spiegazioni all'utente-->
        			Per cercare: <br>
        			-una parola chiave scrivi la parola preceduta dal carattere #, <br>
        			-una zona scrivi il nome della zona preceduta dal carattere $, <br>
