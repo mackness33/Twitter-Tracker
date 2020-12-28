@@ -127,39 +127,39 @@
 			console.log(data);
 		}
 	-->
-  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
-  <script type="text/javascript" charset="utf-8">
-      $(document).ready(function() {
-        // start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
-        var socket = io.connect('http://' + document.domain + ':' + location.port + '/base');
+  	<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+  	<script type="text/javascript" charset="utf-8">
+    	$(document).ready(function() {
+			// start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
+			var socket = io.connect('http://' + document.domain + ':' + location.port + '/base');
 
-        // this is a callback that triggers when the "my response" event is emitted by the server.
-        // socket.on('my response', function(msg) {
-        //   $('#log').append('<p>Received: ' + msg.data + '</p>');
-        // });
+			// this is a callback that triggers when the "my response" event is emitted by the server.
+			// socket.on('my response', function(msg) {
+			//   $('#log').append('<p>Received: ' + msg.data + '</p>');
+			// });
 
-        socket.on('connection_done', function() {
-          console.log('successfully connected to the SocketServer...');
-          socket.emit('start_sample', {data: 'Starting sample stream'});
-        });
+			socket.on('connection_done', function() {
+				console.log('successfully connected to the SocketServer...');
+				socket.emit('start_sample', {data: 'Starting sample stream'});
+			});
 
-        socket.on('tweet', function(msg) {
-          console.log(msg);
-          print_stream_tweets(msg)
-        });
+			socket.on('tweet', function(msg) {
+				console.log(msg);
+				print_stream_tweets(msg)
+			});
 
-        socket.on('disconnect_client', function(msg) {
-          socket.disconnect()
-          console.log(msg);
-		});
+			socket.on('disconnect_client', function(msg) {
+				socket.disconnect()
+				console.log(msg);
+			});
 		
-			$('form#foro').submit(function(event) {
+			$('form#form_lookup').submit(function(event) {
 				socket.emit('disconnect_server');
 			});
 
         	$('form#form_stream').submit(function(event) {
-            	socket.emit('connect');
+            	socket.emit('connect_server');
         	});
      	});
   	</script>
@@ -167,152 +167,162 @@
 
 		//gestione form da mostrare
 		function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
-			document.getElementById("foro").style.display = "block"; 
+			document.getElementById("form_lookup").style.display = "block"; 
 			document.getElementById("form_stream").style.display = "none";
 		};
 
 		function visualizza_form_stream(){ //vedi sopra
 			document.getElementById("form_stream").style.display = "block";
-			document.getElementById("foro").style.display = "none";
+			document.getElementById("form_lookup").style.display = "none";
 		};
 
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
+			// socket.emit('disconnect_server');
+
 			$.ajax({
-       	type: "POST",
-       	url: "/base",
-       	data: $("#foro").serialize(), // serializes the form's elements.
-       	success: print_tweets(data)
-     	});
+				type: "POST",
+				url: "/base",
+				data: $("#form_lookup").serialize(), // serializes the form's elements.
+				dataType: "json",
+				success: function (response) {
+					console.log('this is the response: ', response);
+					if (response.data !== "ERROR")
+						print_tweets(response);
+					else
+						console.log(response.text);
+				}
+			});
 		}
 
-    function print_stream_tweets(response){
-      let tweet = response.data
-      let word_cloud_text = "";
+		function print_stream_tweets(response){
+			let tweet = response.data
+			let word_cloud_text = "";
 
-      if (typeof tweet.entities !== "undefined"){
-          if (typeof tweet.entities.hashtags !== "undefined"){
-            tweet.entities.hashtags.forEach((hashtag, index) => {
-              word_cloud_text = word_cloud_text + " " + hashtag.tag;
-            });
-        }
-      }
-      console.log('word_cloud_text: ', word_cloud_text);
-      word_cloud(word_cloud_text);
+			if (typeof tweet.entities !== "undefined"){
+				if (typeof tweet.entities.hashtags !== "undefined"){
+					tweet.entities.hashtags.forEach((hashtag, index) => {
+						word_cloud_text = word_cloud_text + " " + hashtag.tag;
+					});
+				}
+			}
+			console.log('word_cloud_text: ', word_cloud_text);
+			word_cloud(word_cloud_text);
 
-      // visualizzazione tweet
-      // TODO: set a maximum quantity of tweets to be visualize
-      // TIP: use a Queue
-      tweet_visualization(tweet)
+			// visualizzazione tweet
+			// TODO: set a maximum quantity of tweets to be visualize
+			// TIP: use a Queue
+			tweet_visualization(tweet)
 
-      // maps
-      var coordinate = [];
-      if (typeof tweet.geo !== "undefined"){ //test mappa
-        console.log('GEO: ', tweet.geo);
-        if (typeof tweet.geo.coordinates!=="undefined"){
-          console.log(typeof tweet.geo.coordinates.coordinates[0]);
-          var long = tweet.geo.coordinates.coordinates[0];
-          var lat = tweet.geo.coordinates.coordinates[1];
-          var latlong = [lat, long];
-          coordinate.push(latlong);
-        }
-      }
+			// maps
+			var coordinate = [];
+			if (typeof tweet.geo !== "undefined"){ //test mappa
+				console.log('GEO: ', tweet.geo);
+				if (typeof tweet.geo.coordinates!=="undefined"){
+				console.log(typeof tweet.geo.coordinates.coordinates[0]);
+				var long = tweet.geo.coordinates.coordinates[0];
+				var lat = tweet.geo.coordinates.coordinates[1];
+				var latlong = [lat, long];
+				coordinate.push(latlong);
+				}
+			}
 
-      initialize (coordinate);
-    }
+			initialize (coordinate);
+		}
 
-    function tweet_visualization(tweet){
-      let node = document.getElementById("visualizzazione_tw")
+		function tweet_visualization(tweet){
+			let node = document.getElementById("visualizzazione_tw")
 
-      let container = document.createElement("div");
-      container.setAttribute("id", "tweet" + tweet.id);
-      container.setAttribute("class", "tweet_container");
+			let container = document.createElement("div");
+			container.setAttribute("id", "tweet" + tweet.id);
+			container.setAttribute("class", "tweet_container");
 
-      let username = document.createElement("div");
-      username.setAttribute("id", "tweet" + tweet.id + "_userName");
-      username.setAttribute("class", "tweet_userName");
-      username.innerHTML = tweet.author_id;
+			let username = document.createElement("div");
+			username.setAttribute("id", "tweet" + tweet.id + "_userName");
+			username.setAttribute("class", "tweet_userName");
+			username.innerHTML = tweet.author_id;
 
-      let text = document.createElement("div");
-      text.setAttribute("id", "tweet" + tweet.id + "_text");
-      text.setAttribute("class", "tweet_text");
-      text.innerHTML = tweet.text;
+			let text = document.createElement("div");
+			text.setAttribute("id", "tweet" + tweet.id + "_text");
+			text.setAttribute("class", "tweet_text");
+			text.innerHTML = tweet.text;
 
-      container.appendChild(username);
-      container.appendChild(text);
-      document.getElementById("visualizzazione_tw").appendChild(container);
-    }
+			container.appendChild(username);
+			container.appendChild(text);
+			document.getElementById("visualizzazione_tw").appendChild(container);
+		}
 
-    function print_tweets(data){
-      var dati = data.data
-      //word cloud;
-      var testo2 = "";
-      var geo = true;   //test mappa
+		function print_tweets(data){
+			var dati = data.data
+			console.log('the data is: ', data.data);
+			//word cloud;
+			var testo2 = "";
+			var geo = true;   //test mappa
 
-      for (a of dati){
-        pk = 0;
-        if (typeof a.entities!=="undefined"){
-            if (typeof a.entities.hashtags!=="undefined"){
-              while (typeof a.entities.hashtags[pk]!=="undefined"){
-                testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
-              pk=pk+1;
-            }
-          }
-        }
-        if (typeof a.geo!=="undefined"){ //test mappa
-          console.log(a.geo);
-          geo = false;
-        }
-      }
+			for (a of dati){
+				pk = 0;
+				if (typeof a.entities!=="undefined"){
+					if (typeof a.entities.hashtags!=="undefined"){
+					while (typeof a.entities.hashtags[pk]!=="undefined"){
+						testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
+					pk=pk+1;
+					}
+				}
+				}
+				if (typeof a.geo!=="undefined"){ //test mappa
+				console.log(a.geo);
+				geo = false;
+				}
+			}
 
-      if (geo) { //test mappa
-        console.log("zibibbo")
-      }
-      word_cloud(testo2);
+			if (geo) { //test mappa
+				console.log("zibibbo")
+			}
+			word_cloud(testo2);
 
-      //controllo risposte
-      console.log(dati);// show response from the server.
+			//controllo risposte
+			console.log(dati);// show response from the server.
 
-      //visualizzazione tweet
-      var node = document.getElementById("visualizzazione_tw")
-      while (node.hasChildNodes()) {
-        node.removeChild(node.lastChild);
-      }
-      var index = 0
-      dati.forEach(element => {
-        var tmp = document.createElement("div");
-        tmp.setAttribute("id", "tweet" + index);
-        tmp.setAttribute("class", "tweet_container");
-        var tmp2 = document.createElement("div");
-        tmp2.setAttribute("id", "tweet" + index + "_userName");
-        tmp2.setAttribute("class", "tweet_userName");
-        tmp2.innerHTML = element.author_id;
-        var tmp3 = document.createElement("div");
-        tmp3.setAttribute("id", "tweet" + index + "_text");
-        tmp3.setAttribute("class", "tweet_text");
-        tmp3.innerHTML = element.text;
-        tmp.appendChild(tmp2);
-        tmp.appendChild(tmp3);
-        document.getElementById("visualizzazione_tw").appendChild(tmp);
-        index = index +1;
-      });
+			//visualizzazione tweet
+			var node = document.getElementById("visualizzazione_tw")
+			while (node.hasChildNodes()) {
+				node.removeChild(node.lastChild);
+			}
+			var index = 0
+			dati.forEach(element => {
+				var tmp = document.createElement("div");
+				tmp.setAttribute("id", "tweet" + index);
+				tmp.setAttribute("class", "tweet_container");
+				var tmp2 = document.createElement("div");
+				tmp2.setAttribute("id", "tweet" + index + "_userName");
+				tmp2.setAttribute("class", "tweet_userName");
+				tmp2.innerHTML = element.author_id;
+				var tmp3 = document.createElement("div");
+				tmp3.setAttribute("id", "tweet" + index + "_text");
+				tmp3.setAttribute("class", "tweet_text");
+				tmp3.innerHTML = element.text;
+				tmp.appendChild(tmp2);
+				tmp.appendChild(tmp3);
+				document.getElementById("visualizzazione_tw").appendChild(tmp);
+				index = index +1;
+			});
 
-      //colloca su mappa
-      var coordinate = [];
-      for (a of dati){
-        if (typeof a.geo!=="undefined"){
-          if (typeof a.geo.coordinates!=="undefined"){
-            console.log(typeof a.geo.coordinates.coordinates[0]);
-            var long = a.geo.coordinates.coordinates[0];
-            var lat = a.geo.coordinates.coordinates[1];
-            var latlong = [lat, long];
-            coordinate.push(latlong);
-          }
-        }
-      }
+			//colloca su mappa
+			var coordinate = [];
+			for (a of dati){
+				if (typeof a.geo!=="undefined"){
+				if (typeof a.geo.coordinates!=="undefined"){
+					console.log(typeof a.geo.coordinates.coordinates[0]);
+					var long = a.geo.coordinates.coordinates[0];
+					var lat = a.geo.coordinates.coordinates[1];
+					var latlong = [lat, long];
+					coordinate.push(latlong);
+				}
+				}
+			}
 
-      initialize (coordinate);
-    }
+			initialize (coordinate);
+		}
 
 		/*mappa*/
 		function initialize(coordinate) {
@@ -388,7 +398,6 @@
 		google.maps.event.addDomListener(window, 'load', initialize);
 
 		//wordcloud
-
 		function word_cloud(hashtags) {
 
 			// Themes begin
@@ -410,7 +419,7 @@
 			series.text = hashtags;
 		};
 
-		</script>
+	</script>
   	</head>
   	<body>
 		<h1>Twitter Tracker</h1>
@@ -422,7 +431,7 @@
 			<label for="stream"> Stream</label><br>
 			
 			<!--form lookup-->
-			<form id="foro" method="post" target="tweet" style="display:none">
+			<form id="form_lookup" method="post" target="tweet" style="display:none">
 				<p>Ricerca: </p>
 				<input id="input" type="text" name="ricerca" ><br>
 				<input id="input2" type="text" name="numero_tw" ><br>

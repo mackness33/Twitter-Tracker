@@ -42,8 +42,8 @@ class TwitterService():
                 else:
                     return 'users/by/username', 'usernames'
 
-        type, field = by(query)
-        url = self._create_url(type, field, query)                          # set up the url
+        lu_type, field = by(query)
+        url = self._create_url(lu_type, field, query)                          # set up the url
         url = self._add_fields(url, fields)                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
@@ -52,7 +52,8 @@ class TwitterService():
 
     #---------RECENT SEARCH----------
     def recent_search(self, query, fields):
-        url = self._create_url('tweets/search/recent', 'query', query)  # set up the url
+
+        url = self._create_url('tweets/search/recent', 'query', query if isinstance(query, list) else list(query))  # set up the url
         url = self._add_fields(url, fields)                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
@@ -156,6 +157,10 @@ class TwitterService():
             thread.start()
 
         print ('are we at the end?')
+
+    # TODO: build input by divide input by "," and then trim it
+    def _build_input(self, input):
+        return True
 
     def _create_url(self, type, field, values):
         # Specify the usernames that you want to lookup below
