@@ -57,16 +57,13 @@ def base_post():
         data = data[1:]
     else:
         return json.dumps('Error on input')
-
-    # fields = request.form['fields']
-    # print('message: ', msg)
-
+        
     if search_type == '#':
         return T.tweets_lookup(id=data, fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
     elif search_type == '@':
-        return T.users_lookup(query=data, fields={"user.fields": "description,created_at"})
+        # BUG: results with undefined fields
+        return T.users_lookup(query=data, fields={})
     elif search_type == '$':
-        
         return T.recent_search(query=data, fields={"user.fields": "description,created_at", "tweet.fields": "author_id,created_at,entities,geo"})
 
     return {"text": 'Error on input', "data": 'ERROR', "status_code": 413}

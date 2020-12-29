@@ -21,7 +21,7 @@ class TwitterService():
 
     #---------TWEETS LOOKUP----------
     def tweets_lookup(self, id, fields):
-        url = self._create_url('tweets', 'ids', id)                          # set up the url
+        url = self._create_url('tweets', 'ids', self._build_input(id))                          # set up the url
         url = self._add_fields(url, fields)                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
@@ -41,9 +41,9 @@ class TwitterService():
                     return 'users', 'ids'
                 else:
                     return 'users/by/username', 'usernames'
-
-        lu_type, field = by(query)
-        url = self._create_url(lu_type, field, query)                          # set up the url
+        input = self._build_input(query)
+        lu_type, field = by(input)
+        url = self._create_url(lu_type, field, input)                          # set up the url
         url = self._add_fields(url, fields)                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
@@ -52,8 +52,7 @@ class TwitterService():
 
     #---------RECENT SEARCH----------
     def recent_search(self, query, fields):
-
-        url = self._create_url('tweets/search/recent', 'query', query if isinstance(query, list) else list(query))  # set up the url
+        url = self._create_url('tweets/search/recent', 'query', self._build_input(query))  # set up the url
         url = self._add_fields(url, fields)                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
@@ -160,7 +159,12 @@ class TwitterService():
 
     # TODO: build input by divide input by "," and then trim it
     def _build_input(self, input):
-        return True
+        input = input.split(',')
+        index = 0
+        for i in input:
+            input[index] = i.strip()
+            index += 1
+        return input
 
     def _create_url(self, type, field, values):
         # Specify the usernames that you want to lookup below
