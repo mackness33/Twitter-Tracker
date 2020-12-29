@@ -165,6 +165,24 @@
   	</script>
 	<script>
 
+		//gestione visualizzazione mappa&worldcloud
+		
+		function vedi_mappa(){
+			if (document.getElementById("container-map").style.display == "none"){
+				document.getElementById("container-map").style.display = "block";
+			}
+			else {
+				document.getElementById("container-map").style.display = "none";
+			}
+		}
+		function vedi_wordcloud(){
+			if (document.getElementById("word_cloud").style.display == "none"){
+				document.getElementById("word_cloud").style.display = "block";
+			}
+			else {
+				document.getElementById("word_cloud").style.display = "none";
+			}
+		}
 		//gestione form da mostrare
 		function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
 			document.getElementById("foro").style.display = "block"; 
@@ -186,19 +204,28 @@
      	});
 		}
 
+		let word_cloud_text = "";
+
+	var conta_tweet = 0;	
     function print_stream_tweets(response){
-      let tweet = response.data
-      let word_cloud_text = "";
+	  conta_tweet = conta_tweet + 1;
+	  document.getElementById("conta").innerHTML = conta_tweet;
+	  let tweet = response.data
+	  let aggiorna_wordcloud = false
+      
 
       if (typeof tweet.entities !== "undefined"){
           if (typeof tweet.entities.hashtags !== "undefined"){
             tweet.entities.hashtags.forEach((hashtag, index) => {
               word_cloud_text = word_cloud_text + " " + hashtag.tag;
-            });
+			});
+			aggiorna_wordcloud = true;
         }
       }
       console.log('word_cloud_text: ', word_cloud_text);
-      word_cloud(word_cloud_text);
+      if(aggiorna_wordcloud){
+		  word_cloud(word_cloud_text);
+	  }
 
       // visualizzazione tweet
       // TODO: set a maximum quantity of tweets to be visualize
@@ -206,19 +233,35 @@
       tweet_visualization(tweet)
 
       // maps
-      var coordinate = [];
-      if (typeof tweet.geo !== "undefined"){ //test mappa
-        console.log('GEO: ', tweet.geo);
+	  var coordinate = [];
+	  var aggiorna_coordinate = false;
+      if (typeof tweet.geo !== "undefined"){ 
+        console.log('GEO: ', tweet.geo);	//test mappa
         if (typeof tweet.geo.coordinates!=="undefined"){
           console.log(typeof tweet.geo.coordinates.coordinates[0]);
           var long = tweet.geo.coordinates.coordinates[0];
           var lat = tweet.geo.coordinates.coordinates[1];
           var latlong = [lat, long];
-          coordinate.push(latlong);
-        }
-      }
+		  coordinate.push(latlong);
+		  aggiorna_coordinate = true;
+		}
+	  }
+	  /*else{
+		  var long = getRandomArbitrary(0, 179);
+          var lat = getRandomArbitrary(0, 179);
+          var latlong = [lat, long];
+		  coordinate.push(latlong);
+		  aggiorna_coordinate = true;
+	  }*/
 
-      initialize (coordinate);
+	  if(aggiorna_coordinate){
+		marker(coordinate);
+	  }
+      //initialize (coordinate);
+	}
+	//da togliere
+	function getRandomArbitrary(min, max) {
+  	  return Math.floor(Math.random()*100);
     }
 
     function tweet_visualization(tweet){
@@ -374,15 +417,20 @@
 		  	//Associate the styled map with the MapTypeId and set it to display.
 		  	map.mapTypes.set('map_style', styledMap);
 		  	map.setMapTypeId('map_style');
+			marker(coordinate); //setta i marker
 
-		  	for(a of coordinate){
+		}
 
-		  		var myLatlng = new google.maps.LatLng(a[0], a[1]);
-		  		var marker = new google.maps.Marker({
-		      		position: myLatlng,
-		      		map: map,
-		  		});
-		  	}
+		//funzione per marker
+		function marker(coordinate){
+			for(a of coordinate){
+
+				var myLatlng = new google.maps.LatLng(a[0], a[1]);
+				var marker = new google.maps.Marker({
+					position: myLatlng,
+					map: map,
+				});
+			}
 		}
 
 		google.maps.event.addDomListener(window, 'load', initialize);
@@ -416,6 +464,11 @@
 		<h1>Twitter Tracker</h1>
 		<div id="ricerca">
 			 <!--Per scegliere il tipo di ricerca-->
+			<div id="conta"></div>
+			<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
+			<label for="mappa_visibile">visualizza mappa</label><br>
+			<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
+			<label for="wordcloud_visibile">visualizza wordcloud</label><br>
 			<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
 			<label for="search"> Ricerca</label><br>
 			<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta">
@@ -466,10 +519,10 @@
 		</div>
 		<div id="visualizzazione_tw">
 		</div>
-  		<div id="container-map">
+  		<div id="container-map" style="display:none">
     		<div id="map-canvas"></div>
 	  	</div>
-		<div id="word_cloud">
+		<div id="word_cloud" style="display:none">
 		</div>
 		<iframe name="tweet" style="display:none"></iframe>
   	</body>
