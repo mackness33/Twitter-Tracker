@@ -245,24 +245,22 @@
 		  coordinate.push(latlong);
 		  aggiorna_coordinate = true;
 		}
-	  }
-	  /*else{
-		  var long = getRandomArbitrary(0, 179);
-          var lat = getRandomArbitrary(0, 179);
+	  //}
+	  else{
+		  var long = 45;
+          var lat = 50;
           var latlong = [lat, long];
 		  coordinate.push(latlong);
 		  aggiorna_coordinate = true;
-	  }*/
+	  }
+	}
 
 	  if(aggiorna_coordinate){
 		marker(coordinate);
 	  }
       //initialize (coordinate);
 	}
-	//da togliere
-	function getRandomArbitrary(min, max) {
-  	  return Math.floor(Math.random()*100);
-    }
+
 
     function tweet_visualization(tweet){
       let node = document.getElementById("visualizzazione_tw")
