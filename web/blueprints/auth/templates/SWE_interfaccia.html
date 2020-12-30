@@ -132,7 +132,10 @@
   	<script type="text/javascript" charset="utf-8">
     	$(document).ready(function() {
 			// start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
-			var socket = io.connect('http://' + document.domain + ':' + location.port + '/base');
+			var socket = io.connect(
+				'http://' + document.domain + ':' + location.port + '/base',
+				{reconnectionDelayMax: 10000}
+			);
 
 			// this is a callback that triggers when the "my response" event is emitted by the server.
 			// socket.on('my response', function(msg) {
@@ -155,11 +158,16 @@
 			});
 		
 			$('form#form_lookup').submit(function(event) {
-				socket.emit('disconnect_server');
+				if (!socket.disconnected)
+					socket.emit('disconnect_server');
 			});
 
         	$('form#form_stream').submit(function(event) {
-            	socket.emit('connect_server');
+				console.log('retryin to connect')
+				remove_old_tweets()
+				if (!socket.connected){
+					socket.connect();
+				}
         	});
      	});
   	</script>
@@ -178,8 +186,6 @@
 
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
-			// socket.emit('disconnect_server');
-
 			$.ajax({
 				type: "POST",
 				url: "/base",
@@ -188,9 +194,12 @@
 				success: function (response) {
 					console.log('this is the response: ', response);
 					if (response.data !== "ERROR")
-						print_tweets(response);
+						if (typeof response.data==="undefined")
+							alert('No results found')
+						else
+							print_tweets(response);
 					else
-						console.log(response.text);
+						alert(response.text);
 				}
 			});
 		}
@@ -252,12 +261,21 @@
 			document.getElementById("visualizzazione_tw").appendChild(container);
 		}
 
+		function remove_old_tweets(){
+			var node = document.getElementById("visualizzazione_tw")
+			while (node.hasChildNodes()) {
+				node.removeChild(node.lastChild);
+			}
+		}
+
 		function print_tweets(data){
+			// TODO: handle results with undefined data, ergo: 0 tweets found
 			var dati = data.data
-			console.log('the data is: ', data.data);
 			//word cloud;
 			var testo2 = "";
 			var geo = true;   //test mappa
+			if (typeof dati==="undefined")
+				return
 
 			for (a of dati){
 				pk = 0;
@@ -461,7 +479,7 @@
 				<label for="area geografica stream"> Area geografica</label><br>
 				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave">
 				<label for="parola_chiave_stream"> Parola chiave</label><br>
-				<input class="button" type="submit" onclick=richiesta_dati() value="Search">
+				<input class="button" type="submit"  value="Search">
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--onclick=richiesta_dati()-->

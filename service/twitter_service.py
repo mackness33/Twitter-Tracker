@@ -41,6 +41,7 @@ class TwitterService():
                     return 'users', 'ids'
                 else:
                     return 'users/by/username', 'usernames'
+        
         input = self._build_input(query)
         lu_type, field = by(input)
         url = self._create_url(lu_type, field, input)                          # set up the url
@@ -157,7 +158,6 @@ class TwitterService():
 
         print ('are we at the end?')
 
-    # TODO: build input by divide input by "," and then trim it
     def _build_input(self, input):
         input = input.split(',')
         index = 0
