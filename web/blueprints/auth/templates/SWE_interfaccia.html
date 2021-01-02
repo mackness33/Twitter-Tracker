@@ -173,6 +173,25 @@
   	</script>
 	<script>
 
+		//gestione visualizzazione mappa&worldcloud
+		
+		function vedi_mappa(){
+			if (document.getElementById("container-map").style.display == "none"){
+				document.getElementById("container-map").style.display = "block";
+			}
+			else {
+				document.getElementById("container-map").style.display = "none";
+			}
+		}
+		function vedi_wordcloud(){
+			if (document.getElementById("word_cloud").style.display == "none"){
+				document.getElementById("word_cloud").style.display = "block";
+			}
+			else {
+				document.getElementById("word_cloud").style.display = "none";
+			}
+		}
+
 		//gestione form da mostrare
 		function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
 			document.getElementById("form_lookup").style.display = "block"; 
@@ -204,19 +223,29 @@
 			});
 		}
 
+		let word_cloud_text = "";
+
+		var conta_tweet = 0;
+
 		function print_stream_tweets(response){
-			let tweet = response.data
-			let word_cloud_text = "";
+			conta_tweet = conta_tweet + 1;
+	  		document.getElementById("conta").innerHTML = conta_tweet;
+			let tweet = response.data;
+			let aggiorna_wordcloud = false;
+			
 
 			if (typeof tweet.entities !== "undefined"){
 				if (typeof tweet.entities.hashtags !== "undefined"){
 					tweet.entities.hashtags.forEach((hashtag, index) => {
 						word_cloud_text = word_cloud_text + " " + hashtag.tag;
 					});
+					aggiorna_wordcloud = true;
 				}
 			}
 			console.log('word_cloud_text: ', word_cloud_text);
-			word_cloud(word_cloud_text);
+			if(aggiorna_wordcloud){
+		  		word_cloud(word_cloud_text);
+	  		}
 
 			// visualizzazione tweet
 			// TODO: set a maximum quantity of tweets to be visualize
@@ -225,6 +254,7 @@
 
 			// maps
 			var coordinate = [];
+			var aggiorna_coordinate = false;
 			if (typeof tweet.geo !== "undefined"){ //test mappa
 				console.log('GEO: ', tweet.geo);
 				if (typeof tweet.geo.coordinates!=="undefined"){
@@ -233,10 +263,14 @@
 				var lat = tweet.geo.coordinates.coordinates[1];
 				var latlong = [lat, long];
 				coordinate.push(latlong);
+				aggiorna_coordinate = true;
 				}
 			}
 
-			initialize (coordinate);
+			if(aggiorna_coordinate){
+				marker(coordinate);
+	  		}
+			//initialize (coordinate);
 		}
 
 		function tweet_visualization(tweet){
@@ -442,7 +476,12 @@
   	<body>
 		<h1>Twitter Tracker</h1>
 		<div id="ricerca">
-			 <!--Per scegliere il tipo di ricerca-->
+			<!--Per scegliere il tipo di ricerca-->
+			<div id="conta"></div>
+			<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
+			<label for="mappa_visibile">visualizza mappa</label><br>
+			<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
+			<label for="wordcloud_visibile">visualizza wordcloud</label><br>
 			<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
 			<label for="search"> Ricerca</label><br>
 			<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta">
@@ -493,10 +532,10 @@
 		</div>
 		<div id="visualizzazione_tw">
 		</div>
-  		<div id="container-map">
+  		<div id="container-map" style="display:none">
     		<div id="map-canvas"></div>
 	  	</div>
-		<div id="word_cloud">
+		<div id="word_cloud" style="display:none">
 		</div>
 		<iframe name="tweet" style="display:none"></iframe>
   	</body>
