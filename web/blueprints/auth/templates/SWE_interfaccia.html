@@ -121,7 +121,7 @@
 	
 	<!--librerie socket-->
   	<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
-	  <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 	  
   	<script type="text/javascript" charset="utf-8">
     	$(document).ready(function() {
@@ -262,7 +262,7 @@
 			}
 
 			if(aggiorna_coordinate){
-				marker(coordinate);
+				marker(coordinate);  //da aggiustare, per ora usare initialize
 	  		}
 			//initialize (coordinate);
 		}
@@ -305,24 +305,19 @@
 			if (typeof dati==="undefined")
 				return
 
-			for (a of dati){
+			for (element of dati){
 				pk = 0;
-				if (typeof a.entities!=="undefined"){
-					if (typeof a.entities.hashtags!=="undefined"){
-					while (typeof a.entities.hashtags[pk]!=="undefined"){
-						testo2 = testo2 + " " + a.entities.hashtags[pk].tag;
+				if (typeof element.entities!=="undefined"){
+					if (typeof element.entities.hashtags!=="undefined"){
+					while (typeof element.entities.hashtags[pk]!=="undefined"){
+						testo2 = testo2 + " " + element.entities.hashtags[pk].tag;
 					pk=pk+1;
 					}
 				}
 				}
-				if (typeof a.geo!=="undefined"){ //test mappa
-				console.log(a.geo);
-				geo = false;
+				if (typeof element.geo!=="undefined"){ //test mappa
+					console.log(element.geo);
 				}
-			}
-
-			if (geo) { //test mappa
-				console.log("zibibbo")
 			}
 			word_cloud(testo2);
 
@@ -355,14 +350,15 @@
 
 			//colloca su mappa
 			var coordinate = [];
-			for (a of dati){
-				if (typeof a.geo!=="undefined"){
-				if (typeof a.geo.coordinates!=="undefined"){
-					console.log(typeof a.geo.coordinates.coordinates[0]);
-					var long = a.geo.coordinates.coordinates[0];
-					var lat = a.geo.coordinates.coordinates[1];
-					var latlong = [lat, long];
-					coordinate.push(latlong);
+			for (element of dati){
+				if (typeof element.geo!=="undefined"){
+				if (typeof element.geo.coordinates!=="undefined"){
+					console.log(typeof element.geo.coordinates.coordinates[0]);
+					var long = element.geo.coordinates.coordinates[0];
+					var lat = element.geo.coordinates.coordinates[1];
+					var testo_tweet = element.text;
+					var latlong_text = [lat, long, testo_tweet];
+					coordinate.push(latlong_text);
 				}
 				}
 			}
@@ -414,7 +410,7 @@
 		  	// Create a map object, and include the MapTypeId to add
 		  	// to the map type control.
 		  	var mapOptions = {
-		    	zoom: 12, 				//zoom level
+		    	zoom: 3, 				//zoom level
 		    	center: myCenter, 		//center position
 		    	scrollwheel: false, 	//zoom when scroll disable
 		    	zoomControl: true, 		//show control zoom
@@ -429,21 +425,54 @@
 
 		  	//Associate the styled map with the MapTypeId and set it to display.
 		  	map.mapTypes.set('map_style', styledMap);
-			map.setMapTypeId('map_style');
-			marker(coordinate);
+		  	map.setMapTypeId('map_style');
 
-		  	
+		  	marker(coordinate, map);
 		}
 
-		function marker(coordinate){
-			for(a of coordinate){
-				var myLatlng = new google.maps.LatLng(a[0], a[1]);
+		//funzione per marker
+		function marker(coordinate, map){
+			
+			  
+			for(element of coordinate){
+
+				var myLatlng = new google.maps.LatLng(element[0], element[1]);
 				var marker = new google.maps.Marker({
-				position: myLatlng,
-				map: map,
+					position: myLatlng,
+					map: map,
 				});
+
+				var contentString = element[2];
+
+				pop_up(contentString, map, marker);
+
+		 		
+
+			
 			}
+
+			
 		}
+
+		function pop_up(contentString, map, marker){
+			var infowindow = new google.maps.InfoWindow({
+
+				content: contentString,
+
+  				maxWidth: 230,
+
+				maxHeight: 300,
+
+			});
+			  
+			google.maps.event.addListener(marker, 'click', function() {
+
+				infowindow.open(map,marker);
+
+			});
+
+		}
+
 
 		google.maps.event.addDomListener(window, 'load', initialize);
 
