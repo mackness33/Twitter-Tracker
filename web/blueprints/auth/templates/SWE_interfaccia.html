@@ -7,7 +7,7 @@
 
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700' rel='stylesheet' type='text/css'>
 
-    <style type="text/css">
+	<style type="text/css">
 
 		p {
    			margin-top: 1vw;
@@ -19,6 +19,19 @@
 		   	color: #50ABF1;
    			font-size: 3vw;
    			font-family: Helvetica;
+		}
+		#scelta_form {
+			margin-left: 25%;
+			margin-right: 25%;
+		}
+		input[type="radio"]{
+			margin-left: 14vw;
+		}
+		#scelta_visualizzazione{
+			margin-left: 25%;
+		}
+		.vedi {
+			margin-right: 9.5vw;
 		}
 		#input, #input2, .button, #input_stream, #input2_stream {
    			height: 3vw;
@@ -34,9 +47,17 @@
 		}
 		input[type="checkbox"]{
 			margin-top: 1vw;
-			margin-left: 25%;
 		}
 		.button {
+			height: 3vw;
+   			width: 5px;
+   			margin-top: 1vw;
+
+   			text-align: center;
+   			font-size: large;
+   			border-radius: 5px;
+   			border-color: rgb(0, 174, 255);
+   			font-family: Arial, Helvetica, serif;
 		   	font-weight: bold;
    			background-color: blue;
    			color: orange;
@@ -54,8 +75,8 @@
       		width: 100%;
       	}
 
-      	#container-map, #ricerca, #word_cloud, #visualizzazione_tw{
-		  	width:50%;
+      	#container-map, #word_cloud, #visualizzazione_tw{
+		  	width:100%;
 		  	height:50%;
 		  	position: relative;
 		  	float: left;
@@ -63,8 +84,8 @@
 		}
 
       	#map-canvas{
-			width: 95%;
-			height:95%;
+			width:100%;
+			height:100%;
 			position:relative;
 			z-index:10;
 		}
@@ -75,7 +96,7 @@
 		}
 
 		.tweet_container{
-			width: 95%;
+			width: 97%;
 			height: 70px;
 			border: solid 2px #50ABF1;
 			border-radius: 10px;
@@ -103,9 +124,22 @@
 		.tweet_text{
 			height: 100%;
 			color: #50ABF1;
-			padding: 5px;
+			padding: 0px;
 			overflow: scroll;
 			scrollbar-width: none;  /* Firefox */
+		}
+
+		.container_popup{
+			background-color: white;
+		}
+
+		.testo_popup{
+			color: black;
+		}
+
+		::-webkit-scrollbar {
+    		width: 0px;
+			height: 0px;
 		}
 
 	</style>
@@ -167,23 +201,66 @@
   	</script>
 	<script>
 
-		//gestione visualizzazione mappa&worldcloud
-		
+		//gestione visualizzazione tweet&mappa&worldcloud
+		function vedi_tweet(){
+			var visibiletweet = document.getElementById("tweet_visibile");
+            if (visibiletweet.checked){
+				document.getElementById("visualizzazione_tw").style.display = "block";
+            }
+            else {
+                document.getElementById("visualizzazione_tw").style.display = "none";
+            }
+			ridimensiona();
+		}
 		function vedi_mappa(){
-			if (document.getElementById("container-map").style.display == "none"){
+			var visibilemap = document.getElementById("mappa_visibile");
+            if (visibilemap.checked){
 				document.getElementById("container-map").style.display = "block";
+            }
+            else {
+                document.getElementById("container-map").style.display = "none";
 			}
-			else {
-				document.getElementById("container-map").style.display = "none";
-			}
+			ridimensiona();
 		}
 		function vedi_wordcloud(){
-			if (document.getElementById("word_cloud").style.display == "none"){
-				document.getElementById("word_cloud").style.display = "block";
+			var visibilecloud = document.getElementById("wordcloud_visibile");			
+            if (visibilecloud.checked){
+				document.getElementById("word_cloud").style.display = "block";				
+            }
+            else {
+                document.getElementById("word_cloud").style.display = "none";
+			}
+			ridimensiona();
+		}
+
+		function ridimensiona(){
+			var visibiletweet = document.getElementById("tweet_visibile");
+			var visibilemap = document.getElementById("mappa_visibile");
+			var visibilecloud = document.getElementById("wordcloud_visibile");
+			if (visibiletweet.checked==null){
+				visibiletweet.checked=false;
+			}
+			if (visibilemap.checked==null){
+				visibilemap.checked=false;
+			}
+			if (visibilecloud.checked==null){
+				visibilecloud.checked=false;
+			}
+			if (visibiletweet.checked && visibilemap.checked && visibilecloud.checked) {
+				document.getElementById("visualizzazione_tw").style.width = "33%";
+				document.getElementById("container-map").style.width = "33%";
+				document.getElementById("word_cloud").style.width = "33%";
+			}
+			else if ((visibiletweet.checked && visibilemap.checked) || (visibiletweet.checked && visibilecloud.checked) || (visibilecloud.checked && visibilemap.checked)){
+				document.getElementById("visualizzazione_tw").style.width = "50%";
+				document.getElementById("container-map").style.width = "50%";
+				document.getElementById("word_cloud").style.width = "50%";	
 			}
 			else {
-				document.getElementById("word_cloud").style.display = "none";
-			}
+				document.getElementById("visualizzazione_tw").style.width = "100%";
+				document.getElementById("container-map").style.width = "100%";
+				document.getElementById("word_cloud").style.width = "100%";
+			}	
 		}
 
 		//gestione form da mostrare
@@ -219,11 +296,11 @@
 
 		let word_cloud_text = "";
 
-		var conta_tweet = 0;
+		//var conta_tweet = 0; //da valutare
 
 		function print_stream_tweets(response){
-			conta_tweet = conta_tweet + 1;
-	  		document.getElementById("conta").innerHTML = conta_tweet;
+			//conta_tweet = conta_tweet + 1;
+	  		//document.getElementById("conta").innerHTML = conta_tweet;
 			let tweet = response.data;
 			let aggiorna_wordcloud = false;
 			
@@ -286,7 +363,8 @@
 
 			container.appendChild(username);
 			container.appendChild(text);
-			document.getElementById("visualizzazione_tw").appendChild(container);
+			let tweet_list = document.getElementById("visualizzazione_tw");
+			tweet_list.insertBefore(container, tweet_list.childNodes[0]);
 		}
 
 		function remove_old_tweets(){
@@ -356,8 +434,9 @@
 					console.log(typeof element.geo.coordinates.coordinates[0]);
 					var long = element.geo.coordinates.coordinates[0];
 					var lat = element.geo.coordinates.coordinates[1];
+					var nome_utente = element.author_id;
 					var testo_tweet = element.text;
-					var latlong_text = [lat, long, testo_tweet];
+					var latlong_text = [lat, long, testo_tweet, nome_utente];
 					coordinate.push(latlong_text);
 				}
 				}
@@ -436,21 +515,19 @@
 			  
 			for(element of coordinate){
 
-				var myLatlng = new google.maps.LatLng(element[0], element[1]);
+				var cas1 = Math.random()/10000+1;
+				var cas2 = Math.random()/10000+1;
+				var myLatlng = new google.maps.LatLng((element[0]*cas1), (element[1]*cas2));
 				var marker = new google.maps.Marker({
 					position: myLatlng,
 					map: map,
 				});
 
-				var contentString = element[2];
+				var contentString = '<div class= "container_popup"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p></div>';
 
 				pop_up(contentString, map, marker);
-
-		 		
-
 			
 			}
-
 			
 		}
 
@@ -459,9 +536,9 @@
 
 				content: contentString,
 
-  				maxWidth: 230,
+  				maxWidth: 150,
 
-				maxHeight: 300,
+				maxHeight: 200,
 
 			});
 			  
@@ -504,21 +581,26 @@
 		<h1>Twitter Tracker</h1>
 		<div id="ricerca">
 			<!--Per scegliere il tipo di ricerca-->
-			<div id="conta"></div>
-			<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
-			<label for="mappa_visibile">visualizza mappa</label><br>
-			<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
-			<label for="wordcloud_visibile">visualizza wordcloud</label><br>
-			<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
-			<label for="search"> Ricerca</label><br>
-			<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta">
-			<label for="stream"> Stream</label><br>
-			
+			<!--<div id="conta"></div>-->
+			<div id="scelta_form">
+				<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
+				<label for="search"> Ricerca</label>
+				<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta" checked>
+				<label for="stream"> Stream</label><br>
+			</div>
+			<div id="scelta_visualizzazione">
+				<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked> 
+				<label class="vedi" for="tweet_visibile">visualizza tweet</label>
+				<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
+				<label class="vedi" for="mappa_visibile">visualizza mappa</label>
+				<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
+				<label class="vedi" for="wordcloud_visibile">visualizza wordcloud</label>
+			</div>
 			<!--form lookup-->
 			<form id="form_lookup" method="post" target="tweet" style="display:none">
-				<p>Ricerca: </p>
-				<input id="input" type="text" name="ricerca" ><br>
-				<input id="input2" type="text" name="numero_tw" ><br>
+				<!--<input id="input2" type="text" name="numero_tw" ><br>-->
+				<input id="input" type="text" name="ricerca" >
+				<input class="button" type="submit" onclick=richiesta_dati() value=""><br>
 				<input type="checkbox" id="persona" name="persona">
 				<label for="persona"> Username</label><br>
 				<!--<input type="checkbox" id="luogo" name="luogo"> //probabilmente non è utile
@@ -527,16 +609,16 @@
 				<label for="area geografica"> Area geografica</label><br>-->
 				<input type="checkbox" id="parola_chiave" name="parola_chiave">
 				<label for="parola chiave"> Parola chiave</label><br>
-				<input class="button" type="submit" onclick=richiesta_dati() value="Search">
+				
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--onclick=richiesta_dati()-->
 			</form>
 			<!--form streaming-->
-			<form id="form_stream" method="post" target="tweet" style="display:none">
-				<p>Stream: </p>
-				<input id="input_stream" type="text" name="ricerca" ><br>
-				<input id="input2_stream" type="text" name="numero_tw" ><br>
+			<form id="form_stream" method="post" target="tweet">
+				<input id="input_stream" type="text" name="ricerca">
+				<input class="button" type="submit"  value=""><br>
+				<!--<input id="input2_stream" type="text" name="numero_tw" ><br>-->
 				<input type="checkbox" id="persona_stream" name="persona">
 				<label for="persona_stream"> Username</label><br>
 				<input type="checkbox" id="luogo_stream" name="luogo">
@@ -545,11 +627,12 @@
 				<label for="area geografica stream"> Area geografica</label><br>
 				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave">
 				<label for="parola_chiave_stream"> Parola chiave</label><br>
-				<input class="button" type="submit"  value="Search">
+
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--onclick=richiesta_dati()-->
-    		</form>
+			</form>
+			
     		<p id="descrizione" style="display: none"> <!--Inserire in questo paragrafo i commenti e le spiegazioni all'utente-->
        			Per cercare: <br>
        			-una parola chiave scrivi la parola preceduta dal carattere #, <br>
