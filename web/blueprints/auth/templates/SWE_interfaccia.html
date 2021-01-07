@@ -4,10 +4,142 @@
 	<title>Twitter Tracker</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-	<link href="stiloso.css" rel="stylesheet">
+	<!--<link href="stiloso.css" rel="stylesheet">-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700' rel='stylesheet' type='text/css'>
 
 	<style type="text/css">
+		p {
+    		margin-top: 1vw;
+		}
+		h1 {
+    		text-align: center;
+    		margin-top: 1vw;
+    		margin-bottom: 1vw;
+    		color: #50ABF1;
+    		font-size: 3vw;
+    		font-family: Helvetica;
+		}
+		#scelta_form {
+ 			margin-left: 25%;
+ 			margin-right: 25%;
+		}
+		input[type="radio"]{
+ 			margin-left: 14vw;
+		}
+		#scelta_visualizzazione{
+ 			margin-left: 25%;
+		}
+		.vedi {
+ 			margin-right: 9.5vw;
+		}
+		#input, .button, #input_stream {
+			margin-left: 5%;
+    		height: 3vw;
+    		margin-top: 1vw;
+    		text-align: center;
+    		font-size: large;
+    		border-radius: 5px;
+    		border-color: rgb(0, 174, 255);
+    		font-family: Arial, Helvetica, serif;
+		}
+		input[type="checkbox"]{
+ 			margin-top: 1vw;
+		}
+		.testo_ricerca {
+			margin-left: 25%;
+    		margin-right: 25%;
+		}
+		#input_stream, #input {
+			width: 70%;
+		}
+		.button {
+    		width: 15%;
+    		margin-top: 1vw;
+    		font-weight: bold;
+    		background-color: blue;
+    		color: orange;
+		}
+		#descrizione {
+    		font-size: 0.6vw;
+    		text-align: center;
+		}
+		.filtro {
+			margin-left: 44.4%;
+		}
+		html, body {
+ 			margin: 0;
+ 			padding: 0;
+ 			height:100%;
+ 			font-family: open sans;
+  			width: 100%;
+		}
+
+		#container-map, #word_cloud, #visualizzazione_tw{
+   			width:100%;
+   			height:50%;
+   			position: relative;
+   			float: left;
+   			overflow: auto;
+		}
+
+		#map-canvas{
+ 			width:100%;
+ 			height:100%;
+ 			position:relative;
+ 			z-index:10;
+		}
+
+		iframe{
+ 			width: 95%;
+ 			height: 95%;
+		}
+
+		.tweet_container{
+ 			width: 97%;
+ 			height: 70px;
+ 			border: solid 2px #50ABF1;
+ 			border-radius: 10px;
+ 			margin: 10px;
+ 			display: flex;
+ 			align-items: center;
+ 			scrollbar-width: none;  /* Firefox */
+ 			overflow: scroll;
+		}
+
+		.tweet_userName{
+ 			height: 100%;
+ 			width: 250px;
+ 			border: solid 2px #50ABF1;
+ 			border-radius: 10px;
+ 			margin-right: 20px;
+ 			display: flex;
+ 			align-items: center;
+ 			justify-content: center;
+ 			background-color: #50ABF1;
+ 			color: white;
+ 			scrollbar-width: none;  /* Firefox */
+		}
+
+		.tweet_text{
+ 			height: 100%;
+ 			color: #50ABF1;
+ 			padding: 0px;
+ 			overflow: scroll;
+ 			scrollbar-width: none;  /* Firefox */
+		}
+
+		.container_popup{
+ 			background-color: white;
+		}
+
+		.testo_popup{
+ 			color: black;
+		}
+
+		::-webkit-scrollbar {
+ 			width: 0px;
+ 			height: 0px;
+		}
 	</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -141,6 +273,8 @@
 			document.getElementById("form_lookup").style.display = "none";
 		};
 
+		var file_export; //per esportare ed importare i dati
+
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
 			$.ajax({
@@ -149,7 +283,8 @@
 				data: $("#form_lookup").serialize(), // serializes the form's elements.
 				dataType: "json",
 				success: function (response) {
-					console.log('this is the response: ', response);
+					file_export = response;
+					//console.log('this is the response: ', response);
 					if (response.data !== "ERROR")
 						if (typeof response.data==="undefined")
 							alert('No results found')
@@ -180,7 +315,7 @@
 					aggiorna_wordcloud = true;
 				}
 			}
-			console.log('word_cloud_text: ', word_cloud_text);
+			//console.log('word_cloud_text: ', word_cloud_text);
 			if(aggiorna_wordcloud){
 		  		word_cloud(word_cloud_text);
 	  		}
@@ -194,9 +329,9 @@
 			var coordinate = [];
 			var aggiorna_coordinate = false;
 			if (typeof tweet.geo !== "undefined"){ //test mappa
-				console.log('GEO: ', tweet.geo);
+				//console.log('GEO: ', tweet.geo);
 				if (typeof tweet.geo.coordinates!=="undefined"){
-				console.log(typeof tweet.geo.coordinates.coordinates[0]);
+				//console.log(typeof tweet.geo.coordinates.coordinates[0]);
 				var long = tweet.geo.coordinates.coordinates[0];
 				var lat = tweet.geo.coordinates.coordinates[1];
 				var latlong = [lat, long];
@@ -261,13 +396,13 @@
 				}
 				}
 				if (typeof element.geo!=="undefined"){ //test mappa
-					console.log(element.geo);
+					//console.log(element.geo);
 				}
 			}
 			word_cloud(testo2);
 
 			//controllo risposte
-			console.log(dati);// show response from the server.
+			//console.log(dati);// show response from the server.
 
 			//visualizzazione tweet
 			var node = document.getElementById("visualizzazione_tw")
@@ -442,6 +577,30 @@
 			series.text = hashtags;
 		};
 
+		//import ed export
+		function esporta(){
+			if (typeof(Storage) !== "undefined") {
+				if ((typeof(document.getElementById("input")) !== "null") && (document.getElementById("input")!=="")){
+					//console.log(file_export);
+					console.log(document.getElementById("input").value);
+					var mystring = JSON.stringify(file_export);					
+					window.localStorage.setItem("$foulq", mystring);
+					//console.log(window.localStorage.setItem("$foulq", mystring));
+					//console.log(localStorage.getItem("$foulq"))
+				}
+				else {
+					console.log("non esporto")
+				}
+			} 
+			else {
+    			document.getElementById("json_ricevuto").innerHTML = "Sorry, your browser does not support web storage...";
+  			}
+		}
+		function importa(){
+			console.log(localStorage.getItem("$foulq"))
+			var myobj = JSON.parse(localStorage.getItem("$foulq"));
+			print_tweets(myobj);
+		}
 	</script>
   	</head>
   	<body>
@@ -457,24 +616,26 @@
 			</div>
 			<div id="scelta_visualizzazione">
 				<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked> 
-				<label class="vedi" for="tweet_visibile">visualizza tweet</label>
+				<label class="vedi" for="tweet_visibile">Visualizza tweet</label>
 				<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
-				<label class="vedi" for="mappa_visibile">visualizza mappa</label>
+				<label class="vedi" for="mappa_visibile">Visualizza mappa</label>
 				<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
-				<label class="vedi" for="wordcloud_visibile">visualizza wordcloud</label>
+				<label class="vedi" for="wordcloud_visibile">Visualizza wordcloud</label>
 			</div>
 			<!--form lookup-->
 			<form id="form_lookup" method="post" target="tweet" style="display:none">
 				<!--<input id="input2" type="text" name="numero_tw" ><br>-->
-				<input id="input" type="text" name="ricerca" >
-				<input class="button" type="submit" onclick=richiesta_dati() value=""><br>
-				<input type="checkbox" id="persona" name="persona">
+				<div class="testo_ricerca">
+					<input id="input" type="text" name="ricerca" >
+					<input class="button" type="submit" onclick=richiesta_dati() value="Search"><br>
+				</div>
+				<input type="checkbox" id="persona" name="persona" class="filtro">
 				<label for="persona"> Username</label><br>
-				<!--<input type="checkbox" id="luogo" name="luogo"> //probabilmente non è utile
+				<!--<input type="checkbox" id="luogo" name="luogo" class="filtro"> //probabilmente non è utile
 				<label for="luogo"> Luogo</label><br>
-				<input type="checkbox" id="area_geografica" name="area_geografica">
+				<input type="checkbox" id="area_geografica" name="area_geografica" class="filtro">
 				<label for="area geografica"> Area geografica</label><br>-->
-				<input type="checkbox" id="parola_chiave" name="parola_chiave">
+				<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro">
 				<label for="parola chiave"> Parola chiave</label><br>
 				
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
@@ -483,16 +644,18 @@
 			</form>
 			<!--form streaming-->
 			<form id="form_stream" method="post" target="tweet">
-				<input id="input_stream" type="text" name="ricerca">
-				<input class="button" type="submit"  value=""><br>
+				<div class="testo_ricerca">
+					<input id="input_stream" type="text" name="ricerca">
+					<input class="button" type="submit"  value="Search"><br>
+				</div>
 				<!--<input id="input2_stream" type="text" name="numero_tw" ><br>-->
-				<input type="checkbox" id="persona_stream" name="persona">
+				<input type="checkbox" id="persona_stream" name="persona" class="filtro">
 				<label for="persona_stream"> Username</label><br>
-				<input type="checkbox" id="luogo_stream" name="luogo">
+				<input type="checkbox" id="luogo_stream" name="luogo" class="filtro">
 				<label for="luogo_stream"> Luogo</label><br>
-				<input type="checkbox" id="area_geografica_stream" name="area_geografica">
+				<input type="checkbox" id="area_geografica_stream" name="area_geografica" class="filtro">
 				<label for="area geografica stream"> Area geografica</label><br>
-				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave">
+				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave" class="filtro">
 				<label for="parola_chiave_stream"> Parola chiave</label><br>
 
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
@@ -514,6 +677,10 @@
 	  	</div>
 		<div id="word_cloud" style="display:none">
 		</div>
-		<iframe name="tweet" style="display:none"></iframe>
+		<div id="importaEsporta">
+			<button onclick="esporta()" type="button">Esporta</button>
+			<button onclick="importa()" type="button">Importa</button>
+		</div>
+		<iframe name="tweet" id="json_ricevuto"></iframe>
   	</body>
 </html>
