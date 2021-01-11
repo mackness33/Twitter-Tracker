@@ -236,15 +236,6 @@
 			var visibiletweet = document.getElementById("tweet_visibile");
 			var visibilemap = document.getElementById("mappa_visibile");
 			var visibilecloud = document.getElementById("wordcloud_visibile");
-			if (visibiletweet.checked==null){
-				visibiletweet.checked=false;
-			}
-			if (visibilemap.checked==null){
-				visibilemap.checked=false;
-			}
-			if (visibilecloud.checked==null){
-				visibilecloud.checked=false;
-			}
 			if (visibiletweet.checked && visibilemap.checked && visibilecloud.checked) {
 				document.getElementById("visualizzazione_tw").style.width = "33%";
 				document.getElementById("container-map").style.width = "33%";
@@ -341,7 +332,7 @@
 			}
 
 			if(aggiorna_coordinate){
-				marker(coordinate);  //da aggiustare, per ora usare initialize
+				marker(coordinate);  //da aggiustare
 	  		}
 			//initialize (coordinate);
 		}
@@ -577,29 +568,81 @@
 			series.text = hashtags;
 		};
 
-		//import ed export
-		function esporta(){
-			if (typeof(Storage) !== "undefined") {
-				if ((typeof(document.getElementById("input")) !== "null") && (document.getElementById("input")!=="")){
-					//console.log(file_export);
-					console.log(document.getElementById("input").value);
-					var mystring = JSON.stringify(file_export);					
-					window.localStorage.setItem("$foulq", mystring);
-					//console.log(window.localStorage.setItem("$foulq", mystring));
-					//console.log(localStorage.getItem("$foulq"))
+		//alert export ed import
+		function AlertEsporta(){
+			var salva = prompt("Nome salvataggio");
+			if ((salva!="") && (salva!=null)){
+				if (window.localStorage.getItem(salva)==null){
+					esporta(salva);
 				}
 				else {
-					console.log("non esporto")
+					var conferma = confirm("Il nome utilizzato è già stato salvato, vuoi sovrascrivere?");
+					if (conferma==true){
+						esporta(salva);
+					}
+					else {
+						AlertEsporta();
+					}
 				}
+			}
+			else if (salva==""){
+				alert("Inserisci un nome per salvare");
+				AlertEsporta();
+			}
+		}
+
+		function AlertImporta(){
+			var carica = prompt("File da caricare");
+			if (carica!=null){
+				if ((window.localStorage.getItem(carica)==null) || (carica=="")){
+					alert("Cerca un file esistente");
+					AlertImporta();
+				}
+				else {
+					importa(carica);
+				}
+			}
+		}
+		if (window.localStorage.getItem("")==null){
+			var listaChiavi = [];	//contiene la lista di tutte le chiavi
+		}
+		else {
+			var listaChiavi = window.localStorage.getItem("");
+		}
+
+		//export ed import
+		function esporta(nome_chiave){
+			if (typeof(Storage) !== "undefined") {
+				var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva		
+				window.localStorage.setItem(nome_chiave, mystring);
+				listaChiavi.push(nome_chiave);
+				var elencoChiavi = "";
+				for (element of listaChiavi){
+					elencoChiavi = elencoChiavi + nome_chiave;
+				}
+				window.localStorage.setItem("", elencoChiavi)
 			} 
 			else {
     			document.getElementById("json_ricevuto").innerHTML = "Sorry, your browser does not support web storage...";
   			}
 		}
-		function importa(){
-			console.log(localStorage.getItem("$foulq"))
-			var myobj = JSON.parse(localStorage.getItem("$foulq"));
+		function importa(nome_chiave){
+			var myobj = JSON.parse(localStorage.getItem(nome_chiave));		//converte in json la stringa salvata prima
 			print_tweets(myobj);
+		}
+		//Per gestire direttamente i salvataggi
+		function VisualizzaSalvataggi(){
+			console.log(listaChiavi);
+			var alertvisuale = "";
+			for (element of listaChiavi){
+				alertvisuale = alertvisuale + element +"\n";
+			}
+			alert(alertvisuale);
+		}
+		//Per svuotare il local storage
+		function SvuotaSalvataggi(){
+			listaChiavi = [];
+			window.localStorage.clear();
 		}
 	</script>
   	</head>
@@ -646,7 +689,7 @@
 			<form id="form_stream" method="post" target="tweet">
 				<div class="testo_ricerca">
 					<input id="input_stream" type="text" name="ricerca">
-					<input class="button" type="submit"  value="Search"><br>
+					<input class="button" type="submit" value="Search"><br>
 				</div>
 				<!--<input id="input2_stream" type="text" name="numero_tw" ><br>-->
 				<input type="checkbox" id="persona_stream" name="persona" class="filtro">
@@ -678,8 +721,10 @@
 		<div id="word_cloud" style="display:none">
 		</div>
 		<div id="importaEsporta">
-			<button onclick="esporta()" type="button">Esporta</button>
-			<button onclick="importa()" type="button">Importa</button>
+			<button onclick="AlertEsporta()" type="button">Esporta</button>
+			<button onclick="AlertImporta()" type="button">Importa</button>
+			<button onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
+			<button onclick="SvuotaSalvataggi()" type="button">Elimina tutti i salvataggi</button>
 		</div>
 		<iframe name="tweet" id="json_ricevuto"></iframe>
   	</body>
