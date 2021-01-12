@@ -19,15 +19,57 @@
     		font-size: 3vw;
     		font-family: Helvetica;
 		}
+		#scelta_form input, #scelta_visualizzazione input {
+			opacity: 0;
+  			position: fixed;
+  			width: 0;
+		}
+		#scelta_form label, #scelta_visualizzazione label {
+			display: inline-block;
+    		background-color: #ddd;
+    		padding: 10px 20px;
+    		font-family: sans-serif, Arial;
+    		font-size: 16px;
+    		border: 2px solid rgb(25, 39, 52);
+    		border-radius: 4px;
+		}
+		#scelta_form label:hover, #scelta_visualizzazione label:hover {
+  			background-color: whitesmoke;
+			cursor: pointer;
+		}
+		#scelta_form input:focus + label {
+    		border: 1px solid rgb(0, 174, 255);
+		}
+		#scelta_visualizzazione input:focus + label {
+			border: 1px solid rgb(25, 39, 52);
+		}
+		#scelta_form input:checked + label{
+			background-color: rgb(25, 39, 52);
+		}
+		#scelta_visualizzazione input:checked + label {
+    		background-color: white;
+		}
 		#scelta_form {
- 			margin-left: 25%;
- 			margin-right: 25%;
+ 			margin-left: 36.3%;
+		}
+		#scelta_form label{
+			border: 2px solid rgb(0, 174, 255);
+			color: rgb(0, 174, 255);
+			font-weight: bolder;
 		}
 		input[type="radio"]{
  			margin-left: 14vw;
 		}
 		#scelta_visualizzazione{
  			margin-left: 25%;
+		}
+		#scelta_visualizzazione label{
+			font-size: 14px;
+			color: rgb(25, 39, 52);
+			font-weight: bolder;
+		}
+		.scegli {
+			margin-right: 13.5vw;
 		}
 		.vedi {
  			margin-right: 9.5vw;
@@ -67,6 +109,7 @@
 			margin-left: 44.4%;
 		}
 		html, body {
+			background-color: rgb(21, 32, 43);
  			margin: 0;
  			padding: 0;
  			height:100%;
@@ -83,10 +126,12 @@
 		}
 
 		#map-canvas{
- 			width:100%;
- 			height:100%;
- 			position:relative;
- 			z-index:10;
+ 			width: 99%;
+ 			height: 99%;
+ 			position: relative;
+ 			z-index: 10;
+			border: 1px solid rgb(0, 174, 255);
+			border-radius: 7px;
 		}
 
 		iframe{
@@ -95,6 +140,7 @@
 		}
 
 		.tweet_container{
+			background-color: white;
  			width: 97%;
  			height: 70px;
  			border: solid 2px #50ABF1;
@@ -140,9 +186,8 @@
  			width: 0px;
  			height: 0px;
 		}
-		/*PROVE*/
 		#start_stop {
-			margin-left: 10px;
+			margin-left: 25px;
 			color: #50ABF1;
 			font-weight: bold;
 		}
@@ -617,7 +662,7 @@
 			series.labels.template.tooltipText = "{word}: {value}";
 			series.fontFamily = "Courier New";
 			series.maxFontSize = am4core.percent(30);
-
+			series.labels.template.fill = am4core.color("rgb(0, 174, 255)");
 			series.text = hashtags;
 		};
 
@@ -712,9 +757,9 @@
 			<!--<div id="conta"></div>-->
 			<div id="scelta_form">
 				<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
-				<label for="search"> Ricerca</label>
+				<label class="scegli" for="search"> Ricerca</label>
 				<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta" checked>
-				<label for="stream"> Stream</label><br>
+				<label class="scegli" for="stream"> Stream</label><br>
 			</div>
 			<div id="scelta_visualizzazione">
 				<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked> 
