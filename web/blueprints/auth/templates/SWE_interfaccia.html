@@ -41,38 +41,33 @@
     		border: 1px solid rgb(0, 174, 255);
 		}
 		#scelta_visualizzazione input:focus + label {
-			border: 1px solid rgb(25, 39, 52);
+			border: 1px solid rgb(0, 174, 255);
 		}
 		#scelta_form input:checked + label{
 			background-color: rgb(25, 39, 52);
 		}
 		#scelta_visualizzazione input:checked + label {
+			border: 2px solid rgb(0, 174, 255);
     		background-color: white;
 		}
+		#gruppo {
+			margin-left: 10%;
+		}
 		#scelta_form {
- 			margin-left: 36.3%;
+			float: left;
+		}
+		#scelta_visualizzazione {
+			margin-left: 10vw;
 		}
 		#scelta_form label{
 			border: 2px solid rgb(0, 174, 255);
 			color: rgb(0, 174, 255);
 			font-weight: bolder;
 		}
-		input[type="radio"]{
- 			margin-left: 14vw;
-		}
-		#scelta_visualizzazione{
- 			margin-left: 25%;
-		}
 		#scelta_visualizzazione label{
-			font-size: 14px;
+			font-size: 12px;
 			color: rgb(25, 39, 52);
 			font-weight: bolder;
-		}
-		.scegli {
-			margin-right: 13.5vw;
-		}
-		.vedi {
- 			margin-right: 9.5vw;
 		}
 		#input, .button, #input_stream {
 			margin-left: 5%;
@@ -123,6 +118,7 @@
    			position: relative;
    			float: left;
    			overflow: auto;
+			scrollbar-width: none;
 		}
 
 		#map-canvas{
@@ -676,6 +672,8 @@
 				else {
 					var conferma = confirm("Il nome utilizzato è già stato salvato, vuoi sovrascrivere?");
 					if (conferma==true){
+						var indice_rimozione = listaChiavi.indexOf(salva);
+						listaChiavi.splice(indice_rimozione, 1);
 						esporta(salva);
 					}
 					else {
@@ -705,7 +703,11 @@
 			var listaChiavi = [];	//contiene la lista di tutte le chiavi
 		}
 		else {
-			var listaChiavi = window.localStorage.getItem("");
+			var stringa_listaChiavi = window.localStorage.getItem("");
+			var listaChiavi = [];
+			for(element of stringa_listaChiavi){
+				listaChiavi.push(element);
+			}
 		}
 
 		//export ed import
@@ -714,11 +716,12 @@
 				var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva		
 				window.localStorage.setItem(nome_chiave, mystring);
 				listaChiavi.push(nome_chiave);
-				var elencoChiavi = "";
-				for (element of listaChiavi){
-					elencoChiavi = elencoChiavi + nome_chiave;
+				if(window.localStorage.getItem("") == null){
+					window.localStorage.setItem("", nome_chiave);
 				}
-				window.localStorage.setItem("", elencoChiavi)
+				else{
+					window.localStorage.setItem("", window.localStorage.getItem("") + nome_chiave);
+				}
 			} 
 			else {
     			document.getElementById("json_ricevuto").innerHTML = "Sorry, your browser does not support web storage...";
@@ -755,19 +758,21 @@
 		<div id="ricerca">
 			<!--Per scegliere il tipo di ricerca-->
 			<!--<div id="conta"></div>-->
-			<div id="scelta_form">
-				<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
-				<label class="scegli" for="search"> Ricerca</label>
-				<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta" checked>
-				<label class="scegli" for="stream"> Stream</label><br>
-			</div>
-			<div id="scelta_visualizzazione">
-				<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked> 
-				<label class="vedi" for="tweet_visibile">Visualizza tweet</label>
-				<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
-				<label class="vedi" for="mappa_visibile">Visualizza mappa</label>
-				<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
-				<label class="vedi" for="wordcloud_visibile">Visualizza wordcloud</label>
+			<div id="gruppo">
+				<div id="scelta_form">
+					<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
+					<label class="scegli" for="search"> Ricerca</label>
+					<input type="radio" id="stream" onclick=visualizza_form_stream() name="scelta" checked>
+					<label class="scegli" for="stream"> Stream</label>
+				</div>
+				<div id="scelta_visualizzazione">
+					<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked> 
+					<label class="vedi" for="tweet_visibile">TWEET</label>
+					<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
+					<label class="vedi" for="mappa_visibile">MAPPA</label>
+					<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
+					<label class="vedi" for="wordcloud_visibile">WORDCLOUD</label>
+				</div>
 			</div>
 			<!--form lookup-->
 			<form id="form_lookup" method="post" target="tweet" style="display:none">
