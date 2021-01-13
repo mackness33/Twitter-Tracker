@@ -41,23 +41,27 @@
     		border: 1px solid rgb(0, 174, 255);
 		}
 		#scelta_visualizzazione input:focus + label {
-			border: 1px solid rgb(0, 174, 255);
+			border: 2px solid rgb(0, 174, 255);
 		}
 		#scelta_form input:checked + label{
 			background-color: rgb(25, 39, 52);
 		}
 		#scelta_visualizzazione input:checked + label {
 			border: 2px solid rgb(0, 174, 255);
+			color: rgb(0, 174, 255);
     		background-color: white;
 		}
 		#gruppo {
-			margin-left: 10%;
+			width: 567px;
+			margin-left: auto;
+			margin-right: auto;
 		}
 		#scelta_form {
 			float: left;
 		}
 		#scelta_visualizzazione {
-			margin-left: 10vw;
+			padding-top: 2.2px;
+			margin-left: 17vw;
 		}
 		#scelta_form label{
 			border: 2px solid rgb(0, 174, 255);
@@ -93,8 +97,8 @@
     		width: 15%;
     		margin-top: 1vw;
     		font-weight: bold;
-    		background-color: blue;
-    		color: orange;
+    		background-color: rgb(0, 174, 255);
+    		color: white;
 		}
 		#descrizione {
     		font-size: 0.6vw;
@@ -250,14 +254,13 @@
   	<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 	  
-  	<script type="text/javascript" charset="utf-8">
+	  <script type="text/javascript" charset="utf-8">
     	$(document).ready(function() {
 			// start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
 			var socket = io.connect(
 				'http://' + document.domain + ':' + location.port + '/base',
 				{reconnectionDelayMax: 10000}
 			);
-
 			// this is a callback that triggers when the "my response" event is emitted by the server.
 			// socket.on('my response', function(msg) {
 			//   $('#log').append('<p>Received: ' + msg.data + '</p>');
@@ -289,8 +292,8 @@
 				if (!socket.connected){
 					socket.connect();
 				}
-        	});
-     	});
+			});
+		 });
   	</script>
 	<script>
 
@@ -730,15 +733,21 @@
 		function importa(nome_chiave){
 			var myobj = JSON.parse(localStorage.getItem(nome_chiave));		//converte in json la stringa salvata prima
 			print_tweets(myobj);
-		}
-		//Per gestire direttamente i salvataggi
-		function VisualizzaSalvataggi(){
-			console.log(listaChiavi);
-			var alertvisuale = "";
-			for (element of listaChiavi){
-				alertvisuale = alertvisuale + element +"\n";
-			}
-			alert(alertvisuale);
+		}	
+		//per gestire i salvataggi
+		function VisualizzaSalvataggi() {
+  			$( "#dialog" ).dialog(function() {
+				var lista_salvataggi = document.createElement("ul");
+				for (element of listaChiavi){
+					var elemento_listasalvataggi = document.createElement("li");
+					var node_text = document.createTextNode(element);
+					elemento_listasalvataggi.appendChild(node_text);
+					lista_salvataggi.appendChild(elemento_listasalvataggi);
+				}
+				var testo = document.createTextNode("ciao");
+				var elenco = document.getElementById("elenco_salvataggi");
+				elenco.appendChild(testo);
+  			});
 		}
 		//Per svuotare il local storage
 		function SvuotaSalvataggi(){
@@ -746,6 +755,14 @@
 			window.localStorage.clear();
 		}
 	</script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
   	</head>
   	<body>
 		<h1>Twitter Tracker</h1>
@@ -834,7 +851,14 @@
 			<button onclick="AlertImporta()" type="button">Importa</button>
 			<button onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
 			<button onclick="SvuotaSalvataggi()" type="button">Elimina tutti i salvataggi</button>
+			<button onclick="provolonazzo()" type="button">prova</button>
 		</div>
-		<iframe name="tweet" id="json_ricevuto"></iframe>
+		<iframe name="tweet" id="json_ricevuto"></iframe>	
+		<!--Finestra di dialogo per salvataggi-->
+		<div id="dialog" title="Salvataggi" style="display:none;">
+			<div id="elenco_salvataggi"></div><hr>
+			<button onclick="importa_direttamente()" type="button">IMPORTA</button>
+			<button onclick="elimina()" type="button">ELIMINA</button>
+		</div>
   	</body>
 </html>
