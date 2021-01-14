@@ -19,6 +19,42 @@
     		font-size: 3vw;
     		font-family: Helvetica;
 		}
+		#importaEsporta {
+			margin-top: -60px;
+			float: right;
+			margin-right: 20px;
+		}
+		#sopra {
+			padding-bottom: 10px;
+		}
+		.bottoni_1 {
+			background-color:rgb(25, 39, 52);
+			border:1px solid white;
+			display:inline-block;
+			cursor:pointer;
+			color: white;
+			font-family:Arial;
+			font-size:10px;
+			padding:5px 20px;
+			text-decoration:none;
+			float: left;
+		}
+		.bottoni_1:hover {
+			background:linear-gradient(to bottom, rgb(25, 39, 52) 5%, rgb(0, 174, 255) 100%);
+			background-color: rgb(0, 174, 255);
+		}
+		.bottoni_1:active {
+			position:relative;
+			top:1px;
+		}
+		#bottone_sinistro {
+			border-bottom-left-radius: 5px;
+			border-top-left-radius: 5px;
+		}
+		#bottone_destro {
+			border-bottom-right-radius: 5px;
+			border-top-right-radius: 5px;
+		}
 		#scelta_form input, #scelta_visualizzazione input {
 			opacity: 0;
   			position: fixed;
@@ -668,15 +704,22 @@
 		//alert export ed import
 		function AlertEsporta(){
 			var salva = prompt("Nome salvataggio");
-			if ((salva!="") && (salva!=null)){
+			if ((!non_valid(salva)) && (salva!=null)){
 				if (window.localStorage.getItem(salva)==null){
 					esporta(salva);
 				}
 				else {
 					var conferma = confirm("Il nome utilizzato è già stato salvato, vuoi sovrascrivere?");
 					if (conferma==true){
+						//aggiorna lista chiavi
 						var indice_rimozione = listaChiavi.indexOf(salva);
 						listaChiavi.splice(indice_rimozione, 1);
+						//aggiorna local storage
+						var locsto = window.localStorage.getItem("");
+						var sottostringa = salva + ",";
+						locsto = locsto.replace(sottostringa, "");
+						window.localStorage.setItem("",locsto);
+						//esporta
 						esporta(salva);
 					}
 					else {
@@ -684,12 +727,33 @@
 					}
 				}
 			}
-			else if (salva==""){
+			else if (non_valid(salva)){
 				alert("Inserisci un nome per salvare");
 				AlertEsporta();
 			}
 		}
 
+		function non_valid(stringa) {
+			return (vuota(stringa) || virgola(stringa));
+		}
+
+		function vuota(stringa){
+            var index = 0;
+            while (stringa[index]!=null){
+                if ((stringa[index]!=" ") && (stringa[index]!="")){
+                    return false;
+                }
+                else{
+                    index = index + 1;
+                }
+            }
+            return true;
+		}
+		
+		function virgola(stringa){
+			return (stringa.indexOf(",") != -1);
+		}
+		
 		function AlertImporta(){
 			var carica = prompt("File da caricare");
 			if (carica!=null){
@@ -702,15 +766,28 @@
 				}
 			}
 		}
-		if (window.localStorage.getItem("")==null){
-			var listaChiavi = [];	//contiene la lista di tutte le chiavi
-		}
-		else {
-			var stringa_listaChiavi = window.localStorage.getItem("");
-			var listaChiavi = [];
-			for(element of stringa_listaChiavi){
-				listaChiavi.push(element);
+
+		var listaChiavi = inizializza_listaChiavi();
+
+		function inizializza_listaChiavi() {
+			if (window.localStorage.getItem("")==null){
+				var lista = [];	//contiene la lista di tutte le chiavi
 			}
+			else {
+				var stringa_listaChiavi = window.localStorage.getItem("");
+				var chiave_corrente = "";
+				var lista = [];
+				for(element of stringa_listaChiavi){
+					if(element == ",") {
+						lista.push(chiave_corrente);
+						chiave_corrente = "";
+					}
+					else {
+						chiave_corrente = chiave_corrente + element;
+					}
+				}
+			}
+			return lista;
 		}
 
 		//export ed import
@@ -720,10 +797,10 @@
 				window.localStorage.setItem(nome_chiave, mystring);
 				listaChiavi.push(nome_chiave);
 				if(window.localStorage.getItem("") == null){
-					window.localStorage.setItem("", nome_chiave);
+					window.localStorage.setItem("", nome_chiave + ",");
 				}
 				else{
-					window.localStorage.setItem("", window.localStorage.getItem("") + nome_chiave);
+					window.localStorage.setItem("", window.localStorage.getItem("") + nome_chiave + ",");
 				}
 			} 
 			else {
@@ -736,23 +813,31 @@
 		}	
 		//per gestire i salvataggi
 		function VisualizzaSalvataggi() {
-  			$( "#dialog" ).dialog(function() {
-				var lista_salvataggi = document.createElement("ul");
-				for (element of listaChiavi){
-					var elemento_listasalvataggi = document.createElement("li");
-					var node_text = document.createTextNode(element);
-					elemento_listasalvataggi.appendChild(node_text);
-					lista_salvataggi.appendChild(elemento_listasalvataggi);
-				}
-				var testo = document.createTextNode("ciao");
-				var elenco = document.getElementById("elenco_salvataggi");
-				elenco.appendChild(testo);
-  			});
+			$( "#dialog" ).dialog(function() {});
+			var lista_salvataggi = document.getElementById("elenco_salvataggi");
+			while (lista_salvataggi.hasChildNodes()){
+				lista_salvataggi.removeChild(lista_salvataggi.lastChild);
+			}
+			for (element of listaChiavi){
+				var elemento_listasalvataggi = document.createElement("p");
+				elemento_listasalvataggi.setAttribute("class", "nome_salvataggio");
+				var node_text = document.createTextNode(element);
+				elemento_listasalvataggi.appendChild(node_text);
+				lista_salvataggi.appendChild(elemento_listasalvataggi);
+			}				
 		}
 		//Per svuotare il local storage
 		function SvuotaSalvataggi(){
-			listaChiavi = [];
-			window.localStorage.clear();
+			var conf = confirm("Vuoi eliminare tutti i salvataggi?");
+			if(conf) {
+				listaChiavi = [];
+				window.localStorage.clear();
+			}
+		}
+
+		function prova() {
+			console.log(listaChiavi);
+			console.log(window.localStorage.getItem(""));
 		}
 	</script>
 
@@ -765,13 +850,24 @@
 
   	</head>
   	<body>
-		<h1>Twitter Tracker</h1>
-		<form id="start_stop" action="#">STREAM
-			<div class="switch">
-			  <input id="switch-1" type="checkbox" class="switch-input" />
-			  <label for="switch-1" class="switch-label">Switch</label>
+		<div id="sopra">
+			<h1>Twitter Tracker</h1>
+			<div id="importaEsporta">
+				<button class="bottoni_1" id="bottone_sinistro" onclick="AlertEsporta()" type="button">Esporta</button>
+				<button class="bottoni_1" onclick="AlertImporta()" type="button">Importa</button>
+				<button class="bottoni_1" onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
+				<button class="bottoni_1" id="bottone_destro" onclick="SvuotaSalvataggi()" type="button">Elimina tutti i salvataggi</button>
 			</div>
-		  </form>
+			<form id="start_stop" action="#">STREAM
+				<div class="switch">
+				  <input id="switch-1" type="checkbox" class="switch-input" />
+				  <label for="switch-1" class="switch-label">Switch</label>
+				</div>
+			</form>
+		</div>
+
+		<button class="bottoni_1" onclick="prova()" type="button">prova</button>
+
 		<div id="ricerca">
 			<!--Per scegliere il tipo di ricerca-->
 			<!--<div id="conta"></div>-->
@@ -846,14 +942,7 @@
 	  	</div>
 		<div id="word_cloud" style="display:none">
 		</div>
-		<div id="importaEsporta">
-			<button onclick="AlertEsporta()" type="button">Esporta</button>
-			<button onclick="AlertImporta()" type="button">Importa</button>
-			<button onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
-			<button onclick="SvuotaSalvataggi()" type="button">Elimina tutti i salvataggi</button>
-			<button onclick="provolonazzo()" type="button">prova</button>
-		</div>
-		<iframe name="tweet" id="json_ricevuto"></iframe>	
+		<iframe name="tweet" id="json_ricevuto" style="display:none;"></iframe>	
 		<!--Finestra di dialogo per salvataggi-->
 		<div id="dialog" title="Salvataggi" style="display:none;">
 			<div id="elenco_salvataggi"></div><hr>
