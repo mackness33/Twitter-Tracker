@@ -390,11 +390,13 @@
 		function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
 			document.getElementById("form_lookup").style.display = "block"; 
 			document.getElementById("form_stream").style.display = "none";
+			document.getElementById("start_stop").style.display = "none";
 		};
 
 		function visualizza_form_stream(){ //vedi sopra
 			document.getElementById("form_stream").style.display = "block";
 			document.getElementById("form_lookup").style.display = "none";
+			document.getElementById("start_stop").style.display = "block";
 		};
 
 		var file_export; //per esportare ed importare i dati
@@ -703,6 +705,7 @@
 
 		//alert export ed import
 		function AlertEsporta(){
+			$( "#dialog" ).dialog( "close" );
 			var salva = prompt("Nome salvataggio");
 			if ((!non_valid(salva)) && (salva!=null)){
 				if (window.localStorage.getItem(salva)==null){
@@ -818,27 +821,72 @@
 			while (lista_salvataggi.hasChildNodes()){
 				lista_salvataggi.removeChild(lista_salvataggi.lastChild);
 			}
+			var numero_salvataggio = 1;
 			for (element of listaChiavi){
-				var elemento_listasalvataggi = document.createElement("p");
+				var elemento_listasalvataggi = document.createElement("label");
 				elemento_listasalvataggi.setAttribute("class", "nome_salvataggio");
+				elemento_listasalvataggi.setAttribute("for", "salvataggio" + numero_salvataggio);
 				var node_text = document.createTextNode(element);
 				elemento_listasalvataggi.appendChild(node_text);
-				lista_salvataggi.appendChild(elemento_listasalvataggi);
-			}				
+				var check_salvataggi = document.createElement("input");
+				check_salvataggi.setAttribute("id", "salvataggio" + numero_salvataggio);
+				check_salvataggi.setAttribute("class", "spunta_salvataggi");
+				check_salvataggi.setAttribute("type", "radio");
+				check_salvataggi.setAttribute("name", "scegli_salvataggio");
+				var container_salvataggi = document.createElement("div");
+				container_salvataggi.setAttribute("class", "save");
+				container_salvataggi.appendChild(check_salvataggi);
+				container_salvataggi.appendChild(elemento_listasalvataggi);
+				lista_salvataggi.appendChild(container_salvataggi);
+				numero_salvataggio=numero_salvataggio+1;
+			}			
+		}
+		function importa_direttamente(){
+			var scorri_salvataggio = document.getElementById("elenco_salvataggi").firstChild;
+			var flag = true;
+			while (flag && (scorri_salvataggio!=null)){
+				scorri_salvataggio = scorri_salvataggio.nextSibling;
+				if (!(typeof (scorri_salvataggio.checked===undefined)) && (scorri_salvataggio.checked)) {
+					flag==false;
+				}
+			}
+			if (scorri_salvataggio.checked){
+				var nome_chiave = scorri_salvataggio.nextSibling.innerHTML;
+				importa(nome_chiave);
+				$( "#dialog" ).dialog( "close" );
+			}
+			else {
+				alert("Seleziona un salvataggio");
+			}
+		}	
+		function elimina(){
+			var scorri_salvataggio = document.getElementById("elenco_salvataggi").firstChild;
+			while ((scorri_salvataggio.checked==null) || (!scorri_salvataggio.checked)){
+					scorri_salvataggio = scorri_salvataggio.nextSibling;
+			}
+			if (scorri_salvataggio.checked){
+				var nome_chiave = scorri_salvataggio.nextSibling.innerHTML;
+				window.localStorage.removeItem(nome_chiave);
+				var indice_rimozione = listaChiavi.indexOf(nome_chiave);
+				listaChiavi.splice(indice_rimozione, 1);
+				/*document.getElementById("elenco_salvataggi").removeChild(scorri_salvataggio.nextSibling);
+				document.getElementById("elenco_salvataggi").removeChild(scorri_salvataggio);*/
+				$( "#dialog" ).dialog( "close" );
+			}
+			else {
+				alert("Seleziona un salvataggio");
+			}
 		}
 		//Per svuotare il local storage
 		function SvuotaSalvataggi(){
 			var conf = confirm("Vuoi eliminare tutti i salvataggi?");
 			if(conf) {
-				listaChiavi = [];
-				window.localStorage.clear();
+				listaChiavi = [];	//svuota la lista delle chiavi salvate
+				window.localStorage.clear();	//pulisce il local storage
+				$( "#dialog" ).dialog( "close" );	//chiude la finestra di dialogo
 			}
 		}
 
-		function prova() {
-			console.log(listaChiavi);
-			console.log(window.localStorage.getItem(""));
-		}
 	</script>
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -855,19 +903,15 @@
 			<div id="importaEsporta">
 				<button class="bottoni_1" id="bottone_sinistro" onclick="AlertEsporta()" type="button">Esporta</button>
 				<button class="bottoni_1" onclick="AlertImporta()" type="button">Importa</button>
-				<button class="bottoni_1" onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
-				<button class="bottoni_1" id="bottone_destro" onclick="SvuotaSalvataggi()" type="button">Elimina tutti i salvataggi</button>
+				<button class="bottoni_1" id="bottone_destro" onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
 			</div>
 			<form id="start_stop" action="#">STREAM
 				<div class="switch">
-				  <input id="switch-1" type="checkbox" class="switch-input" />
+				  <input id="switch-1" type="checkbox" class="switch-input" checked>
 				  <label for="switch-1" class="switch-label">Switch</label>
 				</div>
 			</form>
 		</div>
-
-		<button class="bottoni_1" onclick="prova()" type="button">prova</button>
-
 		<div id="ricerca">
 			<!--Per scegliere il tipo di ricerca-->
 			<!--<div id="conta"></div>-->
@@ -948,6 +992,7 @@
 			<div id="elenco_salvataggi"></div><hr>
 			<button onclick="importa_direttamente()" type="button">IMPORTA</button>
 			<button onclick="elimina()" type="button">ELIMINA</button>
+			<button onclick="SvuotaSalvataggi()" type="button">Elimina tutto</button>
 		</div>
   	</body>
 </html>
