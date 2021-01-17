@@ -3,7 +3,10 @@
   <head>
 	<title>Twitter Tracker</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="/resources/demos/style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--<link href="stiloso.css" rel="stylesheet">-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700' rel='stylesheet' type='text/css'>
 
@@ -18,6 +21,17 @@
     		color: #50ABF1;
     		font-size: 3vw;
     		font-family: Helvetica;
+		}
+		.filtro + label, #coordinate_geo {
+			color: #50ABF1;
+		}
+		#coordinate_geo {
+			padding-bottom: 0.7vw;
+			width: 436px;
+			margin: 0 auto;
+		}
+		#latitudine, #longitudine{
+			margin-top: 0.5vw;
 		}
 		#importaEsporta {
 			margin-top: -60px;
@@ -275,6 +289,9 @@
   			left: 24px;
 		}
 	</style>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<!--finestra dialogo-->
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
@@ -291,12 +308,13 @@
 	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 	  
 	  <script type="text/javascript" charset="utf-8">
-    	$(document).ready(function() {
-			// start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
-			var socket = io.connect(
+	  		var socket = io.connect(
 				'http://' + document.domain + ':' + location.port + '/base',
 				{reconnectionDelayMax: 10000}
 			);
+    	$(document).ready(function() {
+			// start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
+
 			// this is a callback that triggers when the "my response" event is emitted by the server.
 			// socket.on('my response', function(msg) {
 			//   $('#log').append('<p>Received: ' + msg.data + '</p>');
@@ -329,10 +347,26 @@
 					socket.connect();
 				}
 			});
-		 });
+		});
+		//Per fermare/avviare lo stream dal pulsante switch
+			function ferma_stream1() {
+				if(pulisci_schermo){
+					remove_old_tweets();
+				}
+				if(document.getElementById("switch-1").checked) {
+					if (!socket.connected){
+						socket.connect();
+					}
+				}
+				else {
+					if (!socket.disconnected){
+						socket.disconnect()
+						console.log("disconnected");
+					}
+				}
+			}
   	</script>
 	<script>
-
 		//gestione visualizzazione tweet&mappa&worldcloud
 		function vedi_tweet(){
 			var visibiletweet = document.getElementById("tweet_visibile");
@@ -399,7 +433,8 @@
 			document.getElementById("start_stop").style.display = "block";
 		};
 
-		var file_export; //per esportare ed importare i dati
+		var file_export; //per esportare ed importare i dati di ricerca
+		var pulisci_schermo = false; //controllo se pulire lo schermo
 
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
@@ -420,6 +455,8 @@
 						alert(response.text);
 				}
 			});
+			pulisci_schermo = true;
+			document.getElementById("switch-1").checked = false;
 		}
 
 		let word_cloud_text = "";
@@ -473,7 +510,6 @@
 		}
 
 		function tweet_visualization(tweet){
-			let node = document.getElementById("visualizzazione_tw")
 
 			let container = document.createElement("div");
 			container.setAttribute("id", "tweet" + tweet.id);
@@ -500,6 +536,7 @@
 			while (node.hasChildNodes()) {
 				node.removeChild(node.lastChild);
 			}
+			pulisci_schermo = false;
 		}
 
 		function print_tweets(data){
@@ -705,34 +742,38 @@
 
 		//alert export ed import
 		function AlertEsporta(){
-			$( "#dialog" ).dialog( "close" );
-			var salva = prompt("Nome salvataggio");
-			if ((!non_valid(salva)) && (salva!=null)){
-				if (window.localStorage.getItem(salva)==null){
-					esporta(salva);
-				}
-				else {
-					var conferma = confirm("Il nome utilizzato è già stato salvato, vuoi sovrascrivere?");
-					if (conferma==true){
-						//aggiorna lista chiavi
-						var indice_rimozione = listaChiavi.indexOf(salva);
-						listaChiavi.splice(indice_rimozione, 1);
-						//aggiorna local storage
-						var locsto = window.localStorage.getItem("");
-						var sottostringa = salva + ",";
-						locsto = locsto.replace(sottostringa, "");
-						window.localStorage.setItem("",locsto);
-						//esporta
+			document.getElementById("switch-1").checked = false;
+			ferma_stream1();
+			try{$( "#dialog" ).dialog( "close" );}
+			finally{
+				var salva = prompt("Nome salvataggio");
+				if ((!non_valid(salva)) && (salva!=null)){
+					if (window.localStorage.getItem(salva)==null){
 						esporta(salva);
 					}
 					else {
-						AlertEsporta();
+						var conferma = confirm("Il nome utilizzato è già stato salvato, vuoi sovrascrivere?");
+						if (conferma==true){
+							//aggiorna lista chiavi
+							var indice_rimozione = listaChiavi.indexOf(salva);
+							listaChiavi.splice(indice_rimozione, 1);
+							//aggiorna local storage
+							var locsto = window.localStorage.getItem("");
+							var sottostringa = salva + ",";
+							locsto = locsto.replace(sottostringa, "");
+							window.localStorage.setItem("",locsto);
+							//esporta
+							esporta(salva);
+						}
+						else {
+							AlertEsporta();
+						}
 					}
 				}
-			}
-			else if (non_valid(salva)){
-				alert("Inserisci un nome per salvare");
-				AlertEsporta();
+				else if (non_valid(salva)){
+					alert("Inserisci un nome per salvare");
+					AlertEsporta();
+				}
 			}
 		}
 
@@ -811,11 +852,14 @@
   			}
 		}
 		function importa(nome_chiave){
+			pulisci_schermo = true;
 			var myobj = JSON.parse(localStorage.getItem(nome_chiave));		//converte in json la stringa salvata prima
 			print_tweets(myobj);
 		}	
 		//per gestire i salvataggi
 		function VisualizzaSalvataggi() {
+			document.getElementById("switch-1").checked = false;
+			ferma_stream1();
 			$( "#dialog" ).dialog(function() {});
 			var lista_salvataggi = document.getElementById("elenco_salvataggi");
 			while (lista_salvataggi.hasChildNodes()){
@@ -842,41 +886,41 @@
 			}			
 		}
 		function importa_direttamente(){
-			var scorri_salvataggio = document.getElementById("elenco_salvataggi").firstChild;
-			var flag = true;
-			while (flag && (scorri_salvataggio!=null)){
-				scorri_salvataggio = scorri_salvataggio.nextSibling;
-				if (!(typeof (scorri_salvataggio.checked===undefined)) && (scorri_salvataggio.checked)) {
-					flag==false;
-				}
-			}
-			if (scorri_salvataggio.checked){
-				var nome_chiave = scorri_salvataggio.nextSibling.innerHTML;
-				importa(nome_chiave);
-				$( "#dialog" ).dialog( "close" );
-			}
-			else {
-				alert("Seleziona un salvataggio");
-			}
-		}	
+            var scorri_salvataggio = document.getElementsByClassName("spunta_salvataggi");
+            var index = 0;
+            while ((scorri_salvataggio[index].checked==false) && (scorri_salvataggio[index]!=null)){
+                index = index + 1;
+            }
+            if (scorri_salvataggio[index].checked){
+                var nome_chiave = scorri_salvataggio[index].nextSibling.innerHTML;
+                importa(nome_chiave);
+                $( "#dialog" ).dialog( "close" );
+            }
+            else {
+                alert("Seleziona un salvataggio");
+            }
+        }	
 		function elimina(){
-			var scorri_salvataggio = document.getElementById("elenco_salvataggi").firstChild;
-			while ((scorri_salvataggio.checked==null) || (!scorri_salvataggio.checked)){
-					scorri_salvataggio = scorri_salvataggio.nextSibling;
-			}
-			if (scorri_salvataggio.checked){
-				var nome_chiave = scorri_salvataggio.nextSibling.innerHTML;
-				window.localStorage.removeItem(nome_chiave);
-				var indice_rimozione = listaChiavi.indexOf(nome_chiave);
-				listaChiavi.splice(indice_rimozione, 1);
-				/*document.getElementById("elenco_salvataggi").removeChild(scorri_salvataggio.nextSibling);
-				document.getElementById("elenco_salvataggi").removeChild(scorri_salvataggio);*/
-				$( "#dialog" ).dialog( "close" );
-			}
-			else {
-				alert("Seleziona un salvataggio");
-			}
-		}
+            var scorri_salvataggio = document.getElementsByClassName("spunta_salvataggi");
+            var index = 0;
+            while ((scorri_salvataggio[index].checked==false) && (scorri_salvataggio[index]!=null)){
+                index = index + 1;
+            }
+            if (scorri_salvataggio[index].checked){
+                var nome_chiave = scorri_salvataggio[index].nextSibling.innerHTML
+                window.localStorage.removeItem(nome_chiave);
+                var indice_rimozione = listaChiavi.indexOf(nome_chiave);
+                listaChiavi.splice(indice_rimozione, 1);
+                var locsto = window.localStorage.getItem("");
+                var sottostringa = nome_chiave + ",";
+                locsto = locsto.replace(sottostringa, "");
+                window.localStorage.setItem("",locsto);
+                $( "#dialog" ).dialog( "close" );
+            }
+            else {
+                alert("Seleziona un salvataggio");
+            }
+        }
 		//Per svuotare il local storage
 		function SvuotaSalvataggi(){
 			var conf = confirm("Vuoi eliminare tutti i salvataggi?");
@@ -886,15 +930,17 @@
 				$( "#dialog" ).dialog( "close" );	//chiude la finestra di dialogo
 			}
 		}
-
 	</script>
-
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="/resources/demos/style.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script>
+		function visualizza_input(){
+			if(document.getElementById("area_geografica_stream").checked){
+				document.getElementById("coordinate_geo").style.display = "block";
+			}
+			else{
+				document.getElementById("coordinate_geo").style.display = "none";
+			}
+		}
+	</script>
 
   	</head>
   	<body>
@@ -902,12 +948,12 @@
 			<h1>Twitter Tracker</h1>
 			<div id="importaEsporta">
 				<button class="bottoni_1" id="bottone_sinistro" onclick="AlertEsporta()" type="button">Esporta</button>
-				<button class="bottoni_1" onclick="AlertImporta()" type="button">Importa</button>
-				<button class="bottoni_1" id="bottone_destro" onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>
+				<button class="bottoni_1" id="bottone_destro" onclick="VisualizzaSalvataggi()" type="button">Importa</button>
+				<!--<button class="bottoni_1" id="bottone_destro" onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>-->
 			</div>
 			<form id="start_stop" action="#">STREAM
 				<div class="switch">
-				  <input id="switch-1" type="checkbox" class="switch-input" checked>
+				  <input id="switch-1" onclick="ferma_stream1()" type="checkbox" class="switch-input" checked>
 				  <label for="switch-1" class="switch-label">Switch</label>
 				</div>
 			</form>
@@ -962,14 +1008,20 @@
 				<label for="persona_stream"> Username</label><br>
 				<input type="checkbox" id="luogo_stream" name="luogo" class="filtro">
 				<label for="luogo_stream"> Luogo</label><br>
-				<input type="checkbox" id="area_geografica_stream" name="area_geografica" class="filtro">
-				<label for="area geografica stream"> Area geografica</label><br>
 				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave" class="filtro">
 				<label for="parola_chiave_stream"> Parola chiave</label><br>
-
-    			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
-				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
-				<!--onclick=richiesta_dati()-->
+				<input type="checkbox" id="area_geografica_stream" onclick="visualizza_input()" name="area_geografica" class="filtro">
+				<label for="area geografica stream"> Area geografica</label><br>
+				<div id="coordinate_geo">
+					<div id="latitudine">&nbsp;Latitudini:
+						<input type="text" name="lat1">
+						<input type="text" name="lat2"><br>
+					</div>
+					<div id="longitudine">&nbsp;Longitudini:
+						<input type="text" name="long1">
+						<input type="text" name="long2"><br>
+					</div>
+				</div>
 			</form>
 			
     		<p id="descrizione" style="display: none"> <!--Inserire in questo paragrafo i commenti e le spiegazioni all'utente-->
@@ -992,7 +1044,7 @@
 			<div id="elenco_salvataggi"></div><hr>
 			<button onclick="importa_direttamente()" type="button">IMPORTA</button>
 			<button onclick="elimina()" type="button">ELIMINA</button>
-			<button onclick="SvuotaSalvataggi()" type="button">Elimina tutto</button>
+			<button onclick="SvuotaSalvataggi()" type="button">ELIMINA TUTTO</button>
 		</div>
   	</body>
 </html>
