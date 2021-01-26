@@ -285,11 +285,10 @@
 	<script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
 	<script src="https://cdn.amcharts.com/lib/4/plugins/wordCloud.js"></script>
 	<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
-	
 	<!--librerie socket-->
   	<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
-	  
+
 	  <script type="text/javascript" charset="utf-8">
     	$(document).ready(function() {
 			// start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
@@ -316,7 +315,7 @@
 				socket.disconnect()
 				console.log(msg);
 			});
-		
+
 			$('form#form_lookup').submit(function(event) {
 				if (!socket.disconnected)
 					socket.emit('disconnect_server');
@@ -355,9 +354,9 @@
 			ridimensiona();
 		}
 		function vedi_wordcloud(){
-			var visibilecloud = document.getElementById("wordcloud_visibile");			
+			var visibilecloud = document.getElementById("wordcloud_visibile");
             if (visibilecloud.checked){
-				document.getElementById("word_cloud").style.display = "block";				
+				document.getElementById("word_cloud").style.display = "block";
             }
             else {
                 document.getElementById("word_cloud").style.display = "none";
@@ -377,18 +376,18 @@
 			else if ((visibiletweet.checked && visibilemap.checked) || (visibiletweet.checked && visibilecloud.checked) || (visibilecloud.checked && visibilemap.checked)){
 				document.getElementById("visualizzazione_tw").style.width = "50%";
 				document.getElementById("container-map").style.width = "50%";
-				document.getElementById("word_cloud").style.width = "50%";	
+				document.getElementById("word_cloud").style.width = "50%";
 			}
 			else {
 				document.getElementById("visualizzazione_tw").style.width = "100%";
 				document.getElementById("container-map").style.width = "100%";
 				document.getElementById("word_cloud").style.width = "100%";
-			}	
+			}
 		}
 
 		//gestione form da mostrare
 		function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
-			document.getElementById("form_lookup").style.display = "block"; 
+			document.getElementById("form_lookup").style.display = "block";
 			document.getElementById("form_stream").style.display = "none";
 		};
 
@@ -408,7 +407,7 @@
 				dataType: "json",
 				success: function (response) {
 					file_export = response;
-					//console.log('this is the response: ', response);
+					console.log('this is the response: ', response);
 					if (response.data !== "ERROR")
 						if (typeof response.data==="undefined")
 							alert('No results found')
@@ -429,7 +428,7 @@
 	  		//document.getElementById("conta").innerHTML = conta_tweet;
 			let tweet = response.data;
 			let aggiorna_wordcloud = false;
-			
+
 
 			if (typeof tweet.entities !== "undefined"){
 				if (typeof tweet.entities.hashtags !== "undefined"){
@@ -637,8 +636,8 @@
 
 		//funzione per marker
 		function marker(coordinate, map){
-			
-			  
+
+
 			for(element of coordinate){
 
 				var cas1 = Math.random()/10000+1;
@@ -652,9 +651,9 @@
 				var contentString = '<div class= "container_popup"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p></div>';
 
 				pop_up(contentString, map, marker);
-			
+
 			}
-			
+
 		}
 
 		function pop_up(contentString, map, marker){
@@ -667,7 +666,7 @@
 				maxHeight: 200,
 
 			});
-			  
+
 			google.maps.event.addListener(marker, 'click', function() {
 
 				infowindow.open(map,marker);
@@ -749,11 +748,11 @@
             }
             return true;
 		}
-		
+
 		function virgola(stringa){
 			return (stringa.indexOf(",") != -1);
 		}
-		
+
 		function AlertImporta(){
 			var carica = prompt("File da caricare");
 			if (carica!=null){
@@ -793,7 +792,7 @@
 		//export ed import
 		function esporta(nome_chiave){
 			if (typeof(Storage) !== "undefined") {
-				var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva		
+				var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
 				window.localStorage.setItem(nome_chiave, mystring);
 				listaChiavi.push(nome_chiave);
 				if(window.localStorage.getItem("") == null){
@@ -802,7 +801,7 @@
 				else{
 					window.localStorage.setItem("", window.localStorage.getItem("") + nome_chiave + ",");
 				}
-			} 
+			}
 			else {
     			document.getElementById("json_ricevuto").innerHTML = "Sorry, your browser does not support web storage...";
   			}
@@ -810,7 +809,7 @@
 		function importa(nome_chiave){
 			var myobj = JSON.parse(localStorage.getItem(nome_chiave));		//converte in json la stringa salvata prima
 			print_tweets(myobj);
-		}	
+		}
 		//per gestire i salvataggi
 		function VisualizzaSalvataggi() {
 			$( "#dialog" ).dialog(function() {});
@@ -824,7 +823,7 @@
 				var node_text = document.createTextNode(element);
 				elemento_listasalvataggi.appendChild(node_text);
 				lista_salvataggi.appendChild(elemento_listasalvataggi);
-			}				
+			}
 		}
 		//Per svuotare il local storage
 		function SvuotaSalvataggi(){
@@ -879,11 +878,11 @@
 					<label class="scegli" for="stream"> Stream</label>
 				</div>
 				<div id="scelta_visualizzazione">
-					<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked> 
+					<input type="checkbox" onclick="vedi_tweet()" id="tweet_visibile" checked>
 					<label class="vedi" for="tweet_visibile">TWEET</label>
-					<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile"> 
+					<input type="checkbox" onclick="vedi_mappa()" id="mappa_visibile">
 					<label class="vedi" for="mappa_visibile">MAPPA</label>
-					<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile"> 
+					<input type="checkbox" onclick="vedi_wordcloud()" id="wordcloud_visibile">
 					<label class="vedi" for="wordcloud_visibile">WORDCLOUD</label>
 				</div>
 			</div>
@@ -902,7 +901,7 @@
 				<label for="area geografica"> Area geografica</label><br>-->
 				<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro">
 				<label for="parola chiave"> Parola chiave</label><br>
-				
+
     			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--onclick=richiesta_dati()-->
@@ -927,7 +926,7 @@
 				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
 				<!--onclick=richiesta_dati()-->
 			</form>
-			
+
     		<p id="descrizione" style="display: none"> <!--Inserire in questo paragrafo i commenti e le spiegazioni all'utente-->
        			Per cercare: <br>
        			-una parola chiave scrivi la parola preceduta dal carattere #, <br>
@@ -942,7 +941,7 @@
 	  	</div>
 		<div id="word_cloud" style="display:none">
 		</div>
-		<iframe name="tweet" id="json_ricevuto" style="display:none;"></iframe>	
+		<iframe name="tweet" id="json_ricevuto" style="display:none;"></iframe>
 		<!--Finestra di dialogo per salvataggi-->
 		<div id="dialog" title="Salvataggi" style="display:none;">
 			<div id="elenco_salvataggi"></div><hr>
