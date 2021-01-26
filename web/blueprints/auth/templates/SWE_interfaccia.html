@@ -10,7 +10,7 @@
 	<!--<link href="stiloso.css" rel="stylesheet">-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700' rel='stylesheet' type='text/css'>
 
-	<style type="text/css">
+	<!-- <style type="text/css">
 		p {
     		margin-top: 1vw;
 		}
@@ -288,8 +288,8 @@
 		.switch-input:checked + .switch-label::after {
   			left: 24px;
 		}
-	</style>
-
+	</style> -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stiloso.css') }}">
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
@@ -460,6 +460,18 @@
 			pulisci_schermo = true;
 			document.getElementById("switch-1").checked = false;
 		}
+
+    // var js
+    // $.ajax({
+    //   url: "css/stiloso.css",
+    //   dataType: "css",
+    //   success: function(response) {
+    //     $.each(response.Users, function(item) {
+    //       informationArray.push(item);
+    //     });
+    //     informationArray.push("success");
+    //   }
+    // });
 
 		let word_cloud_text = "";
 

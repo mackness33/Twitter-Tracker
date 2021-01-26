@@ -10,7 +10,7 @@ import os
 # from service.jwt_manager import jwt_manager
 # from service.Dash.app import DashApp
 
-app = Flask(__name__, instance_relative_config=True, static_url_path="", static_folder="assets")
+app = Flask(__name__, instance_relative_config=True, static_url_path="/static", static_folder="static")
 ACCESS_TOKEN = 'AAAAAAAAAAAAAAAAAAAAANF7JwEAAAAAJZ%2FhX9vWi1gLPT9hNP%2BcDgnAZ78%3D3AliDJrlgWUu1DFPNJTCYW44DzrXXk9ep4V9FTmSi5ZFxcu937'
 
 app.config.update(
