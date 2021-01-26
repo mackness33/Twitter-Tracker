@@ -328,6 +328,8 @@
 			});
 
 			socket.on('tweet', function(msg) {
+				esporta_stream.push(msg);
+				Json_stream.data=esporta_stream;
 				console.log(msg);
 				print_stream_tweets(msg)
 			});
@@ -353,6 +355,7 @@
 		//Per fermare/avviare lo stream dal pulsante switch
 			function ferma_stream1() {
 				if(pulisci_schermo){
+					word_cloud_text = "";
 					remove_old_tweets();
 				}
 				if(document.getElementById("switch-1").checked) {
@@ -436,7 +439,11 @@
 		};
 
 		var file_export; //per esportare ed importare i dati di ricerca
+		var esporta_stream = []; //per esportare lo stream
 		var pulisci_schermo = false; //controllo se pulire lo schermo
+		var Json_stream = function() {
+				this.data = []
+			}
 
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
@@ -745,7 +752,17 @@
 		//alert export ed import
 		function AlertEsporta(){
 			document.getElementById("switch-1").checked = false;
+			if(pulisci_schermo){
+				pulisci_schermo = false;	//evita di cancellare lo schermo
+				var tmp = true;
+			}
+			else{
+				var tmp = false;
+			}
 			ferma_stream1();
+			if (tmp) {
+				pulisci_schermo = true;
+			}
 			try{$( "#dialog" ).dialog( "close" );}
 			finally{
 				var salva = prompt("Nome salvataggio");
@@ -839,7 +856,9 @@
 		//export ed import
 		function esporta(nome_chiave){
 			if (typeof(Storage) !== "undefined") {
-				var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
+				//var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
+				var mystring = JSON.stringify(Json_stream);
+				console.log(mystring);
 				window.localStorage.setItem(nome_chiave, mystring);
 				listaChiavi.push(nome_chiave);
 				if(window.localStorage.getItem("") == null){
@@ -861,7 +880,17 @@
 		//per gestire i salvataggi
 		function VisualizzaSalvataggi() {
 			document.getElementById("switch-1").checked = false;
+			if(pulisci_schermo){
+				pulisci_schermo = false;	//evita di cancellare lo schermo
+				var tmp = true;
+			}
+			else{
+				var tmp = false;
+			}
 			ferma_stream1();
+			if (tmp) {
+				pulisci_schermo = true;
+			}
 			$( "#dialog" ).dialog(function() {});
 			var lista_salvataggi = document.getElementById("elenco_salvataggi");
 			while (lista_salvataggi.hasChildNodes()){
@@ -1014,7 +1043,7 @@
 				<label for="parola_chiave_stream"> Parola chiave</label><br>
 				<input type="checkbox" id="area_geografica_stream" onclick="visualizza_input()" name="area_geografica" class="filtro">
 				<label for="area geografica stream"> Area geografica</label><br>
-				<div id="coordinate_geo">
+				<div id="coordinate_geo" style="display:none;">
 					<div id="latitudine">&nbsp;Latitudini:
 						<input type="text" name="lat1">
 						<input type="text" name="lat2"><br>
