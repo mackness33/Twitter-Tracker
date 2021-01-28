@@ -7,289 +7,8 @@
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" href="/resources/demos/style.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!--<link href="stiloso.css" rel="stylesheet">-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700' rel='stylesheet' type='text/css'>
-
-	<!-- <style type="text/css">
-		p {
-    		margin-top: 1vw;
-		}
-		h1 {
-    		text-align: center;
-    		margin-top: 1vw;
-    		margin-bottom: 1vw;
-    		color: #50ABF1;
-    		font-size: 3vw;
-    		font-family: Helvetica;
-		}
-		.filtro + label, #coordinate_geo {
-			color: #50ABF1;
-		}
-		#coordinate_geo {
-			padding-bottom: 0.7vw;
-			width: 436px;
-			margin: 0 auto;
-		}
-		#latitudine, #longitudine{
-			margin-top: 0.5vw;
-		}
-		#importaEsporta {
-			margin-top: -60px;
-			float: right;
-			margin-right: 20px;
-		}
-		#sopra {
-			padding-bottom: 10px;
-		}
-		.bottoni_1 {
-			background-color:rgb(25, 39, 52);
-			border:1px solid white;
-			display:inline-block;
-			cursor:pointer;
-			color: white;
-			font-family:Arial;
-			font-size:10px;
-			padding:5px 20px;
-			text-decoration:none;
-			float: left;
-		}
-		.bottoni_1:hover {
-			background:linear-gradient(to bottom, rgb(25, 39, 52) 5%, rgb(0, 174, 255) 100%);
-			background-color: rgb(0, 174, 255);
-		}
-		.bottoni_1:active {
-			position:relative;
-			top:1px;
-		}
-		#bottone_sinistro {
-			border-bottom-left-radius: 5px;
-			border-top-left-radius: 5px;
-		}
-		#bottone_destro {
-			border-bottom-right-radius: 5px;
-			border-top-right-radius: 5px;
-		}
-		#scelta_form input, #scelta_visualizzazione input {
-			opacity: 0;
-  			position: fixed;
-  			width: 0;
-		}
-		#scelta_form label, #scelta_visualizzazione label {
-			display: inline-block;
-    		background-color: #ddd;
-    		padding: 10px 20px;
-    		font-family: sans-serif, Arial;
-    		font-size: 16px;
-    		border: 2px solid rgb(25, 39, 52);
-    		border-radius: 4px;
-		}
-		#scelta_form label:hover, #scelta_visualizzazione label:hover {
-  			background-color: whitesmoke;
-			cursor: pointer;
-		}
-		#scelta_form input:focus + label {
-    		border: 1px solid rgb(0, 174, 255);
-		}
-		#scelta_visualizzazione input:focus + label {
-			border: 2px solid rgb(0, 174, 255);
-		}
-		#scelta_form input:checked + label{
-			background-color: rgb(25, 39, 52);
-		}
-		#scelta_visualizzazione input:checked + label {
-			border: 2px solid rgb(0, 174, 255);
-			color: rgb(0, 174, 255);
-    		background-color: white;
-		}
-		#gruppo {
-			width: 567px;
-			margin-left: auto;
-			margin-right: auto;
-		}
-		#scelta_form {
-			float: left;
-		}
-		#scelta_visualizzazione {
-			padding-top: 2.2px;
-			margin-left: 17vw;
-		}
-		#scelta_form label{
-			border: 2px solid rgb(0, 174, 255);
-			color: rgb(0, 174, 255);
-			font-weight: bolder;
-		}
-		#scelta_visualizzazione label{
-			font-size: 12px;
-			color: rgb(25, 39, 52);
-			font-weight: bolder;
-		}
-		#input, .button, #input_stream {
-			margin-left: 5%;
-    		height: 3vw;
-    		margin-top: 1vw;
-    		text-align: center;
-    		font-size: large;
-    		border-radius: 5px;
-    		border-color: rgb(0, 174, 255);
-    		font-family: Arial, Helvetica, serif;
-		}
-		input[type="checkbox"]{
- 			margin-top: 1vw;
-		}
-		.testo_ricerca {
-			margin-left: 25%;
-    		margin-right: 25%;
-		}
-		#input_stream, #input {
-			width: 70%;
-		}
-		.button {
-    		width: 15%;
-    		margin-top: 1vw;
-    		font-weight: bold;
-    		background-color: rgb(0, 174, 255);
-    		color: white;
-		}
-		#descrizione {
-    		font-size: 0.6vw;
-    		text-align: center;
-		}
-		.filtro {
-			margin-left: 44.4%;
-		}
-		html, body {
-			background-color: rgb(21, 32, 43);
- 			margin: 0;
- 			padding: 0;
- 			height:100%;
- 			font-family: open sans;
-  			width: 100%;
-		}
-
-		#container-map, #word_cloud, #visualizzazione_tw{
-   			width:100%;
-   			height:50%;
-   			position: relative;
-   			float: left;
-   			overflow: auto;
-			scrollbar-width: none;
-		}
-
-		#map-canvas{
- 			width: 99%;
- 			height: 99%;
- 			position: relative;
- 			z-index: 10;
-			border: 1px solid rgb(0, 174, 255);
-			border-radius: 7px;
-		}
-
-		iframe{
- 			width: 95%;
- 			height: 95%;
-		}
-
-		.tweet_container{
-			background-color: white;
- 			width: 97%;
- 			height: 70px;
- 			border: solid 2px #50ABF1;
- 			border-radius: 10px;
- 			margin: 10px;
- 			display: flex;
- 			align-items: center;
- 			scrollbar-width: none;  /* Firefox */
- 			overflow: scroll;
-		}
-
-		.tweet_userName{
- 			height: 100%;
- 			width: 250px;
- 			border: solid 2px #50ABF1;
- 			border-radius: 10px;
- 			margin-right: 20px;
- 			display: flex;
- 			align-items: center;
- 			justify-content: center;
- 			background-color: #50ABF1;
- 			color: white;
- 			scrollbar-width: none;  /* Firefox */
-		}
-
-		.tweet_text{
- 			height: 100%;
- 			color: #50ABF1;
- 			padding: 0px;
- 			overflow: scroll;
- 			scrollbar-width: none;  /* Firefox */
-		}
-
-		.container_popup{
- 			background-color: white;
-		}
-
-		.testo_popup{
- 			color: black;
-		}
-
-		::-webkit-scrollbar {
- 			width: 0px;
- 			height: 0px;
-		}
-		#start_stop {
-			margin-left: 25px;
-			color: #50ABF1;
-			font-weight: bold;
-		}
-        .switch {
-  			position: relative;
-  			display: inline-block;
-		}
-		.switch-input {
- 			display: none;
-		}
-		.switch-label {
- 			display: block;
-  			width: 48px;
-  			height: 24px;
-  			text-indent: -150%;
-  			clip: rect(0 0 0 0);
-  			color: transparent;
-  			user-select: none;
-		}
-		.switch-label::before, .switch-label::after {
-  			content: "";
-  			display: block;
-  			position: absolute;
-  			cursor: pointer;
-		}
-		.switch-label::before {
-  			width: 100%;
-  			height: 100%;
-  			background-color: #dedede;
-  			border-radius: 9999em;
-  			-webkit-transition: background-color 0.25s ease;
-  			transition: background-color 0.25s ease;
-		}
-		.switch-label::after {
-  			top: 0;
-  			left: 0;
-  			width: 24px;
-  			height: 24px;
-  			border-radius: 50%;
- 			background-color: #fff;
-  			box-shadow: 0 0 2px rgba(0, 0, 0, 0.45);
-  			-webkit-transition: left 0.25s ease;
-  			transition: left 0.25s ease;
-		}
-		.switch-input:checked + .switch-label::before {
-  			background-color: #89c12d;
-		}
-		.switch-input:checked + .switch-label::after {
-  			left: 24px;
-		}
-	</style> -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stiloso.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stiloso.css') }}">
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
@@ -328,8 +47,6 @@
 			});
 
 			socket.on('tweet', function(msg) {
-				esporta_stream.push(msg);
-				Json_stream.data=esporta_stream;
 				console.log(msg);
 				print_stream_tweets(msg)
 			});
@@ -354,6 +71,7 @@
 		});
 		//Per fermare/avviare lo stream dal pulsante switch
 			function ferma_stream1() {
+				console.log(esporta_stream);
 				if(pulisci_schermo){
 					word_cloud_text = "";
 					remove_old_tweets();
@@ -441,9 +159,6 @@
 		var file_export; //per esportare ed importare i dati di ricerca
 		var esporta_stream = []; //per esportare lo stream
 		var pulisci_schermo = false; //controllo se pulire lo schermo
-		var Json_stream = function() {
-				this.data = []
-			}
 
 		/*gestione tweet raccolti*/
 		function richiesta_dati(){
@@ -468,25 +183,22 @@
 			document.getElementById("switch-1").checked = false;
 		}
 
-    // var js
-    // $.ajax({
-    //   url: "css/stiloso.css",
-    //   dataType: "css",
-    //   success: function(response) {
-    //     $.each(response.Users, function(item) {
-    //       informationArray.push(item);
-    //     });
-    //     informationArray.push("success");
-    //   }
-    // });
-
 		let word_cloud_text = "";
 
 		//var conta_tweet = 0; //da valutare
 
+		var esporta_stream = {
+				data : []
+			}
+
 		function print_stream_tweets(response){
 			//conta_tweet = conta_tweet + 1;
-	  		//document.getElementById("conta").innerHTML = conta_tweet;
+			//document.getElementById("conta").innerHTML = conta_tweet;
+			console.log(esporta_stream);
+			esporta_stream.data.push(response.data);
+			console.log(esporta_stream);
+			console.log(JSON.stringify(esporta_stream));
+			console.log(JSON.parse(JSON.stringify(esporta_stream)));
 			let tweet = response.data;
 			let aggiorna_wordcloud = false;
 
@@ -869,7 +581,8 @@
 		function esporta(nome_chiave){
 			if (typeof(Storage) !== "undefined") {
 				//var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
-				var mystring = JSON.stringify(Json_stream);
+				var mystring = JSON.stringify(esporta_stream);
+				console.log(esporta_stream);
 				console.log(mystring);
 				window.localStorage.setItem(nome_chiave, mystring);
 				listaChiavi.push(nome_chiave);
