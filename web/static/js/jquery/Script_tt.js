@@ -143,7 +143,7 @@ function richiesta_dati(){
             esporta_stream = {
                 data : [],
                 includes : {
-                    place : []
+                    places : []
                 }
             }
             console.log('this is the response: ', response);
@@ -167,7 +167,7 @@ let word_cloud_text = "";
 var esporta_stream = {  //per esportare lo stream
         data : [],
         includes : {
-            place : []
+            places : []
         }
     }
 
@@ -178,10 +178,10 @@ function print_stream_tweets(response){
     console.log(esporta_stream);
     esporta_stream.data.push(response.data);
     if (typeof response.includes === "undefined") {
-        esporta_stream.includes.place.push("nessuna location")
+        esporta_stream.includes.places.push("nessuna location")
     } 
     else {
-        esporta_stream.includes.place.push(response.includes.place)
+        esporta_stream.includes.places.push(response.includes.places)
     }
     console.log(esporta_stream);
     let tweet = response.data;
