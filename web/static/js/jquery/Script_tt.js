@@ -1,4 +1,4 @@
-                                                        //SOCKET
+//SOCKET
 
 var socket = io.connect(
 	'http://' + document.domain + ':' + location.port + '/base',
@@ -59,7 +59,7 @@ function ferma_stream1() {
 		}
 }
 
-                                            //gestione visualizzazione tweet&mappa&worldcloud
+//gestione visualizzazione tweet&mappa&worldcloud
 function vedi_tweet(){
     var visibiletweet = document.getElementById("tweet_visibile");
     if (visibiletweet.checked){
@@ -126,8 +126,8 @@ function visualizza_form_stream(){ //vedi sopra
 };
 
 var file_export; //per esportare ed importare i dati di ricerca
-var esporta_stream = []; //per esportare lo stream
 var pulisci_schermo = false; //controllo se pulire lo schermo
+var isStream = true; //controlla se il file da esportare è uno stream o una ricerca
 
 /*gestione tweet raccolti*/
 function richiesta_dati(){
@@ -137,7 +137,15 @@ function richiesta_dati(){
         data: $("#form_lookup").serialize(), // serializes the form's elements.
         dataType: "json",
         success: function (response) {
+            console.log(response);
+            isStream = false;
             file_export = response;
+            esporta_stream = {
+                data : [],
+                includes : {
+                    place : []
+                }
+            }
             console.log('this is the response: ', response);
             if (response.data !== "ERROR")
                 if (typeof response.data==="undefined")
@@ -156,18 +164,26 @@ let word_cloud_text = "";
 
 //var conta_tweet = 0; //da valutare
 
-var esporta_stream = {
-        data : []
+var esporta_stream = {  //per esportare lo stream
+        data : [],
+        includes : {
+            place : []
+        }
     }
 
 function print_stream_tweets(response){
     //conta_tweet = conta_tweet + 1;
     //document.getElementById("conta").innerHTML = conta_tweet;
+    isStream = true;
     console.log(esporta_stream);
     esporta_stream.data.push(response.data);
+    if (typeof response.includes === "undefined") {
+        esporta_stream.includes.place.push("nessuna location")
+    } 
+    else {
+        esporta_stream.includes.place.push(response.includes.place)
+    }
     console.log(esporta_stream);
-    console.log(JSON.stringify(esporta_stream));
-    console.log(JSON.parse(JSON.stringify(esporta_stream)));
     let tweet = response.data;
     let aggiorna_wordcloud = false;
 
@@ -193,20 +209,24 @@ function print_stream_tweets(response){
     // maps
     var coordinate = [];
     var aggiorna_coordinate = false;
-    if (typeof tweet.geo !== "undefined"){ //test mappa
-        //console.log('GEO: ', tweet.geo);
+    if (typeof tweet.geo !== "undefined"){ 
         if (typeof tweet.geo.coordinates!=="undefined"){
-        //console.log(typeof tweet.geo.coordinates.coordinates[0]);
-        var long = tweet.geo.coordinates.coordinates[0];
-        var lat = tweet.geo.coordinates.coordinates[1];
-        var latlong = [lat, long];
+            var long = tweet.geo.coordinates.coordinates[0];
+            var lat = tweet.geo.coordinates.coordinates[1];
+        }
+        else if (typeof tweet.includes !== "undefined") {
+            if (typeof tweet.includes.places !== "undefined") {
+                var long = (tweet.includes.places.geo.bbox[0]+tweet.includes.places.geo.bbox[2])/2;
+                var lat = (tweet.includes.places.geo.bbox[1]+tweet.includes.places.geo.bbox[3])/2;
+            }
+        }
+        var latlong = [lat, long, tweet.text, tweet.author_id];
         coordinate.push(latlong);
         aggiorna_coordinate = true;
-        }
     }
 
     if(aggiorna_coordinate){
-        marker(coordinate);  //da aggiustare
+        initialize(coordinate);  //da aggiustare
       }
     //initialize (coordinate);
 }
@@ -254,11 +274,11 @@ function print_tweets(data){
         pk = 0;
         if (typeof element.entities!=="undefined"){
             if (typeof element.entities.hashtags!=="undefined"){
-            while (typeof element.entities.hashtags[pk]!=="undefined"){
-                testo2 = testo2 + " " + element.entities.hashtags[pk].tag;
-            pk=pk+1;
+                while (typeof element.entities.hashtags[pk]!=="undefined"){
+                    testo2 = testo2 + " " + element.entities.hashtags[pk].tag;
+                    pk=pk+1;
+                }
             }
-        }
         }
         if (typeof element.geo!=="undefined"){ //test mappa
             //console.log(element.geo);
@@ -295,18 +315,24 @@ function print_tweets(data){
 
     //colloca su mappa
     var coordinate = [];
+    var indicePlace = -1;
     for (element of dati){
         if (typeof element.geo!=="undefined"){
-        if (typeof element.geo.coordinates!=="undefined"){
-            console.log(typeof element.geo.coordinates.coordinates[0]);
-            var long = element.geo.coordinates.coordinates[0];
-            var lat = element.geo.coordinates.coordinates[1];
-            var nome_utente = element.author_id;
-            var testo_tweet = element.text;
-            var latlong_text = [lat, long, testo_tweet, nome_utente];
-            coordinate.push(latlong_text);
+            indicePlace = indicePlace + 1;
+            if (typeof element.geo.coordinates!=="undefined"){
+                console.log(typeof element.geo.coordinates.coordinates[0]);
+                var long = element.geo.coordinates.coordinates[0];
+                var lat = element.geo.coordinates.coordinates[1];
+            }
+            else {
+                    var long = (data.includes.places[indicePlace].geo.bbox[0] + data.includes.places[indicePlace].geo.bbox[2])/2;
+                    var lat = (data.includes.places[indicePlace].geo.bbox[1] + data.includes.places[indicePlace].geo.bbox[3])/2;
+            }
         }
-        }
+        var nome_utente = element.author_id;
+        var testo_tweet = element.text;
+        var latlong_text = [lat, long, testo_tweet, nome_utente];
+        coordinate.push(latlong_text);
     }
 
     initialize (coordinate);
@@ -549,10 +575,11 @@ function inizializza_listaChiavi() {
 //export ed import
 function esporta(nome_chiave){
     if (typeof(Storage) !== "undefined") {
-        //var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
-        var mystring = JSON.stringify(esporta_stream);
-        console.log(esporta_stream);
-        console.log(mystring);
+        if (isStream) {
+            var mystring = JSON.stringify(esporta_stream);
+        } else {
+            var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
+        }
         window.localStorage.setItem(nome_chiave, mystring);
         listaChiavi.push(nome_chiave);
         if(window.localStorage.getItem("") == null){
