@@ -179,7 +179,7 @@ function print_stream_tweets(response){
     esporta_stream.data.push(response.data);
     if (typeof response.includes === "undefined") {
         esporta_stream.includes.places.push("nessuna location")
-    } 
+    }
     else {
         esporta_stream.includes.places.push(response.includes.places)
     }
@@ -209,7 +209,7 @@ function print_stream_tweets(response){
     // maps
     var coordinate = [];
     var aggiorna_coordinate = false;
-    if (typeof tweet.geo !== "undefined"){ 
+    if (typeof tweet.geo !== "undefined"){
         if (typeof tweet.geo.coordinates!=="undefined"){
             var long = tweet.geo.coordinates.coordinates[0];
             var lat = tweet.geo.coordinates.coordinates[1];
