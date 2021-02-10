@@ -41,7 +41,7 @@ class TwitterService():
                     return 'users', 'ids'
                 else:
                     return 'users/by/username', 'usernames'
-        
+
         input = self._build_input(query)
         lu_type, field = by(input)
         url = self._create_url(lu_type, field, input)                          # set up the url
@@ -50,6 +50,13 @@ class TwitterService():
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
 
+    #---------TIMELINE----------
+    def timeline(self, username, fields):
+        response = self.users_lookup(query=username, fields={"user.fields": "name"})
+        url = self._base_url + "users/" + response["data"][0]["id"] + "/tweets"
+        headers = self._create_headers()                         # set up the headers
+        json_response = self._request_resources(url, headers)  # set up the response as a json
+        return json_response
 
     #---------RECENT SEARCH----------
     def recent_search(self, query, fields):

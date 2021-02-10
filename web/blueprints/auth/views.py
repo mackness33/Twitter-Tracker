@@ -62,9 +62,11 @@ def base_post():
         return T.tweets_lookup(id=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id&place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type&user.fields=description,created_at,name,username"})
     elif search_type == '@':
         # BUG: results with undefined fields
-        return T.users_lookup(query=data, fields={})
+        return T.users_lookup(query=data, fields={"user.fields": "description,created_at,name,url"})
     elif search_type == '$':
         return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+    elif search_type == '£':
+        return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
 
     return {"text": 'Error on input', "data": 'ERROR', "status_code": 413}
 
