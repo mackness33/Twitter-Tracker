@@ -1,8 +1,8 @@
-//SOCKET
+ //SOCKET
 
-var socket = io.connect(
-	'http://' + document.domain + ':' + location.port + '/base',
-	{reconnectionDelayMax: 10000}
+ var socket = io.connect(
+    'http://' + document.domain + ':' + location.port + '/base',
+    {reconnectionDelayMax: 10000}
 );
 $(document).ready(function() {
     // start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
@@ -12,51 +12,51 @@ $(document).ready(function() {
     // });
 
     socket.on('connection_done', function() {
-		console.log('successfully connected to the SocketServer...');
-		socket.emit('start_sample', {data: 'Starting sample stream'});
-	});
+        console.log('successfully connected to the SocketServer...');
+        socket.emit('start_sample', {data: 'Starting sample stream'});
+    });
 
-	socket.on('tweet', function(msg) {
-		console.log(msg);
-		print_stream_tweets(msg)
-	});
+    socket.on('tweet', function(msg) {
+        console.log(msg);
+        print_stream_tweets(msg)
+    });
 
-	socket.on('disconnect_client', function(msg) {
-		socket.disconnect()
-		console.log(msg);
-	});
+    socket.on('disconnect_client', function(msg) {
+        socket.disconnect()
+        console.log(msg);
+    });
 
-	$('form#form_lookup').submit(function(event) {
-		if (!socket.disconnected)
-			socket.emit('disconnect_server');
-	});
+    $('form#form_lookup').submit(function(event) {
+        if (!socket.disconnected)
+            socket.emit('disconnect_server');
+    });
 
     $('form#form_stream').submit(function(event) {
-		console.log('retryin to connect')
-		remove_old_tweets()
-		if (!socket.connected){
-			socket.connect();
-		}
-	});
+        console.log('retryin to connect')
+        remove_old_tweets()
+        if (!socket.connected){
+            socket.connect();
+        }
+    });
 });
 //Per fermare/avviare lo stream dal pulsante switch
 function ferma_stream1() {
-	console.log(esporta_stream);
-		if(pulisci_schermo){
-			word_cloud_text = "";
-			remove_old_tweets();
-		}
-		if(document.getElementById("switch-1").checked) {
-			if (!socket.connected){
-				socket.connect();
-			}
-		}
-		else {
-			if (!socket.disconnected){
-				socket.disconnect()
-				console.log("disconnected");
-			}
-		}
+    console.log(esporta_stream);
+        if(pulisci_schermo){
+            word_cloud_text = "";
+            remove_old_tweets();
+        }
+        if(document.getElementById("switch-1").checked) {
+            if (!socket.connected){
+                socket.connect();
+            }
+        }
+        else {
+            if (!socket.disconnected){
+                socket.disconnect()
+                console.log("disconnected");
+            }
+        }
 }
 
 //gestione visualizzazione tweet&mappa&worldcloud
@@ -171,17 +171,14 @@ var esporta_stream = {  //per esportare lo stream
         }
     }
 
+var coordinate = [];
 function print_stream_tweets(response){
     //conta_tweet = conta_tweet + 1;
     //document.getElementById("conta").innerHTML = conta_tweet;
     isStream = true;
-    console.log(esporta_stream);
     esporta_stream.data.push(response.data);
-    if (typeof response.includes === "undefined") {
-        esporta_stream.includes.places.push("nessuna location")
-    }
-    else {
-        esporta_stream.includes.places.push(response.includes.places)
+    if (typeof response.includes !== "undefined") {
+        esporta_stream.includes.places.push(response.includes.places[0])
     }
     console.log(esporta_stream);
     let tweet = response.data;
@@ -207,17 +204,17 @@ function print_stream_tweets(response){
     tweet_visualization(tweet)
 
     // maps
-    var coordinate = [];
+    
     var aggiorna_coordinate = false;
-    if (typeof tweet.geo !== "undefined"){
+    if (typeof tweet.geo !== "undefined"){ 
         if (typeof tweet.geo.coordinates!=="undefined"){
             var long = tweet.geo.coordinates.coordinates[0];
             var lat = tweet.geo.coordinates.coordinates[1];
         }
-        else if (typeof tweet.includes !== "undefined") {
-            if (typeof tweet.includes.places !== "undefined") {
-                var long = (tweet.includes.places.geo.bbox[0]+tweet.includes.places.geo.bbox[2])/2;
-                var lat = (tweet.includes.places.geo.bbox[1]+tweet.includes.places.geo.bbox[3])/2;
+        else if (typeof response.includes !== "undefined") {
+            if (typeof response.includes.places !== "undefined"){
+                var long = (response.includes.places[0].geo.bbox[0]+response.includes.places[0].geo.bbox[2])/2;
+                var lat = (response.includes.places[0].geo.bbox[1]+response.includes.places[0].geo.bbox[3])/2;
             }
         }
         var latlong = [lat, long, tweet.text, tweet.author_id];
@@ -266,7 +263,6 @@ function print_tweets(data){
     var dati = data.data
     //word cloud;
     var testo2 = "";
-    var geo = true;   //test mappa
     if (typeof dati==="undefined")
         return
 
@@ -280,14 +276,8 @@ function print_tweets(data){
                 }
             }
         }
-        if (typeof element.geo!=="undefined"){ //test mappa
-            //console.log(element.geo);
-        }
     }
     word_cloud(testo2);
-
-    //controllo risposte
-    //console.log(dati);// show response from the server.
 
     //visualizzazione tweet
     var node = document.getElementById("visualizzazione_tw")
@@ -315,24 +305,36 @@ function print_tweets(data){
 
     //colloca su mappa
     var coordinate = [];
-    var indicePlace = -1;
     for (element of dati){
         if (typeof element.geo!=="undefined"){
-            indicePlace = indicePlace + 1;
+            var indicePlace = 0;
+            while (indicePlace < data.includes.places.length){
+                if (data.includes.places[indicePlace].id==element.geo.place_id){
+                    var long = (data.includes.places[indicePlace].geo.bbox[0] + data.includes.places[indicePlace].geo.bbox[2])/2;
+                    var lat = (data.includes.places[indicePlace].geo.bbox[1] + data.includes.places[indicePlace].geo.bbox[3])/2;
+                    indicePlace = data.includes.places.length;
+                }
+                else {
+                    indicePlace = indicePlace + 1;
+                }
+            }
+            var nome_utente = element.author_id;
+            var testo_tweet = element.text;
+            var latlong_text = [lat, long, testo_tweet, nome_utente];
+            coordinate.push(latlong_text);
+            /*indicePlace = indicePlace + 1;
             if (typeof element.geo.coordinates!=="undefined"){
                 console.log(typeof element.geo.coordinates.coordinates[0]);
                 var long = element.geo.coordinates.coordinates[0];
                 var lat = element.geo.coordinates.coordinates[1];
             }
-            else {
+            else if (typeof data.includes !== "undefined") {
+                if ((typeof data.includes.places !== "undefined") && (data.includes.places[indicePlace] !== "nessuna location")){
                     var long = (data.includes.places[indicePlace].geo.bbox[0] + data.includes.places[indicePlace].geo.bbox[2])/2;
                     var lat = (data.includes.places[indicePlace].geo.bbox[1] + data.includes.places[indicePlace].geo.bbox[3])/2;
-            }
+                }
+            }*/
         }
-        var nome_utente = element.author_id;
-        var testo_tweet = element.text;
-        var latlong_text = [lat, long, testo_tweet, nome_utente];
-        coordinate.push(latlong_text);
     }
 
     initialize (coordinate);
@@ -382,10 +384,10 @@ function initialize(coordinate) {
       // Create a map object, and include the MapTypeId to add
       // to the map type control.
       var mapOptions = {
-        zoom: 3, 				//zoom level
-        center: myCenter, 		//center position
-        scrollwheel: false, 	//zoom when scroll disable
-        zoomControl: true, 		//show control zoom
+        zoom: 3,                //zoom level
+        center: myCenter,       //center position
+        scrollwheel: false,     //zoom when scroll disable
+        zoomControl: true,      //show control zoom
 
         mapTypeControlOptions: {
               mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
@@ -472,7 +474,7 @@ function word_cloud(hashtags) {
 function AlertEsporta(){
     document.getElementById("switch-1").checked = false;
     if(pulisci_schermo){
-        pulisci_schermo = false;	//evita di cancellare lo schermo
+        pulisci_schermo = false;    //evita di cancellare lo schermo
         var tmp = true;
     }
     else{
@@ -553,7 +555,7 @@ var listaChiavi = inizializza_listaChiavi();
 
 function inizializza_listaChiavi() {
     if (window.localStorage.getItem("")==null){
-        var lista = [];	//contiene la lista di tutte le chiavi
+        var lista = []; //contiene la lista di tutte le chiavi
     }
     else {
         var stringa_listaChiavi = window.localStorage.getItem("");
@@ -578,7 +580,7 @@ function esporta(nome_chiave){
         if (isStream) {
             var mystring = JSON.stringify(esporta_stream);
         } else {
-            var mystring = JSON.stringify(file_export);			//converte il json in una stringa e lo salva
+            var mystring = JSON.stringify(file_export);         //converte il json in una stringa e lo salva
         }
         window.localStorage.setItem(nome_chiave, mystring);
         listaChiavi.push(nome_chiave);
@@ -595,14 +597,15 @@ function esporta(nome_chiave){
 }
 function importa(nome_chiave){
     pulisci_schermo = true;
-    var myobj = JSON.parse(localStorage.getItem(nome_chiave));		//converte in json la stringa salvata prima
+    var myobj = JSON.parse(localStorage.getItem(nome_chiave));      //converte in json la stringa salvata prima
+    console.log(myobj);
     print_tweets(myobj);
 }
 //per gestire i salvataggi
 function VisualizzaSalvataggi() {
     document.getElementById("switch-1").checked = false;
     if(pulisci_schermo){
-        pulisci_schermo = false;	//evita di cancellare lo schermo
+        pulisci_schermo = false;    //evita di cancellare lo schermo
         var tmp = true;
     }
     else{
@@ -677,13 +680,13 @@ function elimina(){
 function SvuotaSalvataggi(){
     var conf = confirm("Vuoi eliminare tutti i salvataggi?");
     if(conf) {
-        listaChiavi = [];	//svuota la lista delle chiavi salvate
-        window.localStorage.clear();	//pulisce il local storage
-        $( "#dialog" ).dialog( "close" );	//chiude la finestra di dialogo
+        listaChiavi = [];   //svuota la lista delle chiavi salvate
+        window.localStorage.clear();    //pulisce il local storage
+        $( "#dialog" ).dialog( "close" );   //chiude la finestra di dialogo
     }
 }
 
-                                            //VISUALIZZAZIONE COORDINATE GEOGRAFICHE
+//VISUALIZZAZIONE COORDINATE GEOGRAFICHE
 function visualizza_input(){
     if(document.getElementById("area_geografica_stream").checked){
         document.getElementById("coordinate_geo").style.display = "block";

@@ -131,7 +131,7 @@ class TwitterService():
     def get_stream(self, headers, set, bearer_token):
         response = requests.get(
             # "https://api.twitter.com/2/tweets/search/stream", headers=headers, stream=True,
-            "https://api.twitter.com/2/tweets/sample/stream?tweet.fields=entities,geo,author_id", headers=headers, stream=True,
+            "https://api.twitter.com/2/tweets/sample/stream?tweet.fields=entities,geo,author_id&expansions=geo.place_id&place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type", headers=headers, stream=True,
         )
         print(response.status_code)
         if response.status_code != 200:
