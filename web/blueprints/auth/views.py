@@ -51,10 +51,30 @@ def disconnect_request():
 @tracker.route('/base', methods = ['POST'])
 def base_post():
     data = request.form['ricerca']
+    try:
+        persona = request.form['persona']
+        print(persona)
+    except:
+        persona = False
+    try:
+        parola_chiave = request.form['parola_chiave']
+        print(parola_chiave)
+    except:
+        parola_chiave = False
+
     print('data: ', data)
-    if data != "":
-        search_type = data[0]
-        data = data[1:]
+    if data == "":
+        return json.dumps('Error on input')
+
+    if parola_chiave:
+        return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+    elif persona:
+        return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+    else:
+        return json.dumps('Seleziona un filtro')
+    '''if data != "":
+        # search_type = data[0]
+        # data = data[1:]
     else:
         return json.dumps('Error on input')
 
@@ -67,7 +87,7 @@ def base_post():
         return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
     elif search_type == '£':
         return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
-
+    '''
     return {"text": 'Error on input', "data": 'ERROR', "status_code": 413}
 
 @tracker.route('/base')

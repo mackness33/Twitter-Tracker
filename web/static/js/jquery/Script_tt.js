@@ -44,6 +44,9 @@ function ferma_stream1() {
     console.log(esporta_stream);
         if(pulisci_schermo){
             word_cloud_text = "";
+            coordinate = [];
+            initialize(coordinate);
+            word_cloud(word_cloud_text);
             remove_old_tweets();
         }
         if(document.getElementById("switch-1").checked) {
@@ -137,13 +140,13 @@ function richiesta_dati(){
         data: $("#form_lookup").serialize(), // serializes the form's elements.
         dataType: "json",
         success: function (response) {
-            console.log(response);
             isStream = false;
             file_export = response;
             esporta_stream = {
                 data : [],
                 includes : {
-                    places : []
+                    places : [],
+                    users : []
                 }
             }
             console.log('this is the response: ', response);
@@ -162,23 +165,25 @@ function richiesta_dati(){
 
 let word_cloud_text = "";
 
-//var conta_tweet = 0; //da valutare
-
 var esporta_stream = {  //per esportare lo stream
         data : [],
         includes : {
-            places : []
+            places : [],
+            users : []
         }
     }
 
 var coordinate = [];
 function print_stream_tweets(response){
-    //conta_tweet = conta_tweet + 1;
-    //document.getElementById("conta").innerHTML = conta_tweet;
     isStream = true;
     esporta_stream.data.push(response.data);
     if (typeof response.includes !== "undefined") {
-        esporta_stream.includes.places.push(response.includes.places[0])
+        if (typeof response.includes.places !== "undefined") {
+            esporta_stream.includes.places.push(response.includes.places[0])
+        }
+        if (typeof response.includes.users !== "undefined") {
+            esporta_stream.includes.users.push(response.includes.users[0])
+        }        
     }
     console.log(esporta_stream);
     let tweet = response.data;
@@ -193,7 +198,7 @@ function print_stream_tweets(response){
             aggiorna_wordcloud = true;
         }
     }
-    //console.log('word_cloud_text: ', word_cloud_text);
+    
     if(aggiorna_wordcloud){
           word_cloud(word_cloud_text);
       }
@@ -223,24 +228,23 @@ function print_stream_tweets(response){
     }
 
     if(aggiorna_coordinate){
-        initialize(coordinate);  //da aggiustare
+        initialize(coordinate);  
       }
-    //initialize (coordinate);
 }
 
 function tweet_visualization(tweet){
 
     let container = document.createElement("div");
-    container.setAttribute("id", "tweet" + tweet.id);
+    //container.setAttribute("id", "tweet" + tweet.id);
     container.setAttribute("class", "tweet_container");
 
     let username = document.createElement("div");
-    username.setAttribute("id", "tweet" + tweet.id + "_userName");
+    //username.setAttribute("id", "tweet" + tweet.id + "_userName");
     username.setAttribute("class", "tweet_userName");
     username.innerHTML = tweet.author_id;
 
     let text = document.createElement("div");
-    text.setAttribute("id", "tweet" + tweet.id + "_text");
+    //text.setAttribute("id", "tweet" + tweet.id + "_text");
     text.setAttribute("class", "tweet_text");
     text.innerHTML = tweet.text;
 
@@ -284,23 +288,33 @@ function print_tweets(data){
     while (node.hasChildNodes()) {
         node.removeChild(node.lastChild);
     }
-    var index = 0
+    //var index = 0
     dati.forEach(element => {
+        var indiceUser = 0;
+        while (indiceUser<data.includes.users.length){
+            if (element.author_id == data.includes.users[indiceUser].id){
+                var username = data.includes.users[indiceUser].username;
+                indiceUser = data.includes.users.length;
+            }
+            else{
+                indiceUser = indiceUser + 1;
+            }
+        }
         var tmp = document.createElement("div");
-        tmp.setAttribute("id", "tweet" + index);
+        //tmp.setAttribute("id", "tweet" + index);
         tmp.setAttribute("class", "tweet_container");
         var tmp2 = document.createElement("div");
-        tmp2.setAttribute("id", "tweet" + index + "_userName");
+        //tmp2.setAttribute("id", "tweet" + index + "_userName");
         tmp2.setAttribute("class", "tweet_userName");
-        tmp2.innerHTML = element.author_id;
+        tmp2.innerHTML = username;
         var tmp3 = document.createElement("div");
-        tmp3.setAttribute("id", "tweet" + index + "_text");
+        //tmp3.setAttribute("id", "tweet" + index + "_text");
         tmp3.setAttribute("class", "tweet_text");
         tmp3.innerHTML = element.text;
         tmp.appendChild(tmp2);
         tmp.appendChild(tmp3);
         document.getElementById("visualizzazione_tw").appendChild(tmp);
-        index = index +1;
+        //index = index +1;
     });
 
     //colloca su mappa
@@ -322,18 +336,6 @@ function print_tweets(data){
             var testo_tweet = element.text;
             var latlong_text = [lat, long, testo_tweet, nome_utente];
             coordinate.push(latlong_text);
-            /*indicePlace = indicePlace + 1;
-            if (typeof element.geo.coordinates!=="undefined"){
-                console.log(typeof element.geo.coordinates.coordinates[0]);
-                var long = element.geo.coordinates.coordinates[0];
-                var lat = element.geo.coordinates.coordinates[1];
-            }
-            else if (typeof data.includes !== "undefined") {
-                if ((typeof data.includes.places !== "undefined") && (data.includes.places[indicePlace] !== "nessuna location")){
-                    var long = (data.includes.places[indicePlace].geo.bbox[0] + data.includes.places[indicePlace].geo.bbox[2])/2;
-                    var lat = (data.includes.places[indicePlace].geo.bbox[1] + data.includes.places[indicePlace].geo.bbox[3])/2;
-                }
-            }*/
         }
     }
 
@@ -694,4 +696,13 @@ function visualizza_input(){
     else{
         document.getElementById("coordinate_geo").style.display = "none";
     }
+}
+
+//Pulisce mappa e wordcloud ad ogni ricerca sullo stream e imposta su attivo 
+function aggiustamenti_stream(){
+    word_cloud_text = "";
+    coordinate = [];
+    initialize(coordinate);
+    word_cloud(word_cloud_text);
+    document.getElementById("switch-1").checked = true;
 }

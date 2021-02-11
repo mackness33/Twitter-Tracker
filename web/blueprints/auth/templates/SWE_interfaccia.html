@@ -39,7 +39,6 @@
 			<div id="importaEsporta">
 				<button class="bottoni_1" id="bottone_sinistro" onclick="AlertEsporta()" type="button">Esporta</button>
 				<button class="bottoni_1" id="bottone_destro" onclick="VisualizzaSalvataggi()" type="button">Importa</button>
-				<!--<button class="bottoni_1" id="bottone_destro" onclick="VisualizzaSalvataggi()" type="button">Visualizza ricerche precedenti</button>-->
 			</div>
 			<form id="start_stop" action="#">STREAM
 				<div class="switch">
@@ -50,7 +49,6 @@
 		</div>
 		<div id="ricerca">
 			<!--Per scegliere il tipo di ricerca-->
-			<!--<div id="conta"></div>-->
 			<div id="gruppo">
 				<div id="scelta_form">
 					<input type="radio" id="search" onclick=visualizza_form_ricerca() name="scelta">
@@ -69,31 +67,21 @@
 			</div>
 			<!--form lookup-->
 			<form id="form_lookup" method="post" target="tweet" style="display:none">
-				<!--<input id="input2" type="text" name="numero_tw" ><br>-->
 				<div class="testo_ricerca">
 					<input id="input" type="text" name="ricerca" >
 					<input class="button" type="submit" onclick=richiesta_dati() value="Search"><br>
 				</div>
 				<input type="checkbox" id="persona" name="persona" class="filtro">
 				<label for="persona"> Username</label><br>
-				<!--<input type="checkbox" id="luogo" name="luogo" class="filtro"> //probabilmente non è utile
-				<label for="luogo"> Luogo</label><br>
-				<input type="checkbox" id="area_geografica" name="area_geografica" class="filtro">
-				<label for="area geografica"> Area geografica</label><br>-->
 				<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro">
 				<label for="parola chiave"> Parola chiave</label><br>
-
-    			<!--<input id="start" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
-				<!--<input id="stop" type="submit" onclick=richiesta_dati() value="Search" /> <!--aggiungere funzione ajax al posto di action-->
-				<!--onclick=richiesta_dati()-->
 			</form>
 			<!--form streaming-->
 			<form id="form_stream" method="post" target="tweet">
 				<div class="testo_ricerca">
 					<input id="input_stream" type="text" name="ricerca">
-					<input class="button" type="submit" value="Search"><br>
+					<input class="button" onclick="aggiustamenti_stream()" type="submit" value="Search"><br>
 				</div>
-				<!--<input id="input2_stream" type="text" name="numero_tw" ><br>-->
 				<input type="checkbox" id="persona_stream" name="persona" class="filtro">
 				<label for="persona_stream"> Username</label><br>
 				<input type="checkbox" id="luogo_stream" name="luogo" class="filtro">
