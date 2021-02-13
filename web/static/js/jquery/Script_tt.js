@@ -1,6 +1,5 @@
- //SOCKET
-
- var socket = io.connect(
+//SOCKET
+var socket = io.connect(
     'http://' + document.domain + ':' + location.port + '/base',
     {reconnectionDelayMax: 10000}
 );
@@ -41,92 +40,25 @@ $(document).ready(function() {
 });
 //Per fermare/avviare lo stream dal pulsante switch
 function ferma_stream1() {
-    console.log(esporta_stream);
-        if(pulisci_schermo){
-            word_cloud_text = "";
-            coordinate = [];
-            initialize(coordinate);
-            word_cloud(word_cloud_text);
-            remove_old_tweets();
+    if(pulisci_schermo){
+        word_cloud_text = "";
+        coordinate = [];
+        initialize(coordinate);
+        word_cloud(word_cloud_text);
+        remove_old_tweets();
+    }
+    if(document.getElementById("switch-1").checked) {
+        if (!socket.connected){
+            socket.connect();
         }
-        if(document.getElementById("switch-1").checked) {
-            if (!socket.connected){
-                socket.connect();
-            }
+    }
+    else {
+        if (!socket.disconnected){
+            socket.disconnect()
+            console.log("disconnected");
         }
-        else {
-            if (!socket.disconnected){
-                socket.disconnect()
-                console.log("disconnected");
-            }
-        }
-}
-
-//gestione visualizzazione tweet&mappa&worldcloud
-function vedi_tweet(){
-    var visibiletweet = document.getElementById("tweet_visibile");
-    if (visibiletweet.checked){
-        document.getElementById("visualizzazione_tw").style.display = "block";
-    }
-    else {
-        document.getElementById("visualizzazione_tw").style.display = "none";
-    }
-    ridimensiona();
-}
-function vedi_mappa(){
-    var visibilemap = document.getElementById("mappa_visibile");
-    if (visibilemap.checked){
-        document.getElementById("container-map").style.display = "block";
-    }
-    else {
-        document.getElementById("container-map").style.display = "none";
-    }
-    ridimensiona();
-}
-function vedi_wordcloud(){
-    var visibilecloud = document.getElementById("wordcloud_visibile");
-    if (visibilecloud.checked){
-        document.getElementById("word_cloud").style.display = "block";
-    }
-    else {
-        document.getElementById("word_cloud").style.display = "none";
-    }
-    ridimensiona();
-}
-
-function ridimensiona(){
-    var visibiletweet = document.getElementById("tweet_visibile");
-    var visibilemap = document.getElementById("mappa_visibile");
-    var visibilecloud = document.getElementById("wordcloud_visibile");
-    if (visibiletweet.checked && visibilemap.checked && visibilecloud.checked) {
-        document.getElementById("visualizzazione_tw").style.width = "33%";
-        document.getElementById("container-map").style.width = "33%";
-        document.getElementById("word_cloud").style.width = "33%";
-    }
-    else if ((visibiletweet.checked && visibilemap.checked) || (visibiletweet.checked && visibilecloud.checked) || (visibilecloud.checked && visibilemap.checked)){
-        document.getElementById("visualizzazione_tw").style.width = "50%";
-        document.getElementById("container-map").style.width = "50%";
-        document.getElementById("word_cloud").style.width = "50%";
-    }
-    else {
-        document.getElementById("visualizzazione_tw").style.width = "100%";
-        document.getElementById("container-map").style.width = "100%";
-        document.getElementById("word_cloud").style.width = "100%";
     }
 }
-
-//gestione form da mostrare
-function visualizza_form_ricerca(){ //rende visibile solo uno dei due form
-    document.getElementById("form_lookup").style.display = "block";
-    document.getElementById("form_stream").style.display = "none";
-    document.getElementById("start_stop").style.display = "none";
-};
-
-function visualizza_form_stream(){ //vedi sopra
-    document.getElementById("form_stream").style.display = "block";
-    document.getElementById("form_lookup").style.display = "none";
-    document.getElementById("start_stop").style.display = "block";
-};
 
 var file_export; //per esportare ed importare i dati di ricerca
 var pulisci_schermo = false; //controllo se pulire lo schermo
@@ -188,7 +120,7 @@ function print_stream_tweets(response){
     console.log(esporta_stream);
     let tweet = response.data;
     let aggiorna_wordcloud = false;
-
+    let user = response.includes.users;
 
     if (typeof tweet.entities !== "undefined"){
         if (typeof tweet.entities.hashtags !== "undefined"){
@@ -206,7 +138,7 @@ function print_stream_tweets(response){
     // visualizzazione tweet
     // TODO: set a maximum quantity of tweets to be visualize
     // TIP: use a Queue
-    tweet_visualization(tweet)
+    tweet_visualization(tweet, user)
 
     // maps
     
@@ -232,19 +164,27 @@ function print_stream_tweets(response){
       }
 }
 
-function tweet_visualization(tweet){
+function tweet_visualization(tweet, utente){
+
+    var indiceUser = 0;
+    while (indiceUser<utente.length){
+        if (tweet.author_id == utente[indiceUser].id){
+            var usernameStream = utente[indiceUser].username;
+            indiceUser = utente.length;
+        }
+        else{
+            indiceUser = indiceUser + 1;
+        }
+    }
 
     let container = document.createElement("div");
-    //container.setAttribute("id", "tweet" + tweet.id);
     container.setAttribute("class", "tweet_container");
 
     let username = document.createElement("div");
-    //username.setAttribute("id", "tweet" + tweet.id + "_userName");
     username.setAttribute("class", "tweet_userName");
-    username.innerHTML = tweet.author_id;
+    username.innerHTML = usernameStream;
 
     let text = document.createElement("div");
-    //text.setAttribute("id", "tweet" + tweet.id + "_text");
     text.setAttribute("class", "tweet_text");
     text.innerHTML = tweet.text;
 
@@ -266,7 +206,7 @@ function print_tweets(data){
     // TODO: handle results with undefined data, ergo: 0 tweets found
     var dati = data.data
     //word cloud;
-    var testo2 = "";
+    var testo = "";
     if (typeof dati==="undefined")
         return
 
@@ -275,13 +215,13 @@ function print_tweets(data){
         if (typeof element.entities!=="undefined"){
             if (typeof element.entities.hashtags!=="undefined"){
                 while (typeof element.entities.hashtags[pk]!=="undefined"){
-                    testo2 = testo2 + " " + element.entities.hashtags[pk].tag;
+                    testo = testo + " " + element.entities.hashtags[pk].tag;
                     pk=pk+1;
                 }
             }
         }
     }
-    word_cloud(testo2);
+    word_cloud(testo);
 
     //visualizzazione tweet
     var node = document.getElementById("visualizzazione_tw")
@@ -301,20 +241,16 @@ function print_tweets(data){
             }
         }
         var tmp = document.createElement("div");
-        //tmp.setAttribute("id", "tweet" + index);
         tmp.setAttribute("class", "tweet_container");
         var tmp2 = document.createElement("div");
-        //tmp2.setAttribute("id", "tweet" + index + "_userName");
         tmp2.setAttribute("class", "tweet_userName");
         tmp2.innerHTML = username;
         var tmp3 = document.createElement("div");
-        //tmp3.setAttribute("id", "tweet" + index + "_text");
         tmp3.setAttribute("class", "tweet_text");
         tmp3.innerHTML = element.text;
         tmp.appendChild(tmp2);
         tmp.appendChild(tmp3);
         document.getElementById("visualizzazione_tw").appendChild(tmp);
-        //index = index +1;
     });
 
     //colloca su mappa
