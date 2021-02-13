@@ -1,5 +1,6 @@
 //SOCKET
-var socket = io.connect(
+
+var socket = io(
 	'http://' + document.domain + ':' + location.port + '/base',
 	{
 		reconnectionAttempts: 10,
@@ -16,19 +17,22 @@ $(document).ready(function() {
   //   $('#log').append('<p>Received: ' + msg.data + '</p>');
   // });
 	socket.on('connect', function() {
-		console.log('connectin ' + socket.id + 'to the SocketServer...');
+		console.log('connecting ' + socket.id + 'to the SocketIOServer...');
 		socket.emit('connection');
-		// socket.emit('start_sample', {data: 'Starting sample stream'});
 	});
 
   socket.on('connection_done', function() {
 		console.log('successfully connected to the SocketServer...');
-		socket.emit('start_sample');
 	});
 
 	socket.on('tweet', function(msg) {
 		console.log(msg);
 		print_stream_tweets(msg);
+	});
+
+	socket.on('hola', function() {
+		// console.log(msg);
+		// print_stream_tweets(msg);
 	});
 
 	socket.on('disconnect_client', function(msg) {
@@ -45,12 +49,14 @@ $(document).ready(function() {
 		console.log('retryin to connect')
 		remove_old_tweets();
 		if (!socket.connected){
-			socket.connect();
+			// socket.connect();
 		}
 
 	});
 
-	socket.connect();
+	ferma_stream1();
+	// socket.connect();
+	// socket.emit('start_sample');
 });
 
 //Per fermare/avviare lo stream dal pulsante switch
@@ -64,8 +70,17 @@ function ferma_stream1() {
 	if(document.getElementById("switch-1").checked) {
 		console.log("Checked: ");
 		if (!socket.connected){
+			var input = document.getElementById("input_stream").value
+			console.log("input: " + input);
 			socket.connect();
-			console.log("connecting: " + socket.id);
+			if (input != null && input != ""){
+				console.log("filtereeeed ");
+				socket.emit('start_filtered', input);
+			}else{
+				console.log("sampleee ");
+				socket.emit('start_filtered', input);
+				// socket.emit('start_sample');
+			}
 		}
 	}
 	else {

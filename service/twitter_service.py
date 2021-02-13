@@ -116,6 +116,8 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
 
+        return response.json()
+
     def set_rules(self, headers, delete, bearer_token):
         # You can adjust the rules if needed
         sample_rules = [
@@ -134,17 +136,24 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
 
+        return response.json()
+
     # can use yield to send one tweet per time
     def get_stream(self, url, headers, set, bearer_token):
         response = requests.get( url, headers=headers, stream=True)
 
         print(response.status_code)
         if response.status_code != 200:
+            print("fuckin exception")
             raise Exception(
                 "Cannot get stream (HTTP {}): {}".format(
                     response.status_code, response.text
                 )
             )
+
+        print("url", url)
+        print("headers", headers)
+        print("set", set)
 
         for response_line in response.iter_lines():
             if self._end_stream.isSet():
@@ -153,7 +162,7 @@ class TwitterService():
             if response_line:
                 json_response = json.loads(response_line)
                 socketio.emit('tweet', json_response, namespace='/base')
-                time.sleep(1)
+                time.sleep(5)
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
         self.end_stream()
@@ -165,6 +174,7 @@ class TwitterService():
 
     #---------FILTERED STREAM----------
     def filtered_stream(self):
+        print("Filtred")
         url = self._base_url + "tweets/sample/stream?" + self._fields
         bearer_token = self._bearer
         headers = self._create_headers()
@@ -172,6 +182,7 @@ class TwitterService():
         delete = self.delete_all_rules(headers, bearer_token, rules)
         set = self.set_rules(headers, delete, bearer_token)
         thread = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
+        print("Filtred")
         if not thread.isAlive():
             print("Starting Thread")
             thread.start()
