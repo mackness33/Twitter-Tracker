@@ -18,15 +18,18 @@ class TwitterService():
         self._bearer = token
         self._base_url = "https://api.twitter.com/2/"
         self._end_stream = threading.Event()
+        self._fields = ('tweet.fields=author_id,created_at,entities&'
+            'expansions=geo.place_id,author_id&'
+            'place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type&'
+            'user.fields=description,created_at,name,url'
+        )
 
     #---------TWEETS LOOKUP----------
     def tweets_lookup(self, id, fields):
-        url = self._create_url('tweets', 'ids', self._build_input(id))                          # set up the url
-        url = self._add_fields(url, fields)                          # set up the url
+        url = self._create_url('tweets', 'ids', self._build_input(id)) + self._fields       # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
-
 
     #---------USERS LOOKUP----------
     def users_lookup(self, query, fields):
@@ -44,34 +47,41 @@ class TwitterService():
 
         input = self._build_input(query)
         lu_type, field = by(input)
-        url = self._create_url(lu_type, field, input)                          # set up the url
-        url = self._add_fields(url, fields)                          # set up the url
+        url = self._create_url(lu_type, field, input) + self._fields                          # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
 
     #---------TIMELINE----------
     def timeline(self, username, fields):
+        # TODO: test on the input, to ensure how its typo
+        # TODO: multiple user order by tweet's date
         response = self.users_lookup(query=username, fields={"user.fields": "name"})
-        url = self._base_url + "users/" + response["data"][0]["id"] + "/tweets"
+        url = self._base_url + "users/" + response["data"][0]["id"] + "/tweets?" + self._fields
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
 
     #---------RECENT SEARCH----------
     def recent_search(self, query, fields):
-        url = self._create_url('tweets/search/recent', 'query', self._build_input(query))  # set up the url
-        url = self._add_fields(url, fields)                          # set up the url
+        url = self._create_url('tweets/search/recent', 'query', self._build_input(query)) + self._fields  # set up the url
         headers = self._create_headers()                         # set up the headers
         json_response = self._request_resources(url, headers)  # set up the response as a json
         return json_response
 
-    #---------SAMPLE STREAM----------
-    def sample_stream(self):
-        url = self._base_url + 'tweets/sample/stream'           # set up the url
-        headers = self._create_headers()                         # set up the headers
-        json_response = self._request_resources(url, headers)  # set up the response as a json
-        return json_response
+    #---------STREAM---------
+    def start_stream(self, url):
+        bearer_token = self._bearer
+        headers = self._create_headers()
+        # rules = self.get_rules(headers, bearer_token)
+        # delete = self.delete_all_rules(headers, bearer_token, rules)
+        # set = self.set_rules(headers, delete, bearer_token)
+        thread = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
+        if not thread.isAlive():
+            print("Starting Thread")
+            thread.start()
+
+        print ('are we at the end?')
 
     def end_stream(self):
         self._end_stream.clear()
@@ -86,7 +96,6 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
         return response.json()
-
 
     def delete_all_rules(self, headers, bearer_token, rules):
         if rules is None or "data" not in rules:
@@ -107,7 +116,6 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
 
-
     def set_rules(self, headers, delete, bearer_token):
         # You can adjust the rules if needed
         sample_rules = [
@@ -126,13 +134,10 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
 
-
     # can use yield to send one tweet per time
-    def get_stream(self, headers, set, bearer_token):
-        response = requests.get(
-            # "https://api.twitter.com/2/tweets/search/stream", headers=headers, stream=True,
-            "https://api.twitter.com/2/tweets/sample/stream?tweet.fields=created_at,entities,geo,author_id&expansions=geo.place_id,author_id,attachments.media_keys&place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type&user.fields=description,created_at,name,url&media.fields=url,preview_image_url", headers=headers, stream=True,
-        )
+    def get_stream(self, url, headers, set, bearer_token):
+        response = requests.get( url, headers=headers, stream=True)
+
         print(response.status_code)
         if response.status_code != 200:
             raise Exception(
@@ -140,6 +145,7 @@ class TwitterService():
                     response.status_code, response.text
                 )
             )
+
         for response_line in response.iter_lines():
             if self._end_stream.isSet():
                 break
@@ -147,18 +153,25 @@ class TwitterService():
             if response_line:
                 json_response = json.loads(response_line)
                 socketio.emit('tweet', json_response, namespace='/base')
-                time.sleep(5)
+                time.sleep(1)
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
         self.end_stream()
 
-    def main(self):
+
+    #---------SAMPLE STREAM----------
+    def sample_stream(self):
+        self.start_stream(url=self._base_url + "tweets/sample/stream?" + self._fields)
+
+    #---------FILTERED STREAM----------
+    def filtered_stream(self):
+        url = self._base_url + "tweets/sample/stream?" + self._fields
         bearer_token = self._bearer
         headers = self._create_headers()
-        # rules = self.get_rules(headers, bearer_token)
-        # delete = self.delete_all_rules(headers, bearer_token, rules)
-        # set = self.set_rules(headers, delete, bearer_token)
-        thread = threading.Thread(target=self.get_stream, args=(headers, set, bearer_token))
+        rules = self.get_rules(headers, bearer_token)
+        delete = self.delete_all_rules(headers, bearer_token, rules)
+        set = self.set_rules(headers, delete, bearer_token)
+        thread = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
         if not thread.isAlive():
             print("Starting Thread")
             thread.start()
@@ -200,30 +213,31 @@ class TwitterService():
         print('url: ', url)
         return url
 
-    def _add_fields(self, url, fields):
-        # Specify the usernames that you want to lookup below
-        # You can enter up to 100 comma-separated values.
-        # User fields are adjustable, options include:
-        # created_at, description, entities, id, location, name,
-        # pinned_tweet_id, profile_image_url, protected,
-        # public_metrics, url, username, verified, and withheld
-
-        # key MUST be a parameter name
-        # value is the value of the field
-        for key in fields:
-            url += key + "="                        # set the query key in the url
-            if isinstance(fields[key], list):             # if the argument of the element is a list of value
-                for val in fields[key]:
-                    url += val + ','         # add multiple values
-                url = url[:-1]                      # delete last character
-            else:
-                url += fields[key]
-            url += "&"                              # add next one
-
-        url = url[:-1]                      # delete last character
-
-        print('url&fields: ', url)
-        return url
+    # CLEAR: USELESS
+    # def _add_fields(self, url, fields):
+    #     # Specify the usernames that you want to lookup below
+    #     # You can enter up to 100 comma-separated values.
+    #     # User fields are adjustable, options include:
+    #     # created_at, description, entities, id, location, name,
+    #     # pinned_tweet_id, profile_image_url, protected,
+    #     # public_metrics, url, username, verified, and withheld
+    #
+    #     # key MUST be a parameter name
+    #     # value is the value of the field
+    #     for key in fields:
+    #         url += key + "="                        # set the query key in the url
+    #         if isinstance(fields[key], list):             # if the argument of the element is a list of value
+    #             for val in fields[key]:
+    #                 url += val + ','         # add multiple values
+    #             url = url[:-1]                      # delete last character
+    #         else:
+    #             url += fields[key]
+    #         url += "&"                              # add next one
+    #
+    #     url = url[:-1]                      # delete last character
+    #
+    #     print('url&fields: ', url)
+    #     return url
 
     # create headers
     def _create_headers(self):

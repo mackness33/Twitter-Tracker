@@ -27,15 +27,22 @@ T = TwitterService(ACCESS_TOKEN)
 
 
 #---------------SOCKETIO---------------
-@socketio.on('connect', namespace='/base')
+@socketio.on('connection', namespace='/base')
 def socket_connection():
     print('connecting socket ..')
     emit('connection_done')
 
 @socketio.on('start_sample', namespace='/base')
-def start_sample(msg):
+def start_sample():
+    T.end_stream()
+    print('Starting sample stream')
+    T.sample_stream()
+
+@socketio.on('start_filtered', namespace='/base')
+def start_filtered(msg):
+    T.end_stream()
     print(msg)
-    T.main()
+    T.filtered_stream()
 
 @socketio.on('stop_stream', namespace='/base')
 def the_end(msg):
