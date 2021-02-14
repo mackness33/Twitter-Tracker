@@ -72,14 +72,20 @@ class TwitterService():
         return json_response
 
     #---------STREAM---------
-    def start_stream(self, url):
+    def start_stream(self, rules):
         self._end_stream.clear()
         bearer_token = self._bearer
         headers = self._create_headers()
-        # rules = self.get_rules(headers, bearer_token)
-        # delete = self.delete_all_rules(headers, bearer_token, rules)
-        # set = self.set_rules(headers, delete, bearer_token)
-        self._processor = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
+        if rules is not None and rules != "":
+            url = self._base_url + "tweets/search/stream?" + self._fields
+            actual_rules = self.get_rules(headers, bearer_token)
+            delete = self.delete_all_rules(headers, bearer_token, actual_rules)
+            set = self.set_rules(headers, delete, bearer_token)
+            self._processor = threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
+        else:
+            url = self._base_url + "tweets/sample/stream?" + self._fields
+            self._processor = threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
+
         if self._processor != None and not self._processor.isAlive():
             print("Starting Thread")
             self._processor.start()
@@ -100,7 +106,7 @@ class TwitterService():
             raise Exception(
                 "Cannot get rules (HTTP {}): {}".format(response.status_code, response.text)
             )
-        print(json.dumps(response.json()))
+        print("GET: ", json.dumps(response.json()))
         return response.json()
 
 
@@ -121,7 +127,7 @@ class TwitterService():
                     response.status_code, response.text
                 )
             )
-        print(json.dumps(response.json()))
+        print("DELETED: ", json.dumps(response.json()))
 
 
     def set_rules(self, headers, delete, bearer_token):
@@ -140,12 +146,12 @@ class TwitterService():
             raise Exception(
                 "Cannot add rules (HTTP {}): {}".format(response.status_code, response.text)
             )
-        print(json.dumps(response.json()))
+        print("ADD: ", json.dumps(response.json()))
 
 
     # can use yield to send one tweet per time
-    def get_stream(self, url, headers, set, bearer_token):
-        response = requests.get( url, headers=headers, stream=True)
+    def get_stream(self, url, headers, bearer_token):
+        response = requests.get(url, headers=headers, stream=True)
 
         print(response.status_code)
         if response.status_code != 200:
@@ -158,7 +164,6 @@ class TwitterService():
 
         print("url", url)
         print("headers", headers)
-        print("set", set)
 
         for response_line in response.iter_lines():
             if self._end_stream.isSet():
