@@ -103,35 +103,7 @@ class TwitterService():
         if old_rules is None or "data" not in old_rules:
             return None
 
-        rules = old_rules["data"].copy()
-
-        rules.append({'id': '1361001111111111', "value": "tiden has:images -grumpy", "tag": "biden pictures"})
-        old_rules["data"].append({'id': '13610016666666', "value": "biden has:images -grumpy", "tag": "biden pictures"})
-
-        not_present = list()
-        # to_delete = list(filter(lambda i: i['value'] != list(map(lambda rule: rule["value"], rules)), old_rules["data"]))
-        to_delete = list(filter(lambda i: i['value'] in list(map(lambda rule: rule["value"], rules)), old_rules["data"]))
-        data_rules = list(map(lambda rule: rule, old_rules["data"]))
-        for rule in rules:
-            try:
-                old_rules["data"].remove(rule)
-            except ValueError as e:
-                not_present.append(rule["value"])
-
-        print("DEL in not_present: ", not_present)
-        print("DEL in to_delete: ", to_delete)
-        print("DEL in rules: ", rules)
-        print("DEL in old_rules: ", old_rules)
-        # caos = list(map(lambda rule: rule["id"], old_rules["data"]))
         ids = list(map(lambda rule: rule["id"], old_rules["data"]))
-        values = list(map(lambda rule: rule["value"], old_rules["data"]))
-        print("DEL ids: ", ids)
-        print("DEL values: ", values)
-        # print("DEL caos: ", caos)
-
-        def check(rule, old_rules):
-            return rule if rule not in old_rules else None
-
         payload = {"delete": {"ids": ids}}
         print("DEL payload: ", payload)
         response = requests.post(
@@ -148,30 +120,20 @@ class TwitterService():
         print("DELETED: ", json.dumps(response.json()))
 
     def delete_rules(self, headers, bearer_token, rules, old_rules):
-        if rules is None or "data" not in rules:
-            return None
+        if (rules is None or "data" not in rules) or (old_rules is None or "data" not in old_rules):
+            return
 
-        old_rules["data"].append({'id': '13610016666666', "value": "biden has:images -grumpy", "tag": "biden pictures"})
+        value_to_add = list(map(lambda rule: rule["value"], rules))
+        to_delete = list(filter(lambda role: role[]'value'] in value_to_add, old_rules["data"]))
 
-        not_present = list()
-        # for rule in rules:
-        try:
-            old_rules["data"].remove(rule for rule in rules)
-        except ValueError as e:
-            not_present.append(rule["value"])
-
-        print("DEL not present: ", not_present)
         print("DEL in rules: ", rules)
         print("DEL in old_rules: ", old_rules)
-        # caos = list(map(lambda rule: rule["id"], old_rules["data"]))
-        ids = list(map(lambda rule: rule["id"], old_rules["data"]))
-        values = list(map(lambda rule: rule["value"], old_rules["data"]))
-        print("DEL ids: ", ids)
-        print("DEL values: ", values)
-        # print("DEL caos: ", caos)
+        print("DEL in to_delete: ", to_delete)
 
-        def check(rule, old_rules):
-            return rule if rule not in old_rules else None
+        ids = list(map(lambda rule: rule["id"], to_delete))
+        print("DEL ids: ", ids)
+        if ids == []:
+            return
 
         payload = {"delete": {"ids": ids}}
         print("DEL payload: ", payload)
@@ -189,13 +151,9 @@ class TwitterService():
         print("DELETED: ", json.dumps(response.json()))
 
 
-    def set_rules(self, headers, delete, bearer_token):
+    def set_rules(self, headers, rules, bearer_token):
         # You can adjust the rules if needed
-        sample_rules = [
-            {"value": "dog has:images", "tag": "dog pictures"},
-            {"value": "cat has:images -grumpy", "tag": "cat pictures"},
-        ]
-        payload = {"add": sample_rules}
+        payload = {"add": rules}
         response = requests.post(
             "https://api.twitter.com/2/tweets/search/stream/rules",
             headers=headers,
