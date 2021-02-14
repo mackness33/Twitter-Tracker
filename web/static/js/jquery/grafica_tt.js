@@ -63,3 +63,13 @@ function visualizza_form_stream(){ //vedi sopra
     document.getElementById("form_lookup").style.display = "none";
     document.getElementById("start_stop").style.display = "block";
 };
+
+//VISUALIZZAZIONE COORDINATE GEOGRAFICHE
+function visualizza_input(){
+    if(document.getElementById("area_geografica_stream").checked){
+        document.getElementById("coordinate_geo").style.display = "block";
+    }
+    else{
+        document.getElementById("coordinate_geo").style.display = "none";
+    }
+}
