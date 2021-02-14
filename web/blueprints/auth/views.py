@@ -44,6 +44,15 @@ def start_filtered(msg):
     print(msg)
     T.filtered_stream()
 
+@socketio.on('start_stream', namespace='/base')
+def start_filtered(data):
+    T.end_stream()
+    print("Data: ", data)
+    if (data == None or data == ''):
+        T.sample_stream()
+    else:
+        T.filtered_stream(data)
+
 @socketio.on('stop_stream', namespace='/base')
 def the_end(msg):
     print(message)

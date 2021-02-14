@@ -73,14 +73,16 @@ function ferma_stream1() {
 			var input = document.getElementById("input_stream").value
 			console.log("input: " + input);
 			socket.connect();
-			if (input != null && input != ""){
-				console.log("filtereeeed ");
-				socket.emit('start_filtered', input);
-			}else{
-				console.log("sampleee ");
-				socket.emit('start_filtered', input);
-				// socket.emit('start_sample');
-			}
+
+			socket.emit('start_stream', input)
+			// if (input != null && input != ""){
+			// 	console.log("filtereeeed ");
+			// 	socket.emit('start_filtered', input);
+			// }else{
+			// 	console.log("sampleee ");
+			// 	socket.emit('start_sample');
+			// 	// socket.emit('start_filtered', input);
+			// }
 		}
 	}
 	else {

@@ -23,6 +23,8 @@ class TwitterService():
             'place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type&'
             'user.fields=description,created_at,name,url'
         )
+        self._processor = None
+        self.stream = False
 
     #---------TWEETS LOOKUP----------
     def tweets_lookup(self, id, fields):
@@ -71,20 +73,24 @@ class TwitterService():
 
     #---------STREAM---------
     def start_stream(self, url):
+        self._end_stream.clear()
         bearer_token = self._bearer
         headers = self._create_headers()
         # rules = self.get_rules(headers, bearer_token)
         # delete = self.delete_all_rules(headers, bearer_token, rules)
         # set = self.set_rules(headers, delete, bearer_token)
-        thread = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
-        if not thread.isAlive():
+        self._processor = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
+        if self._processor != None and not self._processor.isAlive():
             print("Starting Thread")
-            thread.start()
+            self._processor.start()
+            self.stream = True
 
         print ('are we at the end?')
 
     def end_stream(self):
-        self._end_stream.clear()
+        self._end_stream.set()
+        if self._processor is not None:
+            self._processor.join()
 
     def get_rules(self, headers, bearer_token):
         response = requests.get(
@@ -96,6 +102,7 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
         return response.json()
+
 
     def delete_all_rules(self, headers, bearer_token, rules):
         if rules is None or "data" not in rules:
@@ -116,7 +123,6 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
 
-        return response.json()
 
     def set_rules(self, headers, delete, bearer_token):
         # You can adjust the rules if needed
@@ -136,7 +142,6 @@ class TwitterService():
             )
         print(json.dumps(response.json()))
 
-        return response.json()
 
     # can use yield to send one tweet per time
     def get_stream(self, url, headers, set, bearer_token):
@@ -165,7 +170,9 @@ class TwitterService():
                 time.sleep(5)
                 # print(json.dumps(json_response, indent=4, sort_keys=True))
 
-        self.end_stream()
+        print('END STREAM')
+        self._end_stream.clear()
+        # self.end_stream()
 
 
     #---------SAMPLE STREAM----------
@@ -173,19 +180,20 @@ class TwitterService():
         self.start_stream(url=self._base_url + "tweets/sample/stream?" + self._fields)
 
     #---------FILTERED STREAM----------
-    def filtered_stream(self):
+    def filtered_stream(self, data):
         print("Filtred")
-        url = self._base_url + "tweets/sample/stream?" + self._fields
+        self._end_stream.clear()
+        url = self._base_url + "tweets/search/stream?" + self._fields
         bearer_token = self._bearer
         headers = self._create_headers()
         rules = self.get_rules(headers, bearer_token)
         delete = self.delete_all_rules(headers, bearer_token, rules)
         set = self.set_rules(headers, delete, bearer_token)
-        thread = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
-        print("Filtred")
-        if not thread.isAlive():
+        self._processor = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
+        if self._processor != None and not self._processor.isAlive():
             print("Starting Thread")
-            thread.start()
+            self._processor.start()
+            self.stream = True
 
         print ('are we at the end?')
 
