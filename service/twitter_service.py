@@ -74,18 +74,7 @@ class TwitterService():
     #---------STREAM---------
     def start_stream(self, rules):
         self._end_stream.clear()
-        bearer_token = self._bearer
-        headers = self._create_headers()
-        if rules is not None and rules != "":
-            url = self._base_url + "tweets/search/stream?" + self._fields
-            actual_rules = self.get_rules(headers, bearer_token)
-            delete = self.delete_all_rules(headers, bearer_token, actual_rules)
-            set = self.set_rules(headers, delete, bearer_token)
-            self._processor = threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
-        else:
-            url = self._base_url + "tweets/sample/stream?" + self._fields
-            self._processor = threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
-
+        self._processor = (self.filtred_stream(rules) if rules is not None and rules != ""  else self.sample_stream())
         if self._processor != None and not self._processor.isAlive():
             print("Starting Thread")
             self._processor.start()
@@ -182,25 +171,22 @@ class TwitterService():
 
     #---------SAMPLE STREAM----------
     def sample_stream(self):
-        self.start_stream(url=self._base_url + "tweets/sample/stream?" + self._fields)
-
-    #---------FILTERED STREAM----------
-    def filtered_stream(self, data):
-        print("Filtred")
-        self._end_stream.clear()
-        url = self._base_url + "tweets/search/stream?" + self._fields
+        print("Sample")
         bearer_token = self._bearer
         headers = self._create_headers()
+        url = self._base_url + "tweets/sample/stream?" + self._fields
+        return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
+
+    #---------FILTERED STREAM----------
+    def filtred_stream(self, data):
+        print("Filtred")
+        bearer_token = self._bearer
+        headers = self._create_headers()
+        url = self._base_url + "tweets/search/stream?" + self._fields
         rules = self.get_rules(headers, bearer_token)
         delete = self.delete_all_rules(headers, bearer_token, rules)
         set = self.set_rules(headers, delete, bearer_token)
-        self._processor = threading.Thread(target=self.get_stream, args=(url, headers, set, bearer_token))
-        if self._processor != None and not self._processor.isAlive():
-            print("Starting Thread")
-            self._processor.start()
-            self.stream = True
-
-        print ('are we at the end?')
+        return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
 
     def _build_input(self, input):
         input = input.split(',')
