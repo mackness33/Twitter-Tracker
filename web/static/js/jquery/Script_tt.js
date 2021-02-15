@@ -30,7 +30,7 @@ $(document).ready(function() {
             socket.emit('disconnect_server');
     });
 
-    $('form#form_stream').submit(function(event) {
+    $('form#form_stream').submit(function() {
         console.log('retryin to connect')
         remove_old_tweets()
         if (!socket.connected){
@@ -124,7 +124,7 @@ function print_stream_tweets(response){
 
     if (typeof tweet.entities !== "undefined"){
         if (typeof tweet.entities.hashtags !== "undefined"){
-            tweet.entities.hashtags.forEach((hashtag, index) => {
+            tweet.entities.hashtags.forEach(hashtag => {
                 word_cloud_text = word_cloud_text + " " + hashtag.tag;
             });
             aggiorna_wordcloud = true;
@@ -161,7 +161,7 @@ function print_stream_tweets(response){
 
     if(aggiorna_coordinate){
         initialize(coordinate);  
-      }
+    }
 }
 
 function tweet_visualization(tweet, utente){
@@ -205,10 +205,9 @@ function remove_old_tweets(){
 function print_tweets(data){
     // TODO: handle results with undefined data, ergo: 0 tweets found
     var dati = data.data
+    var utente = data.includes.users;
     //word cloud;
     var testo = "";
-    if (typeof dati==="undefined")
-        return
 
     for (element of dati){
         pk = 0;
@@ -230,27 +229,7 @@ function print_tweets(data){
     }
     //var index = 0
     dati.forEach(element => {
-        var indiceUser = 0;
-        while (indiceUser<data.includes.users.length){
-            if (element.author_id == data.includes.users[indiceUser].id){
-                var username = data.includes.users[indiceUser].username;
-                indiceUser = data.includes.users.length;
-            }
-            else{
-                indiceUser = indiceUser + 1;
-            }
-        }
-        var tmp = document.createElement("div");
-        tmp.setAttribute("class", "tweet_container");
-        var tmp2 = document.createElement("div");
-        tmp2.setAttribute("class", "tweet_userName");
-        tmp2.innerHTML = username;
-        var tmp3 = document.createElement("div");
-        tmp3.setAttribute("class", "tweet_text");
-        tmp3.innerHTML = element.text;
-        tmp.appendChild(tmp2);
-        tmp.appendChild(tmp3);
-        document.getElementById("visualizzazione_tw").appendChild(tmp);
+        tweet_visualization(element,utente)
     });
 
     //colloca su mappa

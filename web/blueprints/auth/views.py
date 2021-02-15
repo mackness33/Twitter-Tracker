@@ -69,7 +69,7 @@ def base_post():
     if parola_chiave:
         return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
     elif persona:
-        return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+        return T.recent_search(query="from:"+data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
     else:
         return json.dumps('Seleziona un filtro')
     '''if data != "":
