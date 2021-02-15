@@ -154,7 +154,7 @@ function print_stream_tweets(response){
                 var lat = (response.includes.places[0].geo.bbox[1]+response.includes.places[0].geo.bbox[3])/2;
             }
         }
-        var latlong = [lat, long, tweet.text, tweet.author_id];
+        var latlong = [lat, long, tweet.text, response.includes.users[0].username];
         coordinate.push(latlong);
         aggiorna_coordinate = true;
     }
@@ -241,13 +241,22 @@ function print_tweets(data){
                 if (data.includes.places[indicePlace].id==element.geo.place_id){
                     var long = (data.includes.places[indicePlace].geo.bbox[0] + data.includes.places[indicePlace].geo.bbox[2])/2;
                     var lat = (data.includes.places[indicePlace].geo.bbox[1] + data.includes.places[indicePlace].geo.bbox[3])/2;
+                    var indiceUtente = 0;
+                    while (indiceUtente < data.includes.users.length){
+                        if (data.includes.users[indiceUtente].id==element.author_id){
+                            var nome_utente = data.includes.users[indiceUtente].username;
+                            indiceUtente = data.includes.users.length;
+                        }
+                        else {
+                            indiceUtente = indiceUtente + 1;
+                        }
+                    }
                     indicePlace = data.includes.places.length;
                 }
                 else {
                     indicePlace = indicePlace + 1;
                 }
             }
-            var nome_utente = element.author_id;
             var testo_tweet = element.text;
             var latlong_text = [lat, long, testo_tweet, nome_utente];
             coordinate.push(latlong_text);
