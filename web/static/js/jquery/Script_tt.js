@@ -1,66 +1,3 @@
-//SOCKET
-var socket = io.connect(
-    'http://' + document.domain + ':' + location.port + '/base',
-    {reconnectionDelayMax: 10000}
-);
-$(document).ready(function() {
-    // start up the SocketIO connection to the server - the namespace 'test' is also included here if necessary
-    // this is a callback that triggers when the "my response" event is emitted by the server.
-    // socket.on('my response', function(msg) {
-    //   $('#log').append('<p>Received: ' + msg.data + '</p>');
-    // });
-
-    socket.on('connection_done', function() {
-        console.log('successfully connected to the SocketServer...');
-        socket.emit('start_sample', {data: 'Starting sample stream'});
-    });
-
-    socket.on('tweet', function(msg) {
-        console.log(msg);
-        print_stream_tweets(msg)
-    });
-
-    socket.on('disconnect_client', function(msg) {
-        socket.disconnect()
-        console.log(msg);
-    });
-
-    $('form#form_lookup').submit(function(event) {
-        if (!socket.disconnected)
-            socket.emit('disconnect_server');
-    });
-
-    $('form#form_stream').submit(function() {
-        console.log('retryin to connect')
-        remove_old_tweets()
-        if (!socket.connected){
-            socket.connect();
-        }
-    });
-});
-
-//Per fermare/avviare lo stream dal pulsante switch
-function ferma_stream1() {
-    if(pulisci_schermo){
-        word_cloud_text = "";
-        coordinate = [];
-        initialize(coordinate);
-        word_cloud(word_cloud_text);
-        remove_old_tweets();
-    }
-    if(document.getElementById("switch-1").checked) {
-        if (!socket.connected){
-            socket.connect();
-        }
-    }
-    else {
-        if (!socket.disconnected){
-            socket.disconnect()
-            console.log("disconnected");
-        }
-    }
-}
-
 var file_export; //per esportare ed importare i dati di ricerca
 var pulisci_schermo = false; //controllo se pulire lo schermo
 var isStream = true; //controlla se il file da esportare è uno stream o una ricerca
@@ -107,6 +44,7 @@ var esporta_stream = {  //per esportare lo stream
     }
 
 var coordinate = [];
+
 function print_stream_tweets(response){
     isStream = true;
     esporta_stream.data.push(response.data);
@@ -121,27 +59,20 @@ function print_stream_tweets(response){
     let tweet = response.data;
     let aggiorna_wordcloud = false;
     let user = response.includes.users;
+    let word_cloud_tmp = word_cloud_text;
 
-    if (typeof tweet.entities !== "undefined"){
-        if (typeof tweet.entities.hashtags !== "undefined"){
-            tweet.entities.hashtags.forEach(hashtag => {
-                word_cloud_text = word_cloud_text + " " + hashtag.tag;
-            });
-            aggiorna_wordcloud = true;
-        }
-    }
+    word_cloud_text = word_cloud_text + aggiornaHashtagCloud(tweet);
     
+    aggiorna_wordcloud = (word_cloud_text!=word_cloud_tmp);
+
     if(aggiorna_wordcloud){
           word_cloud(word_cloud_text);
       }
 
     // visualizzazione tweet
-    // TODO: set a maximum quantity of tweets to be visualize
-    // TIP: use a Queue
     tweet_visualization(tweet, user)
 
-    // maps
-    
+    // maps 
     var aggiorna_coordinate = false;
     if (typeof tweet.geo !== "undefined"){ 
         if (typeof tweet.geo.coordinates!=="undefined"){
@@ -202,6 +133,20 @@ function remove_old_tweets(){
     pulisci_schermo = false;
 }
 
+function aggiornaHashtagCloud(tweet){
+    var index = 0
+    var testo = "";
+    if (typeof tweet.entities !== "undefined"){
+        if (typeof tweet.entities.hashtags !== "undefined"){
+            while (typeof tweet.entities.hashtags[index]!=="undefined"){
+                testo = testo + " " + tweet.entities.hashtags[index].tag;
+                index=index+1;
+            }
+        }
+    }
+    return testo
+}
+
 function print_tweets(data){
     // TODO: handle results with undefined data, ergo: 0 tweets found
     var dati = data.data
@@ -210,15 +155,7 @@ function print_tweets(data){
     var testo = "";
 
     for (element of dati){
-        pk = 0;
-        if (typeof element.entities!=="undefined"){
-            if (typeof element.entities.hashtags!=="undefined"){
-                while (typeof element.entities.hashtags[pk]!=="undefined"){
-                    testo = testo + " " + element.entities.hashtags[pk].tag;
-                    pk=pk+1;
-                }
-            }
-        }
+        testo = aggiornaHashtagCloud(element);
     }
     word_cloud(testo);
 
@@ -227,7 +164,7 @@ function print_tweets(data){
     while (node.hasChildNodes()) {
         node.removeChild(node.lastChild);
     }
-    //var index = 0
+
     dati.forEach(element => {
         tweet_visualization(element,utente)
     });
@@ -264,13 +201,4 @@ function print_tweets(data){
     }
 
     initialize (coordinate);
-}
-
-//Pulisce mappa e wordcloud ad ogni ricerca sullo stream e imposta su attivo 
-function aggiustamenti_stream(){
-    word_cloud_text = "";
-    coordinate = [];
-    initialize(coordinate);
-    word_cloud(word_cloud_text);
-    document.getElementById("switch-1").checked = true;
 }

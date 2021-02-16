@@ -73,3 +73,12 @@ function visualizza_input(){
         document.getElementById("coordinate_geo").style.display = "none";
     }
 }
+
+//Pulisce mappa e wordcloud ad ogni ricerca sullo stream e imposta su attivo 
+function aggiustamenti_stream(){
+    word_cloud_text = "";
+    coordinate = [];
+    initialize(coordinate);
+    word_cloud(word_cloud_text);
+    document.getElementById("switch-1").checked = true;
+}
