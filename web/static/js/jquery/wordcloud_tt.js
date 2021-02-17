@@ -12,7 +12,7 @@ function word_cloud(hashtags) {
     series.step = 15;
     series.rotationThreshold = 0.7;
     series.maxCount = 200;
-    series.minWordLength = 2;
+    series.minWordLength = 3;
     series.labels.template.tooltipText = "{word}: {value}";
     series.fontFamily = "Courier New";
     series.maxFontSize = am4core.percent(30);

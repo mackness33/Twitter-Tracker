@@ -134,16 +134,17 @@ function remove_old_tweets(){
 }
 
 function aggiornaHashtagCloud(tweet){
-    var index = 0
+    //var index = 0
     var testo = "";
-    if (typeof tweet.entities !== "undefined"){
+    /*if (typeof tweet.entities !== "undefined"){
         if (typeof tweet.entities.hashtags !== "undefined"){
             while (typeof tweet.entities.hashtags[index]!=="undefined"){
                 testo = testo + " " + tweet.entities.hashtags[index].tag;
                 index=index+1;
             }
         }
-    }
+    }*/
+    testo = testo + " " + tweet.text;
     return testo
 }
 
@@ -155,7 +156,7 @@ function print_tweets(data){
     var testo = "";
 
     for (element of dati){
-        testo = aggiornaHashtagCloud(element);
+        testo = testo + " " + aggiornaHashtagCloud(element);
     }
     word_cloud(testo);
 
