@@ -14,9 +14,9 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
-	<!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>-->
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnoZuhgQP9P6u76DmZFi1RAGFI3avJQgc&callback=initMap"
-	type="text/javascript"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=MYKEY&callback=initMap"
+	type="text/javascript"></script>-->
 
 	<!--librerie wordcloud-->
 	<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
@@ -36,6 +36,7 @@
 	<script src="{{ url_for('static', filename='js/jquery/grafica_tt.js') }}" type="text/javascript" charset="utf-8"></script>
 	<script src="{{ url_for('static', filename='js/jquery/mappa_tt.js') }}" type="text/javascript" charset="utf-8"></script>
 	<script src="{{ url_for('static', filename='js/jquery/wordcloud_tt.js') }}" type="text/javascript" charset="utf-8"></script>
+	<script src="{{ url_for('static', filename='js/jquery/temporalgraph_tt.js') }}" type="text/javascript" charset="utf-8"></script>
 	<script src="{{ url_for('static', filename='js/jquery/importexport_tt.js') }}" type="text/javascript" charset="utf-8"></script>
 	<script src="{{ url_for('static', filename='js/jquery/socket_tt.js') }}" type="text/javascript" charset="utf-8"></script>
 
@@ -75,7 +76,10 @@
 			<!--form lookup-->
 			<form id="form_lookup" method="post" target="tweet" style="display:none">
 				<div class="testo_ricerca">
-					<input id="input" type="text" name="ricerca" >
+					<div class="input-container">
+						<input id="input" type="text" name="ricerca" >
+						<input id="input2" type="text" name="ricerca" >
+					</div>
 					<input class="button" type="submit" onclick=richiesta_dati() value="Search"><br>
 				</div>
 				<input type="checkbox" id="persona" name="persona" class="filtro">
@@ -122,6 +126,8 @@
     		<div id="map-canvas"></div>
 	  	</div>
 		<div id="word_cloud" style="display:none">
+		</div>
+		<div id="chartdiv">
 		</div>
 		<iframe name="tweet" id="json_ricevuto" style="display:none;"></iframe>
 		<!--Finestra di dialogo per salvataggi-->

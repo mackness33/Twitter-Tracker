@@ -123,6 +123,9 @@ function tweet_visualization(tweet, utente){
     container.appendChild(text);
     let tweet_list = document.getElementById("visualizzazione_tw");
     tweet_list.insertBefore(container, tweet_list.childNodes[0]);
+    console.log(tweet.created_at)
+    var date = new Date(tweet.created_at)
+    console.log(date.getDay())
 }
 
 function remove_old_tweets(){
