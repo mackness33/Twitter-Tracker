@@ -1,4 +1,4 @@
-am4core.ready(function() {
+function temporal(data) {
 
     // Themes begin
     am4core.useTheme(am4themes_animated);
@@ -7,49 +7,27 @@ am4core.ready(function() {
     // Create chart instance
     var chart = am4core.create("chartdiv", am4charts.XYChart);
     
-    // Add data
-    var data = [
-      {
-        country: "Lithuania",
-        research: 5.9
-      },
-      {
-        country: "Czechia",
-        research: 3.9
-      },
-      {
-        country: "Ireland",
-        research: 27.1
-      },
-      {
-        country: "Hungary",
-        research: 36.9
-      },
-      {
-        country: "Poland",
-        research: 21.1
-      }
-    ];
-    
     chart.data = data;
     // Create axes
     var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "country";
-    categoryAxis.renderer.grid.template.location = 100;
-    categoryAxis.renderer.minGridDistance = 10;
-    categoryAxis.interpolationDuration = 2000;
+    categoryAxis.dataFields.category = "giorno";
+    categoryAxis.renderer.labels.template.fill = am4core.color("white");
+    categoryAxis.renderer.grid.template.strokeOpacity = 0;
     
     var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    valueAxis.renderer.grid.template.strokeOpacity = 0;
+    valueAxis.renderer.labels.template.fill = am4core.color("white");
     
     // Create series
     function createSeries(field, name) {
       var series = chart.series.push(new am4charts.ColumnSeries());
-      series.dataFields.valueX = "research";
-      series.dataFields.categoryY = "country";
-      series.columns.template.tooltipText = "[bold]{valueX}[/]";                        //49-50 fanno vedere il numero in grassetto quando si va sopra col mouse
-      series.columns.template.cursorOverStyle = am4core.MouseCursorStyle.pointer;
+      series.dataFields.valueX = "numeroTweet";
+      series.dataFields.categoryY = "giorno";
+      series.columns.template.tooltipText = "[bold]{valueX}[/]";                        //fa vedere il numero in grassetto quando si va sopra col mouse
+      series.columns.template.cursorOverStyle = am4core.MouseCursorStyle.pointer;       //am4core.color("white");
     
-      var hs = series.columns.template.states.create("hover");      //per cambiare colore quando ci si pasa sopra
+      var hs = series.columns.template.states.create("hover");      //per cambiare colore quando ci si passa sopra
       hs.properties.fillOpacity = 0.5;
     
       var columnTemplate = series.columns.template;
@@ -78,7 +56,7 @@ am4core.ready(function() {
         handleDragStop(ev);
       });*/
     }
-    createSeries("research", "Research");
+    createSeries("numeroTweet", "Ntweet");
     
     /*function handleDragStop(ev) {
       data = [];
@@ -125,5 +103,5 @@ am4core.ready(function() {
       return 0;
     }*/
     
-    }); // end (la parte commentata serve per trascinare le barre, ergo è utile 3 in una scala da 1 a 10)
+    }; // end (la parte commentata serve per trascinare le barre, ergo è utile 3 in una scala da 1 a 10)
     am4core.ready()

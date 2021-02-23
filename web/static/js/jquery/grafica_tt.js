@@ -74,11 +74,20 @@ function visualizza_input(){
     }
 }
 
-//Pulisce mappa e wordcloud ad ogni ricerca sullo stream e imposta su attivo 
+//Pulisce mappa, wordcloud e grafico temporale ad ogni ricerca sullo stream e imposta su attivo 
 function aggiustamenti_stream(){
     word_cloud_text = "";
     coordinate = [];
     initialize(coordinate);
     word_cloud(word_cloud_text);
+    ripristinatempo();
+    temporal(giornitweet);
     document.getElementById("switch-1").checked = true;
+}
+
+//reinizializza tempo
+function ripristinatempo(){
+    for (element of giornitweet){
+        element.numeroTweet = 0;
+    }
 }

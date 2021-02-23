@@ -46,6 +46,8 @@ function ferma_stream1() {
         coordinate = [];
         initialize(coordinate);
         word_cloud(word_cloud_text);
+        ripristinatempo();
+        temporal(giornitweet);
         remove_old_tweets();
     }
     if(document.getElementById("switch-1").checked) {

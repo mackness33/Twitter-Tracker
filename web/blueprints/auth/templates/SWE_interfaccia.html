@@ -78,9 +78,10 @@
 				<div class="testo_ricerca">
 					<div class="input-container">
 						<input id="input" type="text" name="ricerca" >
-						<input id="input2" type="text" name="ricerca" >
+						<input id="input2" type="text" name="ricerca" style="display: block;">
+						<input class="button" type="submit" onclick=richiesta_dati() value="Search">
 					</div>
-					<input class="button" type="submit" onclick=richiesta_dati() value="Search"><br>
+					<br>
 				</div>
 				<input type="checkbox" id="persona" name="persona" class="filtro">
 				<label for="persona"> Username</label><br>
@@ -90,8 +91,13 @@
 			<!--form streaming-->
 			<form id="form_stream" method="post" target="tweet">
 				<div class="testo_ricerca">
-					<input id="input_stream" type="text" name="ricerca">
-					<input class="button" onclick="aggiustamenti_stream()" type="submit" value="Search"><br>
+					<div class="input-container">
+						<input id="input_stream" type="text" name="ricerca">
+						<input id="input_stream2" type="text" name="ricerca">
+						<input id="input_stream3" type="text" name="ricerca">
+						<input class="button" onclick="aggiustamenti_stream()" type="submit" value="Search">
+					</div>
+					<br>
 				</div>
 				<input type="checkbox" id="persona_stream" name="persona" class="filtro">
 				<label for="persona_stream"> Username</label><br>

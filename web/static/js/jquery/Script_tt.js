@@ -45,6 +45,37 @@ var esporta_stream = {  //per esportare lo stream
 
 var coordinate = [];
 
+var giornitweet = [
+    {
+        giorno: "Domenica",
+        numeroTweet: 0
+    },
+    {
+        giorno: "Lunedì",
+        numeroTweet: 0
+    },
+    {
+        giorno: "Martedì",
+        numeroTweet: 0
+    },
+    {
+        giorno: "Mercoledì",
+        numeroTweet: 0
+    },
+    {
+        giorno: "Giovedì",
+        numeroTweet: 0
+    },
+    {
+        giorno: "Venerdì",
+        numeroTweet: 0
+    },
+    {
+        giorno: "Sabato",
+        numeroTweet: 0
+    }
+  ];
+
 function print_stream_tweets(response){
     isStream = true;
     esporta_stream.data.push(response.data);
@@ -67,10 +98,17 @@ function print_stream_tweets(response){
 
     if(aggiorna_wordcloud){
           word_cloud(word_cloud_text);
-      }
+    }
 
     // visualizzazione tweet
     tweet_visualization(tweet, user)
+
+    var giorno = new Date(tweet.created_at);
+    var indicegiorno = giorno.getDay();
+    giornitweet[indicegiorno].numeroTweet = giornitweet[indicegiorno].numeroTweet + 1 
+
+    //grafico giorni
+    temporal(giornitweet)
 
     // maps 
     var aggiorna_coordinate = false;
@@ -123,9 +161,6 @@ function tweet_visualization(tweet, utente){
     container.appendChild(text);
     let tweet_list = document.getElementById("visualizzazione_tw");
     tweet_list.insertBefore(container, tweet_list.childNodes[0]);
-    console.log(tweet.created_at)
-    var date = new Date(tweet.created_at)
-    console.log(date.getDay())
 }
 
 function remove_old_tweets(){
@@ -155,6 +190,7 @@ function print_tweets(data){
     // TODO: handle results with undefined data, ergo: 0 tweets found
     var dati = data.data
     var utente = data.includes.users;
+    ripristinatempo();
     //word cloud;
     var testo = "";
 
@@ -170,8 +206,14 @@ function print_tweets(data){
     }
 
     dati.forEach(element => {
-        tweet_visualization(element,utente)
+        tweet_visualization(element,utente);
+        var giorno = new Date(element.created_at);
+        var indicegiorno = giorno.getDay();
+        giornitweet[indicegiorno].numeroTweet = giornitweet[indicegiorno].numeroTweet + 1 
     });
+
+    //grafico giorni
+    temporal(giornitweet)
 
     //colloca su mappa
     var coordinate = [];
