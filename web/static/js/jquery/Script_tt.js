@@ -240,16 +240,16 @@ function print_tweets(data){
                     indicePlace = indicePlace + 1;
                 }
             }
-            if (typeof element.attachments!=undefined){     //immagine
+            /*if (typeof element.attachments!=undefined){     //immagine
                 var indiceimmagine = 0;
                 while (indiceimmagine < data.includes.media.length){
                     if (data.includes.media[indiceimmagine].media_key==element.attachments.media_keys[0]){
                         var immaginetweet = data.includes.media[indiceimmagine].preview_image_url;
                     }
                 }
-            }
+            }*/
             var testo_tweet = element.text;
-            var latlong_text = [lat, long, testo_tweet, nome_utente, immaginetweet];
+            var latlong_text = [lat, long, testo_tweet, nome_utente, "https://pbs.twimg.com/tweet_video_thumb/EvCG5oiUYAE3wjo.jpg"];
             coordinate.push(latlong_text);
         }
     }

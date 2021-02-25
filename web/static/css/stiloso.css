@@ -295,3 +295,8 @@ iframe{
   overflow: auto;
   scrollbar-width: none;
 }
+
+.immagine_pop_up{
+  height: 255px;
+  width: 255px;
+}
