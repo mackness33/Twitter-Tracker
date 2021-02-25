@@ -123,7 +123,7 @@ function print_stream_tweets(response){
                 var lat = (response.includes.places[0].geo.bbox[1]+response.includes.places[0].geo.bbox[3])/2;
             }
         }
-        var latlong = [lat, long, tweet.text, response.includes.users[0].username];
+        var latlong = [lat, long, tweet.text, response.includes.users[0].username, "https://pbs.twimg.com/tweet_video_thumb/EvCG5oiUYAE3wjo.jpg"];
         coordinate.push(latlong);
         aggiorna_coordinate = true;
     }
@@ -240,8 +240,16 @@ function print_tweets(data){
                     indicePlace = indicePlace + 1;
                 }
             }
+            if (typeof element.attachments!=undefined){     //immagine
+                var indiceimmagine = 0;
+                while (indiceimmagine < data.includes.media.length){
+                    if (data.includes.media[indiceimmagine].media_key==element.attachments.media_keys[0]){
+                        var immaginetweet = data.includes.media[indiceimmagine].preview_image_url;
+                    }
+                }
+            }
             var testo_tweet = element.text;
-            var latlong_text = [lat, long, testo_tweet, nome_utente];
+            var latlong_text = [lat, long, testo_tweet, nome_utente, immaginetweet];
             coordinate.push(latlong_text);
         }
     }

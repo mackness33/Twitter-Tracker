@@ -76,7 +76,7 @@ function marker(coordinate, map){
             map: map,
         });
 
-        var contentString = '<div class= "container_popup"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p></div>';
+        var contentString = '<div class= "container_popup"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p>' + '<img src = "' + element[4] + '">' + '</div>';        
 
         pop_up(contentString, map, marker);
 
