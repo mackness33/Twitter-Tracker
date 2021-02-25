@@ -123,7 +123,22 @@ function print_stream_tweets(response){
                 var lat = (response.includes.places[0].geo.bbox[1]+response.includes.places[0].geo.bbox[3])/2;
             }
         }
-        var latlong = [lat, long, tweet.text, response.includes.users[0].username, "https://pbs.twimg.com/tweet_video_thumb/EvCG5oiUYAE3wjo.jpg"];
+        if (typeof tweet.attachments!=undefined){     //immagine
+            var indiceimmagine = 0;
+            while (indiceimmagine < response.includes.media.length){
+                if (response.includes.media[indiceimmagine].media_key==tweet.attachments.media_keys[0]){
+                    var immaginetweet = response.includes.media[indiceimmagine].url;
+                    indiceimmagine = response.includes.media.length;
+                }
+                else{
+                    indiceimmagine = indiceimmagine + 1;
+                }
+            }
+        }
+        if (typeof immaginetweet!==String){
+            var latlong = [lat, long, tweet.text, response.includes.users[0].username, immaginetweet];
+        }
+        var latlong = [lat, long, tweet.text, response.includes.users[0].username];
         coordinate.push(latlong);
         aggiorna_coordinate = true;
     }
@@ -240,17 +255,24 @@ function print_tweets(data){
                     indicePlace = indicePlace + 1;
                 }
             }
-            if (typeof element.attachments!=undefined){     //immagine
+            if (typeof element.attachments!==undefined){     //immagine
                 var indiceimmagine = 0;
                 while (indiceimmagine < data.includes.media.length){
                     if (data.includes.media[indiceimmagine].media_key==element.attachments.media_keys[0]){
+                        console.log("entro")
                         var immaginetweet = data.includes.media[indiceimmagine].url;
+                        indiceimmagine = data.includes.media.length;    
                     }
-                    indiceimmagine = data.includes.media.length;
+                    else{
+                        indiceimmagine = indiceimmagine + 1;
+                    }
                 }
             }
             var testo_tweet = element.text;
-            var latlong_text = [lat, long, testo_tweet, nome_utente, immaginetweet];
+            if (typeof immaginetweet!==String){
+                var latlong_text = [lat, long, testo_tweet, nome_utente, immaginetweet];
+            }
+            var latlong_text = [lat, long, testo_tweet, nome_utente];
             coordinate.push(latlong_text);
         }
     }

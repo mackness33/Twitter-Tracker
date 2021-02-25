@@ -76,7 +76,13 @@ function marker(coordinate, map){
             map: map,
         });
 
-        var contentString = '<div class= "container_popup"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p>' + '<img class = "immagine_pop_up" src = ' + element[4] + '>' + '</div>';        
+        if (typeof element[4]!==undefined){
+          var contentString = '<div class= "container_popup" style="scrollbar-width:none;"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p><hr>' + '<img class = "immagine_pop_up" src = ' + element[4] + '>' + '</div>';        
+        }
+        else {
+          var contentString = '<div class= "container_popup" style="scrollbar-width:none;"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p></div>';        
+        }
+        
 
         pop_up(contentString, map, marker);
 
@@ -89,9 +95,9 @@ function pop_up(contentString, map, marker){
 
         content: contentString,
 
-          maxWidth: 150,
+        //maxWidth: 150,
 
-        maxHeight: 200,
+        //maxHeight: 200,
 
     });
 
