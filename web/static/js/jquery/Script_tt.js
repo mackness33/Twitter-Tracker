@@ -123,10 +123,10 @@ function print_stream_tweets(response){
                 var lat = (response.includes.places[0].geo.bbox[1]+response.includes.places[0].geo.bbox[3])/2;
             }
         }
-        if (typeof tweet.attachments!=undefined){     //immagine
+        if (typeof tweet.attachments!=="undefined"){     //immagine
             var indiceimmagine = 0;
             while (indiceimmagine < response.includes.media.length){
-                if (response.includes.media[indiceimmagine].media_key==tweet.attachments.media_keys[0]){
+                if (tweet.attachments.media_keys[0]==response.includes.media[indiceimmagine].media_key){
                     var immaginetweet = response.includes.media[indiceimmagine].url;
                     indiceimmagine = response.includes.media.length;
                 }
@@ -135,10 +135,12 @@ function print_stream_tweets(response){
                 }
             }
         }
-        if (typeof immaginetweet!==String){
+        if (typeof immaginetweet!=="undefined"){
             var latlong = [lat, long, tweet.text, response.includes.users[0].username, immaginetweet];
         }
-        var latlong = [lat, long, tweet.text, response.includes.users[0].username];
+        else{
+            var latlong = [lat, long, tweet.text, response.includes.users[0].username];
+        }
         coordinate.push(latlong);
         aggiorna_coordinate = true;
     }
@@ -255,12 +257,12 @@ function print_tweets(data){
                     indicePlace = indicePlace + 1;
                 }
             }
-            if (typeof element.attachments!==undefined){     //immagine
+            var immaginetweet;
+            if (typeof element.attachments!=="undefined"){     //immagine
                 var indiceimmagine = 0;
                 while (indiceimmagine < data.includes.media.length){
-                    if (data.includes.media[indiceimmagine].media_key==element.attachments.media_keys[0]){
-                        console.log("entro")
-                        var immaginetweet = data.includes.media[indiceimmagine].url;
+                    if (element.attachments.media_keys[0]==data.includes.media[indiceimmagine].media_key){
+                        immaginetweet = data.includes.media[indiceimmagine].url;
                         indiceimmagine = data.includes.media.length;    
                     }
                     else{
@@ -269,10 +271,12 @@ function print_tweets(data){
                 }
             }
             var testo_tweet = element.text;
-            if (typeof immaginetweet!==String){
+            if (typeof immaginetweet!=="undefined"){
                 var latlong_text = [lat, long, testo_tweet, nome_utente, immaginetweet];
             }
-            var latlong_text = [lat, long, testo_tweet, nome_utente];
+            else{
+                var latlong_text = [lat, long, testo_tweet, nome_utente];
+            }
             coordinate.push(latlong_text);
         }
     }

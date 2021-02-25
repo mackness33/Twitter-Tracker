@@ -75,8 +75,8 @@ function marker(coordinate, map){
             position: myLatlng,
             map: map,
         });
-
-        if (typeof element[4]!==undefined){
+        console.log(element)
+        if (typeof element[4]!=="undefined"){
           var contentString = '<div class= "container_popup" style="scrollbar-width:none;"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p><hr>' + '<img class = "immagine_pop_up" src = ' + element[4] + '>' + '</div>';        
         }
         else {
