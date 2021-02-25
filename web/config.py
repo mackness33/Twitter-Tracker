@@ -8,7 +8,6 @@ class Config:
     SECURITY_PASSWORD_SALT = "dev"
     SECRET_KEY = 'dev'
 
-
 class Production(Config):
     pass
 

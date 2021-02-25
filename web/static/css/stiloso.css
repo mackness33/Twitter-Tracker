@@ -297,6 +297,10 @@ iframe{
 }
 
 .immagine_pop_up{
-  height: 255px;
-  width: 255px;
+  height: auto;
+  width: 7.25vw;
+}
+
+.container_popup, .testo_popup{
+  scrollbar-width: none;
 }
