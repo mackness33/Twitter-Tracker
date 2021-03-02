@@ -50,7 +50,7 @@ def disconnect_request():
 
 @tracker.route('/base', methods = ['POST'])
 def base_post():
-    data = request.form['ricerca']
+    data = request.form['ricerca_chiave']
     try:
         persona = request.form['persona']
         print(persona)

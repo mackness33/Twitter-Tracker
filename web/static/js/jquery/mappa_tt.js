@@ -59,7 +59,61 @@ function initialize(coordinate) {
       map.mapTypes.set('map_style', styledMap);
       map.setMapTypeId('map_style');
 
+      //disegnare il rettangolo
+      const drawingManager = new google.maps.drawing.DrawingManager({
+        drawingControl: true,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.TOP_CENTER,
+          drawingModes: [
+            google.maps.drawing.OverlayType.RECTANGLE,
+          ],
+        },
+        rectangleOptions: {
+          draggable: true,
+          editable: true,
+        },
+      });
+
+      var r_prec;     //per cancellare il vecchio rettangolo
+
+      google.maps.event.addListener(drawingManager,'rectanglecomplete',function(r) {
+        map.fitBounds(r.getBounds());
+        google.maps.event.addListener(r, "bounds_changed", function() {  //aggiorna i campi lat e long quando viene spostato o ridimensionato
+          document.getElementById("latnord").value = (r.getBounds()).toJSON().north;
+          document.getElementById("latsud").value = (r.getBounds()).toJSON().south;
+          document.getElementById("longest").value = (r.getBounds()).toJSON().east;
+          document.getElementById("longovest").value = (r.getBounds()).toJSON().west;
+        });
+        console.log((r.getBounds()).toJSON());
+        if (r_prec){
+          r_prec.setMap(null);
+        }
+        r_prec=r;
+        document.getElementById("latnord").value = (r.getBounds()).toJSON().north;
+        document.getElementById("latsud").value = (r.getBounds()).toJSON().south;
+        document.getElementById("longest").value = (r.getBounds()).toJSON().east;
+        document.getElementById("longovest").value = (r.getBounds()).toJSON().west;
+      });
+
+      drawingManager.setMap(map);
+    
       marker(coordinate, map);
+}
+
+//crea il rettangolo date 4 coordinate
+function crearettangolo(r, map){
+  r = new google.maps.Rectangle({
+    draggable: true,
+    editable: true,
+    map: map,
+    bounds: {
+      north: Number(document.getElementById("latnord").value),
+      south: Number(document.getElementById("latsud").value),
+      east: Number(document.getElementById("longest").value),
+      west: Number(document.getElementById("longovest").value),
+    },
+
+  })
 }
 
 //funzione per marker
@@ -75,8 +129,8 @@ function marker(coordinate, map){
             position: myLatlng,
             map: map,
         });
-        console.log(element)
         if (typeof element[4]!=="undefined"){
+          marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
           var contentString = '<div class= "container_popup" style="scrollbar-width:none;"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p><hr>' + '<img class = "immagine_pop_up" src = ' + element[4] + '>' + '</div>';        
         }
         else {

@@ -14,9 +14,9 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<!--libreria mappa-->
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-	<!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=MYKEY&callback=initMap"
-	type="text/javascript"></script>-->
+	<!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>-->
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnoZuhgQP9P6u76DmZFi1RAGFI3avJQgc&libraries=drawing&callback=initMap"
+	type="text/javascript"></script>
 
 	<!--librerie wordcloud-->
 	<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
@@ -77,8 +77,8 @@
 			<form id="form_lookup" method="post" target="tweet" style="display:none">
 				<div class="testo_ricerca">
 					<div class="input-container">
-						<input id="input" type="text" name="ricerca" >
-						<input id="input2" type="text" name="ricerca" style="display: block;">
+						<input id="input" type="text" name="ricerca_chiave" placeholder="Inserisci parola chiave...">
+						<input id="input2" type="text" name="ricerca_nome" placeholder="Inserisci Username..." style="display: block;">
 						<input class="button" type="submit" onclick=richiesta_dati() value="Search">
 					</div>
 					<br>
@@ -92,9 +92,9 @@
 			<form id="form_stream" method="post" target="tweet">
 				<div class="testo_ricerca">
 					<div class="input-container">
-						<input id="input_stream" type="text" name="ricerca">
-						<input id="input_stream2" type="text" name="ricerca">
-						<input id="input_stream3" type="text" name="ricerca">
+						<input id="input_stream" type="text" name="stream_chiave" placeholder="Inserisci parola chiave...">
+						<input id="input_stream2" type="text" name="stream_nome" placeholder="Inserisci Username...">
+						<input id="input_stream3" type="text" name="stream_luogo" placeholder="Inserisci luogo...">
 						<input class="button" onclick="aggiustamenti_stream()" type="submit" value="Search">
 					</div>
 					<br>
@@ -107,14 +107,14 @@
 				<label for="parola_chiave_stream"> Parola chiave</label><br>
 				<input type="checkbox" id="area_geografica_stream" onclick="visualizza_input()" name="area_geografica" class="filtro">
 				<label for="area geografica stream"> Area geografica</label><br>
-				<div id="coordinate_geo" style="display:none;">
+				<div id="coordinate_geo" style="display:block;">
 					<div id="latitudine">&nbsp;Latitudini:
-						<input type="text" name="lat1">
-						<input type="text" name="lat2"><br>
+						<input type="text" id="latnord" name="lat1">
+						<input type="text" id="latsud" name="lat2"><br>
 					</div>
 					<div id="longitudine">&nbsp;Longitudini:
-						<input type="text" name="long1">
-						<input type="text" name="long2"><br>
+						<input type="text" id="longest" name="long1">
+						<input type="text" id="longovest" name="long2"><br>
 					</div>
 				</div>
 			</form>
