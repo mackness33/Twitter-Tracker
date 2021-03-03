@@ -233,7 +233,7 @@ iframe{
   width: 0px;
   height: 0px;
 }
-#start_stop {
+#start_stop, #language {
   margin-left: 25px;
   color: #50ABF1;
   font-weight: bold;
