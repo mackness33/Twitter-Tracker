@@ -189,17 +189,21 @@ function remove_old_tweets(){
 }
 
 function aggiornaHashtagCloud(tweet){
-    //var index = 0
     var testo = "";
-    /*if (typeof tweet.entities !== "undefined"){
-        if (typeof tweet.entities.hashtags !== "undefined"){
-            while (typeof tweet.entities.hashtags[index]!=="undefined"){
-                testo = testo + " " + tweet.entities.hashtags[index].tag;
-                index=index+1;
+    var testo_agg = tweet.text;
+    if (typeof tweet.entities !== "undefined"){
+        if (typeof tweet.entities.mentions !== "undefined"){
+            for (element of tweet.entities.mentions){
+                testo_agg = testo_agg.replace("@"+element.username, "");
             }
         }
-    }*/
-    testo = testo + " " + tweet.text;
+        if (typeof tweet.entities.urls !== "undefined"){
+            for (element of tweet.entities.urls){
+                testo_agg = testo_agg.replace(element.url, "");
+            }
+        }
+    }
+    testo = testo + " " + testo_agg;
     return testo
 }
 

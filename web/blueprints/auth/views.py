@@ -51,6 +51,7 @@ def disconnect_request():
 @tracker.route('/base', methods = ['POST'])
 def base_post():
     data = request.form['ricerca_chiave']
+    data_user = request.form['ricerca_nome']
     try:
         persona = request.form['persona']
         print(persona)
@@ -63,13 +64,13 @@ def base_post():
         parola_chiave = False
 
     print('data: ', data)
-    if data == "":
+    if ((data == "") and (parola_chiave != False)) or ((data_user == "") and (persona != False)):
         return json.dumps('Error on input')
 
     if parola_chiave:
         return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
     elif persona:
-        return T.recent_search(query="from:"+data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
+        return T.recent_search(query="from:"+data_user, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
     else:
         return json.dumps('Seleziona un filtro')
     '''if data != "":

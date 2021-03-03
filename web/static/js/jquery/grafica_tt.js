@@ -91,3 +91,79 @@ function ripristinatempo(){
         element.numeroTweet = 0;
     }
 }
+
+//vedi opzioni ricerca o stream
+function vedi(){
+    var visibileusersearch = document.getElementById("persona");
+    var visibilekeysearch = document.getElementById("parola_chiave");
+    var visibileuserstream = document.getElementById("persona_stream");
+    var visibilekeystream = document.getElementById("parola_chiave_stream");
+    var visibilelocstream = document.getElementById("luogo_stream");
+    if (visibilekeysearch.checked){
+        document.getElementById("input").style.display = "block";
+    }
+    else{
+        document.getElementById("input").style.display = "none";
+    }
+    if (visibileusersearch.checked){
+        document.getElementById("input2").style.display = "block";
+    }
+    else{
+        document.getElementById("input2").style.display = "none";
+    }
+    if (visibilekeystream.checked){
+        document.getElementById("input_stream").style.display = "block";
+    }
+    else{
+        document.getElementById("input_stream").style.display = "none";
+    }
+    if (visibileuserstream.checked){
+        document.getElementById("input_stream2").style.display = "block";
+    }
+    else{
+        document.getElementById("input_stream2").style.display = "none";
+    }
+    if (visibilelocstream.checked){
+        document.getElementById("input_stream3").style.display = "block";        
+    }
+    else{
+        document.getElementById("input_stream3").style.display = "none"; 
+    }
+    ridimensiona_input();
+}
+
+function ridimensiona_input(){
+    var ricerca = document.getElementById("search");
+    if (ricerca.checked){
+        var visibileusersearch = document.getElementById("persona");
+        var visibilekeysearch = document.getElementById("parola_chiave");
+        if ((visibilekeysearch.checked)&&(visibileusersearch.checked)){
+            document.getElementById("input").style.width = "40%";
+            document.getElementById("input2").style.width = "40%";
+        }
+        else{
+            document.getElementById("input").style.width = "80%";
+            document.getElementById("input2").style.width = "80%";
+        }
+    }
+    else{
+        var visibileuserstream = document.getElementById("persona_stream");
+        var visibilekeystream = document.getElementById("parola_chiave_stream");
+        var visibilelocstream = document.getElementById("luogo_stream");
+        if ((visibilekeystream.checked)&&(visibileuserstream.checked)&&(visibilelocstream.checked)){
+            document.getElementById("input_stream").style.width = "25%";
+            document.getElementById("input_stream2").style.width = "25%";
+            document.getElementById("input_stream3").style.width = "25%";
+        }
+        else if ((visibilekeystream.checked && visibileuserstream.checked) || (visibilekeystream.checked && visibilelocstream.checked) || (visibilelocstream.checked && visibileuserstream.checked)){
+            document.getElementById("input_stream").style.width = "37.5%";
+            document.getElementById("input_stream2").style.width = "37.5%";
+            document.getElementById("input_stream3").style.width = "37.5%";
+        }
+        else {
+            document.getElementById("input_stream").style.width = "75%";
+            document.getElementById("input_stream2").style.width = "75%";
+            document.getElementById("input_stream3").style.width = "75%";
+        }
+    }
+}

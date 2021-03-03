@@ -130,10 +130,11 @@ function marker(coordinate, map){
             map: map,
         });
         if (typeof element[4]!=="undefined"){
-          marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+          marker.setIcon('https://i.ibb.co/jWS1SC7/verde1.png');
           var contentString = '<div class= "container_popup" style="scrollbar-width:none;"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p><hr>' + '<img class = "immagine_pop_up" src = ' + element[4] + '>' + '</div>';        
         }
         else {
+          marker.setIcon('https://i.ibb.co/MPTB2cg/rosso1.png');
           var contentString = '<div class= "container_popup" style="scrollbar-width:none;"><h2>' + element[3] + '</h2><hr>' + '<p class = "testo_popup">' + element[2] + '</p></div>';        
         }
         
