@@ -86,14 +86,16 @@
 					<div class="input-container">
 						<input id="input" type="text" name="ricerca_chiave" placeholder="Inserisci parola chiave...">
 						<input id="input2" type="text" name="ricerca_nome" placeholder="Inserisci Username..." style="display: none;">
-						<input class="button" type="submit" onclick=richiesta_dati() value="Search">
+						<input class="button" type="submit" onclick=richiesta_dati() value="Search"><br>
 					</div>
 					<br>
 				</div>
-				<input type="checkbox" id="persona" name="persona" class="filtro" onclick=vedi()>
-				<label for="persona"> Username</label><br>
-				<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro" onclick=vedi() checked>
-				<label for="parola chiave"> Parola chiave</label><br>
+				<div id="ricerca_form">
+					<input type="checkbox" id="persona" name="persona" class="filtro" onclick=vedi()>
+					<label for="persona"> Username</label>
+					<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro" onclick=vedi() checked>
+					<label for="parola chiave"> Parola chiave</label>
+				</div>
 			</form>
 			<!--form streaming-->
 			<form id="form_stream" method="post" target="tweet">
@@ -102,19 +104,21 @@
 						<input id="input_stream" type="text" name="stream_chiave" placeholder="Inserisci parola chiave...">
 						<input id="input_stream2" type="text" name="stream_nome" placeholder="Inserisci Username..." style="display: none;">
 						<input id="input_stream3" type="text" name="stream_luogo" placeholder="Inserisci luogo..." style="display: none;">
-						<input class="button" onclick="aggiustamenti_stream()" type="submit" value="Search">
+						<input class="button" onclick="aggiustamenti_stream()" type="submit" value="Search"><br>
 					</div>
 					<br>
 				</div>
-				<input type="checkbox" id="persona_stream" name="persona" class="filtro" onclick=vedi()>
-				<label for="persona_stream"> Username</label><br>
-				<input type="checkbox" id="luogo_stream" name="luogo" class="filtro" onclick=vedi()>
-				<label for="luogo_stream"> Luogo</label><br>
-				<input type="checkbox" id="parola_chiave_stream" name="parola_chiave" class="filtro" onclick=vedi() checked>
-				<label for="parola_chiave_stream"> Parola chiave</label><br>
-				<input type="checkbox" id="area_geografica_stream" onclick="visualizza_input()" name="area_geografica" class="filtro">
-				<label for="area geografica stream"> Area geografica</label><br>
-				<div id="coordinate_geo" style="display:block;">
+				<div id="stream_form">
+					<input type="checkbox" id="persona_stream" name="persona" class="filtro" onclick=vedi()>
+					<label for="persona_stream"> Username</label>
+					<input type="checkbox" id="luogo_stream" name="luogo" class="filtro" onclick=vedi()>
+					<label for="luogo_stream"> Luogo</label>
+					<input type="checkbox" id="parola_chiave_stream" name="parola_chiave" class="filtro" onclick=vedi() checked>
+					<label for="parola_chiave_stream"> Parola chiave</label>
+					<input type="checkbox" id="area_geografica_stream" name="area_geografica" class="filtro" onclick="visualizza_input()">
+					<label for="area geografica stream"> Area geografica</label>
+				</div>
+				<div id="coordinate_geo" style="display: none;">
 					<div id="latitudine">&nbsp;Latitudini:
 						<input type="text" id="latnord" name="lat1">
 						<input type="text" id="latsud" name="lat2"><br>

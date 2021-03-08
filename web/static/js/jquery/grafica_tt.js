@@ -66,6 +66,7 @@ function visualizza_form_stream(){ //vedi sopra
 
 //VISUALIZZAZIONE COORDINATE GEOGRAFICHE
 function visualizza_input(){
+    console.log("sate")
     if(document.getElementById("area_geografica_stream").checked){
         document.getElementById("coordinate_geo").style.display = "block";
     }
@@ -94,6 +95,8 @@ function ripristinatempo(){
 
 //vedi opzioni ricerca o stream
 function vedi(){
+    console.log(document.getElementById("persona"))
+    console.log(document.getElementById("area_geografica_stream"))
     var visibileusersearch = document.getElementById("persona");
     var visibilekeysearch = document.getElementById("parola_chiave");
     var visibileuserstream = document.getElementById("persona_stream");
