@@ -101,23 +101,6 @@ class TwitterService():
 
 
     def delete_all_rules(self, headers, bearer_token, old_rules):
-        # if rules is None or "data" not in rules:
-        #     return None
-        #
-        #     ids = list(map(lambda rule: rule["id"], rules["data"]))
-        #     payload = {"delete": {"ids": ids}}
-        #     response = requests.post(
-        #     "https://api.twitter.com/2/tweets/search/stream/rules",
-        #     headers=headers,
-        #     json=payload
-        #     )
-        #     if response.status_code != 200:
-        #         raise Exception(
-        #         "Cannot delete rules (HTTP {}): {}".format(
-        #         response.status_code, response.text
-        #         )
-        #         )
-        #         print(json.dumps(response.json()))
         if old_rules is None or "data" not in old_rules:
             return None
 
@@ -173,10 +156,10 @@ class TwitterService():
     def set_rules(self, headers, delete, rules, bearer_token):
         # You can adjust the rules if needed
         print ("rules:", rules)
-        sample_rules = [
-        {"value": "dog has:images", "tag": "dog pictures"},
-        {"value": "cat has:images -grumpy", "tag": "cat pictures"},
-        ]
+        # sample_rules = [
+        # {"value": "dog has:images", "tag": "dog pictures"},
+        # {"value": "cat has:images -grumpy", "tag": "cat pictures"},
+        # ]
         # filt_rules = list()
         # filt_rules.append(rules)
         payload = {"add": rules}
@@ -198,7 +181,7 @@ class TwitterService():
 
         print(response.status_code)
         if response.status_code != 200:
-            print("fuckin exception")
+            print("exception on get stream")
             raise Exception(
                 "Cannot get stream (HTTP {}): {}".format(
                     response.status_code, response.text
@@ -245,6 +228,13 @@ class TwitterService():
         return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
 
     def _build_rules(self, input, types):
+        def _get_val_and_tag(gen_rule, value, tag):
+            rule = dict(rules[word])
+            print ("rule: ", rule)
+            rule["value"] += value
+            rule["tag"] += tag
+            return rule
+
         print("input: ", input)
         print("types: ", types)
         if types == None or types == [] or types == ["keyword"]:
@@ -255,43 +245,32 @@ class TwitterService():
             rules = list()
             return rules.append({"value": val, "tag": tag_val + "keywords"})
 
-        # position = ""
-        # if "place" in types or "bounding_box" in types:
-        #     position = "place:" + inputPos
         rules = list()
+        # init rules
         for inp in input:
             rules.append({"value": "", "tag": inp})
-        if "keyword" in types:
-            first = False
-            # word = 0
-            # for rule in rules:
-            #     print("rule: ", rule)
-            for word in range(len(rules)):
-                print ("rules[word]: ", rules[word])
-                print ("input[word]: ", input[word])
-                rule = dict(rules[word])
-                print ("rule: ", rule)
-                rule["value"] += " " + "OR " if word > 0 else ""  + input[word]
-                rule["tag"] += " keyword"
-                rules[word] = rule
-                # word += 1
-                # if first:
-                #     first = False
 
-        if "username" in types:
-            # person = 0
-            # for rule in rules:
+        values = ""
+        for word in range(len(input)):
+            values += " " + ("OR " if word > 0 else "")  + input[word]
+
+        # add keyword rule
+        if "keyword" in types:
             for word in range(len(rules)):
-                print ("rules[word]: ", rules[word])
-                print ("input[word]: ", input[word])
-                rule = dict(rules[word])
-                print ("rule: ", rule)
-                rule["value"] += " from:" + input[word]
-                rule["tag"] += " username"
-                rules[word] = rule
-            # for person in range(len(rules)):
-            #     rules[person]["tag"] += " username"
-                # person += 1
+                print("rule: ", rules[word])
+                rules[word] = _get_val_and_tag(rules[word], values, " keyword")
+
+        # add username rule
+        if "username" in types:
+            for word in range(len(rules)):
+                rules[word] = _get_val_and_tag(rules[word], " from:" + input[word], " username")
+
+        # if "place" in place:
+        #     for word in range(len(rules)):
+        #         rules[word] = _get_val_and_tag(rules[word], " from:" + input[word], " username")
+
+        for word in range(len(rules)):
+            rules[word] = _get_val_and_tag(rules[word], " lang:" + "it" + " -is:retweet", "")
 
         print ("rules", rules)
         return rules
