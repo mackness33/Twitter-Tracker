@@ -56,6 +56,14 @@ h1 {
   border-bottom-right-radius: 5px;
   border-top-right-radius: 5px;
 }
+.center {
+  margin: 0 auto;
+  width: 444.444px;
+}
+.center2 {
+  margin: 0 auto;
+  width: 224.942px;
+}
 #scelta_form input, #scelta_visualizzazione input, #ricerca_form input, #stream_form input {
   opacity: 0;
   position: fixed;
@@ -113,7 +121,6 @@ h1 {
 
 #ricerca_form, #stream_form {
   clear: both;
-  margin-left: 30%;
   padding-top: 1vw;
   padding-bottom: 0.8vw;
 }

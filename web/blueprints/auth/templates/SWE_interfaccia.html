@@ -91,10 +91,12 @@
 					<br>
 				</div>
 				<div id="ricerca_form">
-					<input type="checkbox" id="persona" name="persona" class="filtro" onclick=vedi()>
-					<label for="persona"> Username</label>
-					<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro" onclick=vedi() checked>
-					<label for="parola chiave"> Parola chiave</label>
+					<div class="center2">
+						<input type="checkbox" id="persona" name="persona" class="filtro" onclick=vedi()>
+						<label for="persona"> Username</label>
+						<input type="checkbox" id="parola_chiave" name="parola_chiave" class="filtro" onclick=vedi() checked>
+						<label for="parola_chiave"> Parola chiave</label>
+					</div>
 				</div>
 			</form>
 			<!--form streaming-->
@@ -109,6 +111,7 @@
 					<br>
 				</div>
 				<div id="stream_form">
+<<<<<<< Updated upstream
 					<input type="checkbox" id="persona_stream" name="persona" value="username" class="filtro" onclick=vedi()>
 					<label for="persona_stream"> Username</label>
 					<input type="checkbox" id="luogo_stream" name="luogo" value="place" class="filtro" onclick=vedi()>
@@ -117,6 +120,18 @@
 					<label for="parola_chiave_stream"> Parola chiave</label>
 					<input type="checkbox" id="area_geografica_stream" name="area_geografica" value="bounding_box" class="filtro" onclick="visualizza_input()">
 					<label for="area_geografica_stream"> Area geografica</label>
+=======
+					<div class="center">
+						<input type="checkbox" id="persona_stream" name="persona" class="filtro" onclick=vedi()>
+						<label for="persona_stream"> Username</label>
+						<input type="checkbox" id="luogo_stream" name="luogo" class="filtro" onclick=vedi()>
+						<label for="luogo_stream"> Luogo</label>
+						<input type="checkbox" id="parola_chiave_stream" name="parola_chiave" class="filtro" onclick=vedi() checked>
+						<label for="parola_chiave_stream"> Parola chiave</label>
+						<input type="checkbox" id="area_geografica_stream" name="area_geografica" class="filtro" onclick="visualizza_input()">
+						<label for="area_geografica_stream"> Area geografica</label>
+					</div>
+>>>>>>> Stashed changes
 				</div>
 				<div id="coordinate_geo" style="display: none;">
 					<div id="latitudine">&nbsp;Latitudini:
