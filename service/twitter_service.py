@@ -234,6 +234,8 @@ class TwitterService():
                 val += " " + ("OR " if i > 0 else "")  + input[i]
             val += ")"
 
+            return val
+
         def _get_val_and_tag(gen_rule, value, tag):
             rule = dict(gen_rule)
             print ("rule: ", rule)
