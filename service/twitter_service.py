@@ -228,8 +228,14 @@ class TwitterService():
         return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
 
     def _build_rules(self, input, types):
+        def _set_value(input):
+            val = "("
+            for i in range(len(input)):
+                val += " " + ("OR " if i > 0 else "")  + input[i]
+            val += ")"
+
         def _get_val_and_tag(gen_rule, value, tag):
-            rule = dict(rules[word])
+            rule = dict(gen_rule)
             print ("rule: ", rule)
             rule["value"] += value
             rule["tag"] += tag
@@ -238,21 +244,21 @@ class TwitterService():
         print("input: ", input)
         print("types: ", types)
         if types == None or types == [] or types == ["keyword"]:
-            val = ""
-            for i in range(len(input)):
-                val += " " + "OR " if i > 0 else ""  + input[i]
-            print ("rules", rules)
             rules = list()
-            return rules.append({"value": val, "tag": tag_val + "keywords"})
+            rules.append(_get_val_and_tag({"value":"", "tag": ""}, _set_value(input), "keywords"))
+            rules[0] = _get_val_and_tag(rules[0], " lang:" + "it" + " -is:retweet", "")
+            print ("rules", rules)
+            return rules
 
         rules = list()
         # init rules
         for inp in input:
             rules.append({"value": "", "tag": inp})
 
-        values = ""
+        values = "("
         for word in range(len(input)):
             values += " " + ("OR " if word > 0 else "")  + input[word]
+        values += ")"
 
         # add keyword rule
         if "keyword" in types:
@@ -264,10 +270,6 @@ class TwitterService():
         if "username" in types:
             for word in range(len(rules)):
                 rules[word] = _get_val_and_tag(rules[word], " from:" + input[word], " username")
-
-        # if "place" in place:
-        #     for word in range(len(rules)):
-        #         rules[word] = _get_val_and_tag(rules[word], " from:" + input[word], " username")
 
         for word in range(len(rules)):
             rules[word] = _get_val_and_tag(rules[word], " lang:" + "it" + " -is:retweet", "")
