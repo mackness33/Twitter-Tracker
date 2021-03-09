@@ -177,9 +177,9 @@ class TwitterService():
         {"value": "dog has:images", "tag": "dog pictures"},
         {"value": "cat has:images -grumpy", "tag": "cat pictures"},
         ]
-        filt_rules = list()
-        filt_rules.append(rules)
-        payload = {"add": filt_rules}
+        # filt_rules = list()
+        # filt_rules.append(rules)
+        payload = {"add": rules}
         response = requests.post(
             "https://api.twitter.com/2/tweets/search/stream/rules",
             headers=headers,
@@ -248,31 +248,50 @@ class TwitterService():
         print("input: ", input)
         print("types: ", types)
         if types == None or types == [] or types == ["keyword"]:
-            tag_val = ""
-            for inp in input:
-                tag_val += (inp + " ")
-            rules = {"value": input[0], "tag": tag_val + " keyword"}
+            val = ""
+            for i in range(len(input)):
+                val += " " + "OR " if i > 0 else ""  + input[i]
             print ("rules", rules)
-            return rules
+            rules = list()
+            return rules.append({"value": val, "tag": tag_val + "keywords"})
 
         # position = ""
         # if "place" in types or "bounding_box" in types:
         #     position = "place:" + inputPos
-        rules = list({"value": "", "tag": inp} for inp in input)
+        rules = list()
+        for inp in input:
+            rules.append({"value": "", "tag": inp})
         if "keyword" in types:
             first = False
-            for rule in rules:
-                rule["value"] += " " + "OR " if first else ""  + input
-                rule["key"] += " keyword"
-                if not first:
-                    first = True
+            # word = 0
+            # for rule in rules:
+            #     print("rule: ", rule)
+            for word in range(len(rules)):
+                print ("rules[word]: ", rules[word])
+                print ("input[word]: ", input[word])
+                rule = dict(rules[word])
+                print ("rule: ", rule)
+                rule["value"] += " " + "OR " if word > 0 else ""  + input[word]
+                rule["tag"] += " keyword"
+                rules[word] = rule
+                # word += 1
+                # if first:
+                #     first = False
 
         if "username" in types:
-            person = 0
-            for rule in rules:
-                rule["value"] += " from:" + input[person]
-                rule["key"] += " username"
-                person += 1
+            # person = 0
+            # for rule in rules:
+            for word in range(len(rules)):
+                print ("rules[word]: ", rules[word])
+                print ("input[word]: ", input[word])
+                rule = dict(rules[word])
+                print ("rule: ", rule)
+                rule["value"] += " from:" + input[word]
+                rule["tag"] += " username"
+                rules[word] = rule
+            # for person in range(len(rules)):
+            #     rules[person]["tag"] += " username"
+                # person += 1
 
         print ("rules", rules)
         return rules
