@@ -49,27 +49,30 @@ def disconnect_request():
 
 @tracker.route('/base', methods = ['POST'])
 def base_post():
-    data = request.form['ricerca_chiave']
-    data_user = request.form['ricerca_nome']
     try:
-        persona = request.form['persona']
-        print(persona)
-    except:
-        persona = False
-    try:
-        parola_chiave = request.form['parola_chiave']
-        print(parola_chiave)
-    except:
-        parola_chiave = False
+        data = request.form['ricerca_chiave']
+        # data_user = request.form['ricerca_nome']
+        try:
+            persona = request.form['persona']
+            print(persona)
+        except:
+            persona = False
+        try:
+            parola_chiave = request.form['parola_chiave']
+            print(parola_chiave)
+        except:
+            parola_chiave = False
 
-    print('data: ', data)
-    if ((data == "") and (parola_chiave != False)) or ((data_user == "") and (persona != False)):
-        return json.dumps('Error on input')
+        print('data: ', data)
+        if ((data == "") and (parola_chiave != False)) or ((data_user == "") and (persona != False)):
+            return json.dumps('Error on input')
 
-    if parola_chiave:
-        return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
-    elif persona:
-        return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+        if parola_chiave:
+            return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
+        elif persona:
+            return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+    except:
+        print ("No data found")
 
     return json.dumps('Seleziona un filtro')
 

@@ -74,6 +74,7 @@ class TwitterService():
     #---------STREAM---------
     def start_stream(self, input, types):
         self._end_stream.clear()
+        print("types_start: ", types)
         self._processor = (self.filtred_stream(input, types) if (input is not None and input != "") else self.sample_stream())
         if self._processor != None and not self._processor.isAlive():
             print("Starting Thread")
@@ -100,11 +101,29 @@ class TwitterService():
 
 
     def delete_all_rules(self, headers, bearer_token, old_rules):
+        # if rules is None or "data" not in rules:
+        #     return None
+        #
+        #     ids = list(map(lambda rule: rule["id"], rules["data"]))
+        #     payload = {"delete": {"ids": ids}}
+        #     response = requests.post(
+        #     "https://api.twitter.com/2/tweets/search/stream/rules",
+        #     headers=headers,
+        #     json=payload
+        #     )
+        #     if response.status_code != 200:
+        #         raise Exception(
+        #         "Cannot delete rules (HTTP {}): {}".format(
+        #         response.status_code, response.text
+        #         )
+        #         )
+        #         print(json.dumps(response.json()))
         if old_rules is None or "data" not in old_rules:
             return None
 
         ids = list(map(lambda rule: rule["id"], old_rules["data"]))
         payload = {"delete": {"ids": ids}}
+        # payload = {"delete": {"ids": }}
         print("DEL payload: ", payload)
         response = requests.post(
             "https://api.twitter.com/2/tweets/search/stream/rules",
@@ -113,8 +132,8 @@ class TwitterService():
         )
         if response.status_code != 200:
             raise Exception(
-                "Cannot delete rules (HTTP {}): {}".format(
-                    response.status_code, response.text
+                "Cannot delete rules (HTTP {}): {}\n\r{}".format(
+                    response.status_code, response.text, print("DEL payload: ", payload)
                 )
             )
         print("DELETED: ", json.dumps(response.json()))
@@ -151,9 +170,16 @@ class TwitterService():
         print("DELETED: ", json.dumps(response.json()))
 
 
-    def set_rules(self, headers, rules, bearer_token):
+    def set_rules(self, headers, delete, rules, bearer_token):
         # You can adjust the rules if needed
-        payload = {"add": rules}
+        print ("rules:", rules)
+        sample_rules = [
+        {"value": "dog has:images", "tag": "dog pictures"},
+        {"value": "cat has:images -grumpy", "tag": "cat pictures"},
+        ]
+        filt_rules = list()
+        filt_rules.append(rules)
+        payload = {"add": filt_rules}
         response = requests.post(
             "https://api.twitter.com/2/tweets/search/stream/rules",
             headers=headers,
@@ -213,22 +239,33 @@ class TwitterService():
         url = self._base_url + "tweets/search/stream?" + self._fields
         rules = self._build_rules(self._build_input(input), types)
         old_rules = self.get_rules(headers, bearer_token)
-        delete = self.delete_all_rules(headers, bearer_token, rules, old_rules)
-        set = self.set_rules(headers, delete, bearer_token)
+        delete = self.delete_all_rules(headers, bearer_token, old_rules)
+        # delete = self.delete_all_rules(headers, bearer_token, rules, old_rules)
+        set = self.set_rules(headers, delete, rules, bearer_token)
         return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
 
     def _build_rules(self, input, types):
+        print("input: ", input)
+        print("types: ", types)
         if types == None or types == [] or types == ["keyword"]:
-            return list({"value": input, "tag": (inp + " " for inp in input) + " keyword"})
+            tag_val = ""
+            for inp in input:
+                tag_val += (inp + " ")
+            rules = {"value": input[0], "tag": tag_val + " keyword"}
+            print ("rules", rules)
+            return rules
 
         # position = ""
         # if "place" in types or "bounding_box" in types:
         #     position = "place:" + inputPos
         rules = list({"value": "", "tag": inp} for inp in input)
         if "keyword" in types:
+            first = False
             for rule in rules:
-                rule["value"] += " " + input
+                rule["value"] += " " + "OR " if first else ""  + input
                 rule["key"] += " keyword"
+                if not first:
+                    first = True
 
         if "username" in types:
             person = 0
