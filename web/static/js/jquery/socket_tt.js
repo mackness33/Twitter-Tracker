@@ -65,28 +65,20 @@ function ferma_stream1() {
 	if(document.getElementById("switch-1").checked) {
 		console.log("Checked: ");
 		if (!socket.connected){
-			let input = document.getElementById("input_stream").value
-      console.log("input: " + input);
+			let input = document.getElementById("input_stream").value;
+      let types = getTypes();
 
-      let types = []
-      if (document.getElementById("area_geografica_stream").checked)
-        types.push(document.getElementById("area_geografica_stream").value)
-      if (document.getElementById("luogo_stream").checked)
-        types.push(document.getElementById("luogo_stream").value)
-      if (document.getElementById("parola_chiave_stream").checked)
-        types.push(document.getElementById("parola_chiave_stream").value)
-      if (document.getElementById("persona_stream").checked)
-        types.push(document.getElementById("persona_stream").value)
 
       // var types = document.getElementsByName('cbg_stream');
       // types.forEach((item, i) => {
       //   console.log("type: " + item + " at: " + i);
       // });
+      console.log("input: " + input);
       console.log("types: " + types);
 
 			socket.connect();
 
-			socket.emit('start_stream', {"input": input, "type": types})
+			socket.emit('start_stream', {"input": input, "type": types});
 			// if (input != null && input != ""){
 			// 	console.log("filtereeeed ");
 			// 	socket.emit('start_filtered', input);
@@ -100,8 +92,22 @@ function ferma_stream1() {
 	else {
 		console.log("Not checked: ");
 		if (socket.connected){
-			socket.disconnect()
+			socket.disconnect();
 			console.log("disconnecting: " + socket.id);
 		}
 	}
+}
+
+function getTypes(){
+  let types = [];
+  if (document.getElementById("area_geografica_stream").checked)
+    types.push(document.getElementById("area_geografica_stream").value);
+  if (document.getElementById("luogo_stream").checked)
+    types.push(document.getElementById("luogo_stream").value);
+  if (document.getElementById("parola_chiave_stream").checked)
+    types.push(document.getElementById("parola_chiave_stream").value);
+  if (document.getElementById("persona_stream").checked)
+    types.push(document.getElementById("persona_stream").value);
+
+  return types;
 }

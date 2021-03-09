@@ -22,8 +22,6 @@ import json
 #=============== DEFINITION ===============
 tracker = Blueprint('tracker', __name__, template_folder='templates', static_folder='static')
 T = TwitterService(ACCESS_TOKEN)
-# T = Twitter(app.config['ACCESS_TOKEN'])
-
 
 
 #---------------SOCKETIO---------------
@@ -32,23 +30,11 @@ def socket_connection():
     print('connecting socket ..')
     emit('connection_done')
 
-@socketio.on('start_sample', namespace='/base')
-def start_sample():
-    T.end_stream()
-    print('Starting sample stream')
-    T.sample_stream()
-
-@socketio.on('start_filtered', namespace='/base')
-def start_filtered(msg):
-    T.end_stream()
-    print(msg)
-    T.filtered_stream()
-
 @socketio.on('start_stream', namespace='/base')
 def start_stream(data):
     T.end_stream()
     print("Data: ", data)
-    T.start_stream(data)
+    T.start_stream(data["input"], data["type"])
 
 @socketio.on('stop_stream', namespace='/base')
 def the_end(msg):
@@ -83,26 +69,9 @@ def base_post():
     if parola_chiave:
         return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
     elif persona:
-        return T.recent_search(query="from:"+data_user, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
-    else:
-        return json.dumps('Seleziona un filtro')
-    '''if data != "":
-        # search_type = data[0]
-        # data = data[1:]
-    else:
-        return json.dumps('Error on input')
-
-    if search_type == '#':
-        return T.tweets_lookup(id=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id&place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type&user.fields=description,created_at,name,username"})
-    elif search_type == '@':
-        # BUG: results with undefined fields
-        return T.users_lookup(query=data, fields={"user.fields": "description,created_at,name,url"})
-    elif search_type == '$':
-        return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
-    elif search_type == '£':
         return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
-    '''
-    return {"text": 'Error on input', "data": 'ERROR', "status_code": 413}
+
+    return json.dumps('Seleziona un filtro')
 
 @tracker.route('/base')
 def base():

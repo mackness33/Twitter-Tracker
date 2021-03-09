@@ -72,9 +72,9 @@ class TwitterService():
         return json_response
 
     #---------STREAM---------
-    def start_stream(self, rules):
+    def start_stream(self, input, types):
         self._end_stream.clear()
-        self._processor = (self.filtred_stream(rules) if rules is not None and rules != ""  else self.sample_stream())
+        self._processor = (self.filtred_stream(input, types) if (input is not None and input != "") else self.sample_stream())
         if self._processor != None and not self._processor.isAlive():
             print("Starting Thread")
             self._processor.start()
@@ -124,7 +124,7 @@ class TwitterService():
             return
 
         value_to_add = list(map(lambda rule: rule["value"], rules))
-        to_delete = list(filter(lambda role: role[]'value'] in value_to_add, old_rules["data"]))
+        to_delete = list(filter(lambda role: role['value'] in value_to_add, old_rules["data"]))
 
         print("DEL in rules: ", rules)
         print("DEL in old_rules: ", old_rules)
@@ -206,15 +206,39 @@ class TwitterService():
         return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
 
     #---------FILTERED STREAM----------
-    def filtred_stream(self, data):
+    def filtred_stream(self, input, types):
         print("Filtred")
         bearer_token = self._bearer
         headers = self._create_headers()
         url = self._base_url + "tweets/search/stream?" + self._fields
-        rules = self.get_rules(headers, bearer_token)
-        delete = self.delete_all_rules(headers, bearer_token, rules)
+        rules = self._build_rules(self._build_input(input), types)
+        old_rules = self.get_rules(headers, bearer_token)
+        delete = self.delete_all_rules(headers, bearer_token, rules, old_rules)
         set = self.set_rules(headers, delete, bearer_token)
         return threading.Thread(target=self.get_stream, args=(url, headers, bearer_token))
+
+    def _build_rules(self, input, types):
+        if types == None or types == [] or types == ["keyword"]:
+            return list({"value": input, "tag": (inp + " " for inp in input) + " keyword"})
+
+        # position = ""
+        # if "place" in types or "bounding_box" in types:
+        #     position = "place:" + inputPos
+        rules = list({"value": "", "tag": inp} for inp in input)
+        if "keyword" in types:
+            for rule in rules:
+                rule["value"] += " " + input
+                rule["key"] += " keyword"
+
+        if "username" in types:
+            person = 0
+            for rule in rules:
+                rule["value"] += " from:" + input[person]
+                rule["key"] += " username"
+                person += 1
+
+        print ("rules", rules)
+        return rules
 
     def _build_input(self, input):
         input = input.split(',')
