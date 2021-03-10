@@ -19,9 +19,10 @@ class TwitterService():
         self._base_url = "https://api.twitter.com/2/"
         self._end_stream = threading.Event()
         self._fields = ('tweet.fields=author_id,created_at,entities&'
-            'expansions=geo.place_id,author_id&'
+            'expansions=geo.place_id,author_id,attachments.media_keys&'
             'place.fields=contained_within,country,country_code,full_name,geo,id,name,place_type&'
-            'user.fields=description,created_at,name,url'
+            'user.fields=description,created_at,name,url&'
+            'media.fields=url,preview_image_url'
         )
         self._processor = None
         self.stream = False

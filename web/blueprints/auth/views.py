@@ -51,7 +51,7 @@ def disconnect_request():
 def base_post():
     try:
         data = request.form['ricerca_chiave']
-        # data_user = request.form['ricerca_nome']
+        data_user = request.form['ricerca_nome']
         try:
             persona = request.form['persona']
             print(persona)
@@ -70,7 +70,8 @@ def base_post():
         if parola_chiave:
             return T.recent_search(query=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id,attachments.media_keys", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url", "media.fields": "url,preview_image_url"})
         elif persona:
-            return T.timeline(username=data, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+            return T.recent_search(query="from:"+data_user, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
+            #return T.timeline(username=data_user, fields={"tweet.fields": "author_id,created_at,entities", "expansions": "geo.place_id,author_id", "place.fields": "contained_within,country,country_code,full_name,geo,id,name,place_type", "user.fields": "description,created_at,name,url"})
     except:
         print ("No data found")
 
